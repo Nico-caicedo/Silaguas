@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="HHh Lpr lFf">
     <q-header elevated class="bg-light-blue-9">
       <q-toolbar>
         <q-btn
@@ -47,7 +47,7 @@
       v-model="leftDrawerOpen"
       bordered
     >
-      <q-scroll-area style="height: calc(100% - 30px); margin-top: 50px; border-right: 6px solid #ddd">
+      <q-scroll-area style="height: calc(95% - 30px); margin-top: 50px; border-right: 6px solid #ddd">
         <q-list padding>
           <div v-for="mItem in menuElements" :key="mItem.IdAcceso">
             <q-expansion-item
@@ -88,65 +88,21 @@
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink.vue'
 import { openURL } from 'quasar'
 import { api } from 'boot/axios'
 import utiliades from '../commons/utilidades.js'
 import UsuDao from '../commons/Datos/usuariosDAO_.js'
 
-const linksData = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'http://localhost:8080/#'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
+
 
 export default {
   name: 'MainLayout',
-  components: { EssentialLink },
+
   data () {
     return {
       usuDao: null,
       leftDrawerOpen: false,
-      essentialLinks: linksData,
+     
       menuElements: [ {IdAcceso: 0, IdModulo: '', Padre: 0, Aspx:'', Descripcion: '', Orden: 0, Icono: '', Estado: 0, Hijos: []} ],
       Usuario: { Login: '', IdRol: '', IdTercero: 0, Password: '', LoginCrea: '', Observacion: '', FIngreso: '', ModPasspi: '', NoModPass: '', PassNoExpire: '', Activo: 0, ProximoCambio: '', PeriodoCambio: 0, Estado: 0, NombreTercero: '', ListaAccesos: [] },
       modulo: { Id: '', Nombre: '' },

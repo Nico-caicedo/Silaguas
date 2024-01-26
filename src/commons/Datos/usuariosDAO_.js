@@ -47,7 +47,7 @@ export default class UsuariosDAO_ {
         var usuario = response.data
         if (usuario.Login === null) {
           self.$q.loading.hide()  
-          utilidades.mensaje('Verifique usuario o password')
+          utilidades.mensaje('Verifique usuario o passwordS')
         } else {
           self.$q.localStorage.set('usuarioSilaguas', usuario)
           // cargarAccesos(usuario.IdRol, '-1', self)

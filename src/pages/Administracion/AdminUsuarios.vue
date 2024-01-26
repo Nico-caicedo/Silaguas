@@ -178,11 +178,11 @@
               </template>
             </q-select>
             <q-toggle class="col-xs-12 col-sm-6 col-md-4"
-                v-model="usuarioAcceso.PassNoExpire"
+                v-model="usuarioAcceso.Passnoexpire"
                 checked-icon="check"
                 :rules="[ regla ]"
-                :true-value=1
-                :false-value=0
+                :true-value=true
+                :false-value=false
                 color="green"
                 label="El password no expira"
                 unchecked-icon="clear"
@@ -191,27 +191,27 @@
                 v-model="usuarioAcceso.Activo"
                 checked-icon="check"
                 :rules="[ regla ]"
-                :true-value=1
-                :false-value=0
+                :true-value=true
+                :false-value=false
                 color="green"
                 label="Usuario activo en el sistema"
                 unchecked-icon="clear"
             />
             <q-toggle class="col-xs-12 col-sm-6 col-md-4"
-                v-model="usuarioAcceso.NoModPass"
+                v-model="usuarioAcceso.Nomodpass"
                 checked-icon="check"
-                :true-value=1
-                :false-value=0
+                :true-value=true
+                :false-value=false
                 :rules="[ regla ]"
                 color="green"
                 label="No puede cambiar password"
                 unchecked-icon="clear"
             />
             <q-toggle class="col-xs-12 col-sm-6 col-md-4"
-                v-model="usuarioAcceso.ModPasspi"
+                v-model="usuarioAcceso.Modpasspi"
                 checked-icon="check"
-                :true-value=1
-                :false-value=0
+                :true-value=true
+                :false-value=false
                 :rules="[ regla ]"
                 color="green"
                 label="Cambiar password en el proximo inicio"
@@ -301,7 +301,7 @@ export default {
   name: 'Usuarios',
   data () {
     return {
-      usuarioAcceso: { Login: '', Password: '', IdTercero: -1, NombreTercero: '', Nomodpass: '0', Modpasspi: '0', Passnoexpire: '0', Activo: '0', Fecha: utilidades.fechaActual() },
+      usuarioAcceso: { Login: '', Password: '', IdTercero: -1, NombreTercero: '', Nomodpass: false, Modpasspi: false, Passnoexpire: false, Activo: false, Fecha: utilidades.fechaActual() },
       usuarioB: {},
       tercero: { IdTercero: -1, Nombre: '', CodigoMunicipio: '', IdDepartamento: '', IdTiid: '', Sexo: '', Dv: -1, Nacimiento: '19010101 00:00', OtrosNombres: '', Apellido1: '', Apellido2: '', Alias: '', Direccion: '', Telefono: '', Celular: '', Email: '', Web: '', Observaciones: '' },
       usuario: { Login: '', IdRol: '', IdTercero: -1, Password: '', LoginCrea: '', Observacion: '', FIngreso: '', ModPasspi: '', NoModPass: 0, PassNoExpire: 0, Activo: 0, ProximoCambio: '', PeriodoCambio: 0, Estado: 0, RazonSocial: '' },
@@ -347,7 +347,7 @@ export default {
     limpiarTercero () {
       this.tercero = { Id: -1, Identificacion: '', Nombre: '', OtrosNombres: '', Apellido1: '', Apellido2: '', Alias: '', Direccion: '', Telefono: '', Celular: '', Email: '', Web: '', Observaciones: '', Login: this.usuario.LoginUsuario, Modifica: this.usuario.LoginUsuario }
       this.terceroB = this.tercero
-      this.usuarioAcceso = { Login: '', Password: '', IdTercero: -1, Nomodpass: '0', Modpasspi: '0', Passnoexpire: '0', Activo: '0', Fecha: utilidades.fechaActual() },
+      this.usuarioAcceso = { Login: '', Password: '', IdTercero: -1, Nomodpass: false, Modpasspi: false, Passnoexpire: false, Activo: false, Fecha: utilidades.fechaActual() },
       this.listaUsuarios = []
     },
     mostrarTercerosDialog () {
