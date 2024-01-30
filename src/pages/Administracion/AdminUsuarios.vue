@@ -187,16 +187,16 @@
                 label="El password no expira"
                 unchecked-icon="clear"
             />
-            <q-toggle class="col-xs-12 col-sm-6 col-md-4"
-                v-model="usuarioAcceso.Activo"
-                checked-icon="check"
-                :rules="[ regla ]"
-                :true-value=true
-                :false-value=false
-                color="green"
-                label="Usuario activo en el sistema"
-                unchecked-icon="clear"
-            />
+  <q-toggle
+    class="col-xs-12 col-sm-6 col-md-4"
+    v-model="usuarioAcceso.Activo"
+    :true-value="1"
+    :false-value="0"
+    color="green"
+    label="Usuario activo en el sistema"
+    checked-icon="check"
+    unchecked-icon="clear"
+  />
             <q-toggle class="col-xs-12 col-sm-6 col-md-4"
                 v-model="usuarioAcceso.Nomodpass"
                 checked-icon="check"
@@ -465,10 +465,12 @@ export default {
       }
     },
     guardarusuario () {
+      console.log(this.usuarioAcceso)
+      const data =  this.usuarioAcceso
       const self = this
       var resultado = 0
       self.$q.loading.show()
-      api.post('/usuario/guardarUsuario/', this.usuarioAcceso)
+      api.post('/usuario/guardarUsuario', data)
         .then((response) => {
           resultado = response.data
           if (resultado > 0) {
