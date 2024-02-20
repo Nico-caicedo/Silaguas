@@ -156,6 +156,7 @@ export default {
       const self = this
       self.$q.loading.show()
       self.accesosSeleccion = []
+    
       api.get(`/usuario/AccesosIdModulo/${IdModulo}`)
         .then((response) => {
           self.accesos = response.data
@@ -169,7 +170,7 @@ export default {
     guardar () {
       const self = this
       this.nuevoAccesos = []
-
+      
       if (self.accesosSeleccion.length > 0) {
         self.accesosSeleccion.forEach(function (acceso) {
           const ac = self.accesosRol.find(f => f.IdAcceso === acceso)
@@ -190,7 +191,7 @@ export default {
           }
         })
       }
-
+      console.log('datos',self.nuevoAccesos)
       self.$q.loading.show()
       api.post('/usuario/guardarRolAccesos', self.nuevoAccesos)
         .then((response) => {

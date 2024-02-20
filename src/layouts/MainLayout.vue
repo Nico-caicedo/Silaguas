@@ -78,7 +78,8 @@
         </q-list>
       </q-scroll-area>
       <div class="absolute-top bg-white" style="height: 40px; border-right: 6px solid #0000">
-        <div class="text-weight-bold" style="padding:5px">Usuario: {{ Usuario.RazonSocial }}</div>
+        <!-- <div class="text-weight-bold" style="padding:5px">Usuario: {{ Usuario.RazonSocial }}</div> -->
+        <div class="text-weight-bold" style="padding:5px">Usuario: {{ Usuario.Tercero.Nombre  + " " + Usuario.Tercero.Apellido1 }}</div>
       </div>
     </q-drawer>
     <q-page-container>
@@ -164,6 +165,7 @@ export default {
         this.$router.push('/')
         return
       }
+      console.log(UsuDao)
       self.Usuario = usuario
       clearTimeout(this.timeout)
       this.timeout = setTimeout(() => {

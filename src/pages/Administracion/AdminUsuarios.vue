@@ -1,237 +1,148 @@
 <template>
   <q-layout container style="height: 90vh">
     <q-header class="bg-green-8">
-        <q-toolbar>
-            <q-avatar>
-                <q-btn flat round dense icon="account_box" />
-            </q-avatar>
-            <q-avatar>
-                <q-btn flat round dense icon="delete" @click="limpiarTercero"/>
-            </q-avatar>
-            <q-toolbar-title>
-              Usuarios del Sistema
-            </q-toolbar-title>
-            <q-btn flat icon="person_add" label="Todos..." @click="abrirBusqueda()" />
-        </q-toolbar>
+      <q-toolbar>
+        <q-avatar>
+          <q-btn flat round dense icon="account_box" />
+        </q-avatar>
+        <q-avatar>
+          <q-btn flat round dense icon="delete" @click="limpiarTercero" />
+        </q-avatar>
+        <q-toolbar-title>
+          Usuarios del Sistema
+        </q-toolbar-title>
+        <q-btn flat icon="person_add" label="Todos..." @click="abrirBusqueda()" />
+      </q-toolbar>
     </q-header>
     <q-page-container>
-        <q-form ref="formCl" @submit="guardarUsu(usuarioAcceso)">
-          <div class="q-pa-md">
-            <div class="row q-col-gutter-sm">
+      <q-form ref="formCl" @submit="guardarUsu(usuarioAcceso)">
+        <div class="q-pa-md">
+          <div class="row q-col-gutter-sm">
             <div class="col-xs-12 col-sm-12 col-md-12 q-field--with-bottom">
-              <q-select
-                filled
-                v-model="filtroBuscaUsuario"
-                map-options emit-value option-value="usuario"
-                option-label="RazonSocial"
-                :options="listaUsuarios"
-                use-input
-                hide-dropdown-icon
-                hide-selected
-                fill-input
-                input-debounce="0"
-                label="Buscar Usuario"
-                @filter="filterFnUsuario"
-                @input="val => { cargarUsuario(val) }"
-                >
+              <q-select filled v-model="filtroBuscaUsuario" map-options emit-value option-value="usuario"
+                option-label="RazonSocial" :options="listaUsuarios" use-input hide-dropdown-icon hide-selected fill-input
+                input-debounce="0" label="Buscar Usuario" @filter="filterFnUsuario"
+                @input="val => { cargarUsuario(val) }">
                 <template v-slot:prepend>
-                <q-icon name="search" size="lg" />
+                  <q-icon name="search" size="lg" />
                 </template>
                 <template v-slot:option="scope">
-                    <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                  <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
                     <q-item-section>
-                        <q-item-label caption> <b> {{scope.opt.RazonSocial}} </b> </q-item-label>
-                        <q-item-label caption>Login: {{scope.opt.Login}} </q-item-label>
+                      <q-item-label caption> <b> {{ scope.opt.RazonSocial }} </b> </q-item-label>
+                      <q-item-label caption>Login: {{ scope.opt.Login }} </q-item-label>
                     </q-item-section>
-                    </q-item>
+                  </q-item>
                 </template>
                 <template v-slot:no-option>
-                    <q-item>
+                  <q-item>
                     <q-item-section class="text-grey">
-                        Sin resultados
+                      Sin resultados
                     </q-item-section>
-                    </q-item>
+                  </q-item>
                 </template>
-                </q-select>
+              </q-select>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-4 q-field--with-bottom">
-                <q-select
-                filled
-                v-model="filtroBusca"
-                map-options emit-value option-value="tercero"
-                option-label="Identificacion"
-                :options="listaTerceros"
-                use-input
-                hide-dropdown-icon
-                hide-selected
-                fill-input
-                input-debounce="0"
-                label="Buscar Tercero"
-                @filter="filterFn"
-                @input="val => { cargarTercero(val) }"
-                >
+              <q-select filled v-model="filtroBusca" map-options emit-value option-value="tercero"
+                option-label="Identificacion" :options="listaTerceros" use-input hide-dropdown-icon hide-selected
+                fill-input input-debounce="0" label="Buscar Tercero" @filter="filterFn"
+                @input="val => { cargarTercero(val) }">
                 <template v-slot:prepend>
-                <q-icon name="person" size="lg" />
+                  <q-icon name="person" size="lg" />
                 </template>
                 <template v-slot:append>
                   <q-btn icon="person_add" color="black" flat dense unelevated @click="agregarPersona" />
                 </template>
                 <template v-slot:option="scope">
-                    <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                  <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
                     <q-item-section>
-                        <q-item-label caption> <b> {{scope.opt.RazonSocial}} </b> </q-item-label>
-                        <q-item-label caption>Identification: {{scope.opt.Identificacion}} </q-item-label>
-                        <q-item-label caption>Id Persona: {{scope.opt.IdTercero}} </q-item-label>
+                      <q-item-label caption> <b> {{ scope.opt.RazonSocial }} </b> </q-item-label>
+                      <q-item-label caption>Identification: {{ scope.opt.Identificacion }} </q-item-label>
+                      <q-item-label caption>Id Persona: {{ scope.opt.IdTercero }} </q-item-label>
                     </q-item-section>
-                    </q-item>
+                  </q-item>
                 </template>
                 <template v-slot:no-option>
-                    <q-item>
+                  <q-item>
                     <q-item-section class="text-grey">
-                        Sin resultados
+                      Sin resultados
                     </q-item-section>
-                    </q-item>
+                  </q-item>
                 </template>
-                </q-select>
+              </q-select>
             </div>
-            <q-input class="col-xs-12 col-md-8 q-field--with-bottom"
-                outlined
-                readonly
-                v-model="tercero.RazonSocial"
-                label="Tercero"
-            />
-            <q-input class="col-xs-12 col-md-4 q-field--with-bottom"
-                  outlined
-                  v-model="usuarioAcceso.Login"
-                  label="Usuario"
-                  :rules="[ regla ]"
-                >
-                <template v-slot:prepend>
-                  <q-icon name="account_circle" size="lg" />
-                </template>
+            <q-input class="col-xs-12 col-md-8 q-field--with-bottom" outlined readonly v-model="tercero.RazonSocial"
+              label="Tercero" />
+            <q-input class="col-xs-12 col-md-4 q-field--with-bottom" outlined v-model="usuarioAcceso.Login"
+              label="Usuario" :rules="[regla]">
+              <template v-slot:prepend>
+                <q-icon name="account_circle" size="lg" />
+              </template>
             </q-input>
-            <q-select class="col-xs-12 col-sm-5 col-md-6"
-              filled
-              v-model="usuarioAcceso.IdRol"
-              :rules="[ regla ]"
-              map-options emit-value option-value="IdRol"
-              option-label="Nombre" :options="listaRoles"
-              label="Rol Usuario"
-            >
+            <q-select class="col-xs-12 col-sm-5 col-md-6" filled v-model="usuarioAcceso.IdRol" :rules="[regla]"
+              map-options emit-value option-value="IdRol" option-label="Nombre" :options="listaRoles" label="Rol Usuario">
               <template v-slot:prepend>
                 <q-icon name="accessibility" size="lg" />
               </template>
             </q-select>
-            <q-input class="col-xs-12 col-md-2 q-field--with-bottom"
-              outlined
-              readonly
-              v-model="usuarioAcceso.IdTercero"
-              :rules="[ regla ]"
-              label="Id Persona"
-            />
-            <q-input class="col-xs-12 col-md-4 q-field--with-bottom"
-              outlined
-              readonly
-              v-model="usuarioAcceso.LoginCrea"
-              label="Creado por"
-            >
+            <q-input class="col-xs-12 col-md-2 q-field--with-bottom" outlined readonly v-model="usuarioAcceso.IdTercero"
+              :rules="[regla]" label="Id Persona" />
+            <q-input class="col-xs-12 col-md-4 q-field--with-bottom" outlined readonly v-model="usuarioAcceso.LoginCrea"
+              label="Creado por">
               <template v-slot:prepend>
                 <q-icon name="vpn_key" size="lg" />
               </template>
             </q-input>
-            <q-input class="col-xs-12 col-md-4 q-field--with-bottom"
-              outlined
-              readonly
-              type="date"
-              v-model="usuarioAcceso.Fecha"
-              label="Fecha creado"
-            >
+            <q-input class="col-xs-12 col-md-4 q-field--with-bottom" outlined readonly type="date"
+              v-model="usuarioAcceso.Fecha" label="Fecha creado">
               <template v-slot:prepend>
                 <q-icon name="date_range" size="lg" />
               </template>
             </q-input>
-            <q-input class="col-xs-12 col-md-4 q-field--with-bottom"
-              outlined
-              readonly
-              v-model="usuarioAcceso.ProximoCambio"
-              label="Fecha proximo cambio"
-            >
+            <q-input class="col-xs-12 col-md-4 q-field--with-bottom" outlined readonly
+              v-model="usuarioAcceso.ProximoCambio" label="Fecha proximo cambio">
               <template v-slot:prepend>
                 <q-icon name="date_range" size="lg" />
               </template>
             </q-input>
-            <q-input class="col-xs-12 col-md-8 q-field--with-bottom"
-              outlined
-              v-model="usuarioAcceso.Observacion"
-              label="Cargo"
-            />
-            <q-select class="col-xs-12 col-sm-6 col-md-4"
-              filled
-              v-model="usuarioAcceso.PeriodoCambio"
-              :rules="[ regla ]"
-              map-options emit-value
-              :options="periodoCambio"
-              label="Cambio (meses)"
-            >
+            <q-input class="col-xs-12 col-md-8 q-field--with-bottom" outlined v-model="usuarioAcceso.Observacion"
+              label="Cargo" />
+            <q-select class="col-xs-12 col-sm-6 col-md-4" filled v-model="usuarioAcceso.PeriodoCambio" :rules="[regla]"
+              map-options emit-value :options="periodoCambio" label="Cambio (meses)">
               <template v-slot:prepend>
                 <q-icon name="today" size="lg" />
               </template>
             </q-select>
-            <q-toggle class="col-xs-12 col-sm-6 col-md-4"
-                v-model="usuarioAcceso.Passnoexpire"
-                checked-icon="check"
-                :rules="[ regla ]"
-                :true-value=true
-                :false-value=false
-                color="green"
-                label="El password no expira"
-                unchecked-icon="clear"
-            />
-  <q-toggle
-    class="col-xs-12 col-sm-6 col-md-4"
-    v-model="usuarioAcceso.Activo"
-    :true-value="1"
-    :false-value="0"
-    color="green"
-    label="Usuario activo en el sistema"
-    checked-icon="check"
-    unchecked-icon="clear"
-  />
-            <q-toggle class="col-xs-12 col-sm-6 col-md-4"
-                v-model="usuarioAcceso.Nomodpass"
-                checked-icon="check"
-                :true-value=true
-                :false-value=false
-                :rules="[ regla ]"
-                color="green"
-                label="No puede cambiar password"
-                unchecked-icon="clear"
-            />
-            <q-toggle class="col-xs-12 col-sm-6 col-md-4"
-                v-model="usuarioAcceso.Modpasspi"
-                checked-icon="check"
-                :true-value=true
-                :false-value=false
-                :rules="[ regla ]"
-                color="green"
-                label="Cambiar password en el proximo inicio"
-                unchecked-icon="clear"
-            />
-            </div>
-            <div class="row q-col-gutter-sm">
+            <q-toggle class="col-xs-12 col-sm-6 col-md-4" v-model="usuarioAcceso.Passnoexpire" checked-icon="check"
+              :rules="[regla]" :true-value=1 :false-value=0 color="green" label="El password no expira"
+              unchecked-icon="clear" />
+            <q-toggle class="col-xs-12 col-sm-6 col-md-4" v-model="usuarioAcceso.Activo" :true-value="1" :false-value="0"
+              color="green" label="Usuario activo en el sistema" checked-icon="check" unchecked-icon="clear" />
+            <q-toggle class="col-xs-12 col-sm-6 col-md-4" v-model="usuarioAcceso.Nomodpass" checked-icon="check"
+              :true-value=1 :false-value=0 :rules="[regla]" color="green" label="No puede cambiar password"
+              unchecked-icon="clear" />
+            <q-toggle class="col-xs-12 col-sm-6 col-md-4" v-model="usuarioAcceso.Modpasspi" checked-icon="check"
+              :true-value=1 :false-value=0 :rules="[regla]" color="green"
+              label="Cambiar password en el proximo inicio" unchecked-icon="clear" />
+          </div>
+          <div class="row q-col-gutter-sm">
             <div class="col-xs-12 col-sm-12 col-md-3">
-                <div class="row justify-center q-pt-sm">
-                <q-btn label="Guardar" class="col-xs-12 col-sm-12 col-md-12" icon="save" outline type="submit" align="center" unelevated >
+              <div class="row justify-center q-pt-sm">
+                <q-btn label="Guardar" class="col-xs-12 col-sm-12 col-md-12" icon="save" outline type="submit"
+                  align="center" unelevated>
                 </q-btn>
-                </div>
-                <div class="row justify-center q-pa-sm">
-                <q-btn label="Restaurar password " icon="vpn_key" outline align="center" unelevated @click="restablecerClave">
+              </div>
+              <div class="row justify-center q-pa-sm">
+                <q-btn label="Restaurar password " icon="vpn_key" outline align="center" unelevated
+                  @click="restablecerClave">
                 </q-btn>
-                </div>
-                <div class="row justify-center q-pa-sm">
-                <q-btn label="Regresar" icon="replay" class="col-xs-12 col-sm-12 col-md-12" outline align="center" @click="regresar" unelevated v-close-popup>
+              </div>
+              <div class="row justify-center q-pa-sm">
+                <q-btn label="Regresar" icon="replay" class="col-xs-12 col-sm-12 col-md-12" outline align="center"
+                  @click="regresar" unelevated v-close-popup>
                 </q-btn>
-                </div>
+              </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-8">
               <div class="bg-cyan text-white">
@@ -241,38 +152,39 @@
                 </q-toolbar>
               </div>
               <q-list class="col-xs-12 col-sm-12 col-md-8">
-                <q-item v-for="usu in listaUsuarios" :key="usu.Login" @click.native="cargarUsuario(usu)" class="q-my-sm" clickable>
+                <q-item v-for="usu in listaUsuarios" :key="usu.Login" @click.native="cargarUsuario(usu)" class="q-my-sm"
+                  clickable>
                   <q-item-section avatar>
                     <q-icon name="person" />
                   </q-item-section>
                   <q-item-section>
                     <q-item-label> <b> {{ usu.RazonSocial }} </b> </q-item-label>
-                      <q-item-label>
-                          Id Persona: {{ usu.IdTercero }} <br/>
-                            Usuario: <b> {{ usu.Login }} </b> <br/>
-                            Creado por: {{ usu.LoginCrea }} <br/>
-                            Id Rol: {{ usu.IdRol }} <br/>
-                            Periodo cambio Password: {{ usu.PeriodoCambio }} <br/>
-                            Proximo Cambio: {{ usu.ProximoCambio }} <br/>
-                            Fecha creación: {{ usu.Fecha.slice(0, 10) }} <br/>
-                            El Password nunca expira: {{ usu.Passnoexpire }} <br/>
-                            Activo en el Sistema: {{ usu.Activo }} <br/>
-                            No puede cambiar el password: {{ usu.NoModPass }} <br/>
-                            Proximo cambio del password: {{ usu.ModPasspi }} <br/>
-                            Cargo: {{ usu.Observacion }} <br/>
-                      </q-item-label>
-                      <q-separator />
+                    <q-item-label>
+                      Id Persona: {{ usu.IdTercero }} <br />
+                      Usuario: <b> {{ usu.Login }} </b> <br />
+                      Creado por: {{ usu.LoginCrea }} <br />
+                      Id Rol: {{ usu.IdRol }} <br />
+                      Periodo cambio Password: {{ usu.PeriodoCambio }} <br />
+                      Proximo Cambio: {{ usu.ProximoCambio }} <br />
+                      Fecha creación: {{ usu.Fecha.slice(0, 10) }} <br />
+                      El Password nunca expira: {{ usu.Passnoexpire }} <br />
+                      Activo en el Sistema: {{ usu.Activo }} <br />
+                      No puede cambiar el password: {{ usu.NoModPass }} <br />
+                      Proximo cambio del password: {{ usu.ModPasspi }} <br />
+                      Cargo: {{ usu.Observacion }} <br />
+                    </q-item-label>
+                    <q-separator />
                   </q-item-section>
                 </q-item>
               </q-list>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-5">
             </div>
-            </div>
           </div>
-        </q-form>
-        <TerceroFiltro ref="busquedaTercero" :onSeleccionTercero="seleccionarTercero" />
-        <q-dialog v-model="isDialogComponenteTerceros" style="max-width: 650px" :maximized="true">
+        </div>
+      </q-form>
+      <TerceroFiltro ref="busquedaTercero" :onSeleccionTercero="seleccionarTercero" />
+      <q-dialog v-model="isDialogComponenteTerceros" style="max-width: 650px" :maximized="true">
         <q-card>
           <q-bar>
             <div>componentePersonas</div>
@@ -282,8 +194,7 @@
             </q-btn>
           </q-bar>
           <q-card-section>
-            <component tercero = @tercero 
-              :is="componenteTerceros">
+            <component tercero=@tercero :is="componenteTerceros">
             </component>
           </q-card-section>
         </q-card>
@@ -299,7 +210,7 @@ import utilidades from '../../commons/utilidades.js'
 import { date } from 'quasar'
 export default {
   name: 'Usuarios',
-  data () {
+  data() {
     return {
       usuarioAcceso: { Login: '', Password: '', IdTercero: -1, NombreTercero: '', Nomodpass: false, Modpasspi: false, Passnoexpire: false, Activo: false, Fecha: utilidades.fechaActual() },
       usuarioB: {},
@@ -318,7 +229,7 @@ export default {
       selected: []
     }
   },
-  mounted () {
+  mounted() {
     this.accesos = this.$q.localStorage.getItem('accesosSilaguas')
     const value = this.$q.localStorage.getItem('usuarioSilaguas')
     if (value) {
@@ -327,7 +238,7 @@ export default {
     }
     // utilidades.verificarUsuario(this.usuario.Login, this)
   },
-  created () {
+  created() {
     this.tercero.Nacimiento = date
     this.tercero.Nacimiento = utilidades.fechaActual()
     this.mostrarRoles(-1)
@@ -336,28 +247,28 @@ export default {
     TerceroFiltro
   },
   methods: {
-    abrirBusqueda () {
+    abrirBusqueda() {
       this.$refs.busquedaTercero.show()
     },
-    seleccionarTercero (tercero) {
+    seleccionarTercero(tercero) {
       const self = this
       self.$refs.busquedaTercero.hide()
       self.cargarTercero(tercero)
     },
-    limpiarTercero () {
+    limpiarTercero() {
       this.tercero = { Id: -1, Identificacion: '', Nombre: '', OtrosNombres: '', Apellido1: '', Apellido2: '', Alias: '', Direccion: '', Telefono: '', Celular: '', Email: '', Web: '', Observaciones: '', Login: this.usuario.LoginUsuario, Modifica: this.usuario.LoginUsuario }
       this.terceroB = this.tercero
       this.usuarioAcceso = { Login: '', Password: '', IdTercero: -1, Nomodpass: false, Modpasspi: false, Passnoexpire: false, Activo: false, Fecha: utilidades.fechaActual() },
-      this.listaUsuarios = []
+        this.listaUsuarios = []
     },
-    mostrarTercerosDialog () {
+    mostrarTercerosDialog() {
       this.componenteTerceros = () => this.isDialogComponenteTerceros
       this.isDialogComponenteTerceros = true
     },
-    abortFilterFn () {
+    abortFilterFn() {
       // console.log('delayed filter aborted')
     },
-    filterFn (val, update, abort) {
+    filterFn(val, update, abort) {
       if (val.length === 0) {
         abort()
         return
@@ -377,7 +288,7 @@ export default {
           })
       }, 500)
     },
-    filterFnUsuario (val, update, abort) {
+    filterFnUsuario(val, update, abort) {
       if (val.length === 0) {
         abort()
         return
@@ -397,11 +308,11 @@ export default {
           })
       }, 500)
     },
-    agregarPersona () {
+    agregarPersona() {
       this.componentePersonas = () => import('pages/Administracion/Tercero.vue')
       this.isDialogComponentePersonas = true
     },
-    buscarPersonaFiltro () {
+    buscarPersonaFiltro() {
       const self = this
       self.listaPersonas = []
       self.$q.loading.show()
@@ -415,18 +326,18 @@ export default {
           self.$q.loading.hide()
         })
     },
-    cargarTercero (ter) {
+    cargarTercero(ter) {
       this.tercero = ter
       this.mostrarusuarioPersona(ter)
       // this.mostrarListaZonas(usua)
     },
-    cargarUsuario (usu) {
+    cargarUsuario(usu) {
       this.usuarioAcceso = usu
       this.NombreTercero = usu.RazonSocial
       this.usuarioAcceso.Fecha = usu.Fecha.slice(0, 10)
       this.usuarioAcceso.Proximocambio = usu.ProximoCambio.slice(0, 10)
     },
-    mostrarRoles (idRol) {
+    mostrarRoles(idRol) {
       const self = this
       self.$q.loading.show()
       api.get(`/usuario/roles/${idRol}`)
@@ -439,7 +350,7 @@ export default {
           self.$q.loading.hide()
         })
     },
-    verificarUsuairo (loginUsuario) {
+    verificarUsuairo(loginUsuario) {
       const self = this
       self.$q.loading.show()
       api.get(`/usuario/verificacion/${loginUsuario}`)
@@ -452,7 +363,7 @@ export default {
           self.$q.loading.hide()
         })
     },
-    guardarUsu (usu) {
+    guardarUsu(usu) {
       // const login = this.usuarioAcceso.loginUsuario
       this.verificarUsuairo(this.usuarioAcceso.Login)
       this.usuarioAcceso.Modifica = this.usuario.Login
@@ -464,9 +375,9 @@ export default {
         this.guardarusuario()
       }
     },
-    guardarusuario () {
+    guardarusuario() {
       console.log(this.usuarioAcceso)
-      const data =  this.usuarioAcceso
+      const data = this.usuarioAcceso
       const self = this
       var resultado = 0
       self.$q.loading.show()
@@ -484,7 +395,7 @@ export default {
           self.$q.loading.hide()
         })
     },
-    modificarusuario () {
+    modificarusuario() {
       const self = this
       self.$q.loading.show()
       api.post('/usuario/modificaUsuario/', this.usuarioAcceso)
@@ -497,19 +408,19 @@ export default {
           self.$q.loading.hide()
         })
     },
-    convertirFecha () {
+    convertirFecha() {
       this.usuarioAcceso.FechaUsuario = utilidades.fechaActual()
     },
-    regresar () {
+    regresar() {
       this.$router.push('/admin')
     },
-    regla (val) {
+    regla(val) {
       if (val !== null && val !== '' && val !== undefined) {
         return true
       }
       return false || 'Falta completar información'
     },
-    mostrarusuarioPersona (persona) {
+    mostrarusuarioPersona(persona) {
       const self = this
       self.limpiarTercero()
       self.tercero = persona
@@ -536,7 +447,7 @@ export default {
           self.$q.loading.hide()
         })
     },
-    restablecerClave () {
+    restablecerClave() {
       const self = this
       this.$q.dialog({
         title: 'Silaguas',
