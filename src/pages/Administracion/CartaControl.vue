@@ -14,12 +14,36 @@
       </q-toolbar>
     </q-header>
     <q-page padding>
+
       <q-form>
 
 
         <div class="column justify-around q-gutter-y-lg q-mt-xl">
+          <div class="row q-gutter-x-lg ">
+            <q-btn label="Ver Carta Control" style="background-color: #589ce0;" icon="bar_chart" />
+            <q-btn label="Consultar limites" style="background-color: #f86d2c;" icon="dangerous" class="bg-alert"
+              @click="activar" :disabled="!VerLimites" />
+          </div>
 
-          <div class="row justify-center items-center q-gutter-x-xl " style="height:420px">
+          <q-dialog v-model="inception">
+            <q-card>
+              <q-card-section>
+                <div class="text-h6">Limites de {{ MetodoRPD.label }} {{Metodo.label }}</div>
+              </q-card-section>
+
+              <q-card-section v-html="Showlimite" class="q-pt-none ">
+
+              </q-card-section>
+
+              <q-card-actions align="right" class="text-primary">
+
+                <q-btn flat label="Close" class="text-white bg-negative" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+
+
+          <div class="row justify-center items-center q-gutter-x-xl q-mt-none" style="height:420px">
             <div class="q-gutter-y-xl col-xs-12 col-sm-12" style="width: 30%;">
               <div class="options row items-center justify-center  text-h6  "
                 :class="{ selected: shape === 'Verificacion' }" @click="selectOption('Verificacion')">
@@ -31,23 +55,25 @@
               </div>
               <div class="row justify-center " style="height:100%">
                 <q-btn v-if="show" class="color-white q-ma-sm bg-positive text-h6" style="width: 120px; height: 50px;"
-                  label="Enviar" @click="ValidacionesCartVerificacion" :disabled="!opcionSeleccionada" />
+                  label="Enviar" @click="ValidacionesCartVerificacion" :disabled="!opcionSeleccionada1" />
                 <q-btn v-if="show == false" class="color-white q-ma-sm bg-positive text-h6"
-                  style="width: 120px; height: 50px;" label="Enviar" @click="ValidacionesCartVerificacion"
-                  :disabled="!opcionSeleccionada" />
+                  style="width: 120px; height: 50px;"  @click="ValidacionesCartRPD" label="Enviar" :disabled="!opcionSeleccionada2" />
 
               </div>
             </div>
 
             <div v-if="show" class="q-gutter-y-lg col-12 col-sm-12 " style="width: 40%; height: 100%;">
-              <q-select filled v-model="Metodo" :options="MetodoSelect" label="Método" @input="Concentraciones" />
+              <q-select filled v-model="Metodo" :options="MetodoSelect" label="Método"
+                @input="Concentraciones(); VericarOpt();" />
               <div class="shadow-1 q-pa-md" style="width: 100%; height: 325px; background-color: rgb(238, 238, 238);">
                 <!-- <q-table style="height: 300px;" title="Solución Patrón" :data="rows" :columns="columns" row-key="name" /> -->
 
+                <q-scroll-area style="height: 300px;">
+
+                  <q-option-group class="text-h5" :options="row" type="checkbox" v-model="groups" @input="VericarOpt" />
 
 
-                <q-option-group :options="row" type="checkbox" v-model="groups" @input="VericarOpt" />
-
+                </q-scroll-area>
               </div>
 
 
@@ -55,9 +81,10 @@
 
             <div v-if="show == false" class="column items-center  q-pt-xl q-gutter-y-lg  "
               style="width: 40%; height: 90%; ">
-              <q-select class="" style="width: 65%;" filled v-model="Metodo" :options="MetodoSelect" label="Método" />
-              <q-select filled class="q-mt-xl" style="width: 65%;" v-model="matriz" :options="matrizSelect" @input=""
-                label="Tipo Matriz" />
+              <q-select class="" style="width: 65%;" filled v-model="MetodoRPD" :options="MetodoSelect" label="Método"
+                @input="VericarOpt" />
+              <q-select filled class="q-mt-xl" style="width: 65%;" v-model="matriz" :options="matrizSelect"
+              @input="VericarOpt(); Concentraciones();"     label="Tipo Matriz" />
             </div>
           </div>
 
@@ -165,18 +192,93 @@ export default {
       Tendencias: [],
       Limites: [],
       valoresAnteriores: [],
-      opcionSeleccionada: false,
-      mensajesAlerta : [],
-      mensajess: []
+      opcionSeleccionada1: false,
+      opcionSeleccionada2: false,
+    
+      mensajesAlerta: [],
+      mensajess: [],
+      mensajesAlerta: [],
+      valoresAnterioresO: [],
+      clavesObserva: [],
+      observacions: [],
+      inception: false,
+      Showlimite: [],
+      VerLimites: false,
+      MetodoRPD: "",
     };
   },
   methods: {
-    VericarOpt() {
-      if (this.groups.length > 0) {
-        this.opcionSeleccionada = true
-      } else {
-        this.opcionSeleccionada = false
+    activar() {
+      // permite desactivar el botón de consultar limites
+     
+      let mensajesValor = '';
+console.log('lo',this.Limites)
+      if (this.Metodo) {
+        this.inception = true;
+        for (let clave in this.Limites) {
+          if (this.Limites.hasOwnProperty(clave)) {
+            const valor = this.Limites[clave];
+
+            // Concatenar la información para cada clave
+            mensajesValor += `<strong> Solución ${clave} ${this.row[0].value.unidad}</strong><br>`;
+            mensajesValor += `LCS: ${valor.LCSresultado}` + " - " + `LCI: ${valor.LCIresultado}<br>`;
+            mensajesValor += `LAS: ${valor.LASresultado}` + " - " + `LAI: ${valor.LAIresultado}<br>`;
+            mensajesValor += `+1s: ${valor.MasDes}` + " / " + `-1s: ${valor.MenosDes}<br>`;
+            mensajesValor += `Media: ${valor.Media.toFixed(2)} <br><br>`;
+
+
+          }
+        }
+      } else if (this.MetodoRPD) {
+        this.inception = true;
+  const limite = this.Limites[0]
+  console.log(limite)
+     // Concatenar la información para cada objeto en el array
+      mensajesValor += `<strong>Limites RPD</strong><br>`;
+      mensajesValor += `LCS: ${limite.LCSresultado} <br>`;
+      mensajesValor += `LAS: ${limite.LASresultado}<br>`;
+      mensajesValor += `+1s: ${limite.MasDes}<br>`;
+      mensajesValor += `Media: ${limite.Media.toFixed(2)} <br><br>`;
+   
+  }else {
+        mensajesValor = "Sin Limites aún"
       }
+
+      this.Showlimite = mensajesValor; // Mostrar mensajesValor completo
+    }
+
+    ,
+    VericarOpt() {
+      // permite desactivar el botón de envío
+      if (this.groups.length > 0) {
+        this.opcionSeleccionada1 = true
+
+      } else {
+        this.opcionSeleccionada1 = false
+      }
+
+
+      if (this.Metodo) {
+        this.VerLimites = true
+      } else if (this.matriz) {
+        this.VerLimites = true
+      } else {
+        this.VerLimites = false
+      }
+
+      if(this.MetodoRPD){
+        this.opcionSeleccionada2 = true
+      }else{
+        this.opcionSeleccionada2 = false
+      }
+
+
+      if (this.matriz) {
+        this.opcionSeleccionada2 = true
+      } else {
+        this.opcionSeleccionada2 = false
+      }
+
     },
     limpiarJSON() {
 
@@ -223,9 +325,10 @@ export default {
         }
       }
 
-
+      this.valoresAnterioresO = elementosValoresAnteriores
       this.Limites = elementosLimites
       this.valoresAnteriores = elementosValoresAnteriores
+
 
       // Ahora puedes usar el array elementosAlmacenados como desees
 
@@ -273,11 +376,24 @@ export default {
     ,
     selectOption(option) {
       this.shape = this.shape === option ? null : option;
-      this.selectedOption = null;
+
       if (this.shape === "RPD") {
+        console.log('hola mundo')
         this.show = false;
+        this.Metodo = ''
+        this.row = []
+        this.opcionSeleccionada1 = false;
+        this.groups = []
+        this.VerLimites = false
+
       } else if (this.shape === "Verificacion") {
         this.show = true;
+        this.matriz = ''
+        this.valor = ''
+        console.log('hola mundo dos')
+        this.opcionSeleccionada2 = false;
+        this.VerLimites = false
+        this.MetodoRPD = ''
       }
     },
 
@@ -328,42 +444,56 @@ export default {
         })
     },
     Concentraciones() {
-      this.ObtenerTendencias()
+
+      
+     
       this.groups = []
       this.VericarOpt()
       // this.valores = []
-      const self = this
-      self.$q.loading.show()
-      api.post(`/usuario/CallSolPatron/${self.Metodo.id}`)
-        .then((response) => {
 
-          self.cantidad = response.data.response.length;
-          self.rows = response.data.response.map(item => ({
-            descripcion: item.Descripcion,
-            valor: item.Concentracion,
-            unidad: item.IdUnidadMedida,
-            IdSolucion: item.IdSolucion,
-            LimiteInferior: item.LimiteInferior,
-            LimiteSuperior: item.LimiteSuperior,
-          }));
+      if (this.Metodo) {
 
-          self.row = response.data.response.map(item => ({
-            label: ("concentración" + " " + item.Concentracion),
-            value: {
-              value: item.Concentracion,
-              id: item.IdSolucion,
+        this.ObtenerTendencias()
+        const self = this
+        self.$q.loading.show()
+        api.post(`/usuario/CallSolPatron/${self.Metodo.id}`)
+          .then((response) => {
+
+            self.cantidad = response.data.response.length;
+            self.rows = response.data.response.map(item => ({
+              descripcion: item.Descripcion,
               valor: item.Concentracion,
               unidad: item.IdUnidadMedida,
-              descripcion: item.Descripcion,
-            },
-            IdSolucion: item.IdSolucion,
-          }));
-          self.$q.loading.hide()
-        })
-        .catch((error) => {
-          utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error)
-          self.$q.loading.hide()
-        })
+              IdSolucion: item.IdSolucion,
+              LimiteInferior: item.LimiteInferior,
+              LimiteSuperior: item.LimiteSuperior,
+            }));
+
+            self.row = response.data.response.map(item => ({
+              label: ("Concentración" + " " + item.Concentracion + " " + item.IdUnidadMedida),
+              value: {
+                value: item.Concentracion,
+                id: item.IdSolucion,
+                valor: item.Concentracion,
+                unidad: item.IdUnidadMedida,
+                descripcion: item.Descripcion,
+              },
+              IdSolucion: item.IdSolucion,
+            }));
+            self.$q.loading.hide()
+          })
+          .catch((error) => {
+            utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error)
+            self.$q.loading.hide()
+          })
+
+      }
+      if (this.MetodoRPD) {
+        this.ObtenerTendenciasRPD()
+      }
+
+
+
 
 
     },
@@ -371,129 +501,317 @@ export default {
       this.ObtenerMetodos();
     },
     ValidacionesCartVerificacion() {
-  if (this.valores.length === 0) {
-    this.triggerNegative();
-    return;
-  } else if (this.valores.length !== this.groups.length) {
-    this.AllCampos();
-    return;
-  }
-  this.OnSubmit();
-  console.log('?', this.valoresAnteriores);
-  console.log('?', this.Limites);
+      if (this.valores.length === 0) {
+        this.triggerNegative();
+        return;
+      } else if (this.valores.length !== this.groups.length) {
+        this.AllCampos();
+        return;
+      }
+      this.OnSubmit();
+      console.log('?', this.valoresAnteriores);
+      console.log('?', this.Limites);
 
-  let promesa = Promise.resolve();
- // Array para almacenar los mensajes de alerta
+      this.mensajesAlerta = {};
 
-  // Iterar sobre los arrays de valores y limites
-  for (let clave in this.valoresAnteriores) {
-    if (this.valoresAnteriores.hasOwnProperty(clave)) {
-      let valorArray = this.valoresAnteriores[clave];
-      let limiteArray = this.Limites;
+      // Iterar sobre los arrays de valores y limites
+      for (let clave in this.valoresAnteriores) {
+        if (this.valoresAnteriores.hasOwnProperty(clave)) {
+          let valorArray = this.valoresAnteriores[clave];
+          let limiteArray = this.Limites;
+          this.clavesObserva.push(clave)
+          // Verificar si valorArray es un objeto
+          if (typeof valorArray === 'object' && valorArray !== null) {
+            // Acceder al valor que escribio el usuario
+            let valor = valorArray[valorArray.length - 1];
+            let valorpeniultimo = valorArray[valorArray.length - 2];
+            console.log(valorpeniultimo,valor)
+            // Buscar el límite correspondiente en el objeto limiteArray
+            let limite = limiteArray[clave];
+            let mensajesValor = [];
 
-      // Verificar si valorArray es un objeto
-      if (typeof valorArray === 'object' && valorArray !== null) {
-        // Acceder al último valor del array
-        let valor = valorArray[valorArray.length - 1];
+            // Si se encuentra el límite correspondiente
+            if (limite) {
+              // Validar si un  valor supera el límite control superior o es menor que el límite control inferior
+              if (valor > limite.LCSresultado) {
+                mensajesValor.push(' Es superior a LCS ');
+              } else if (valor < limite.LCIresultado) {
+                mensajesValor.push(' Es inferior a LCI ');
+              }
+            }
 
-        // Buscar el límite correspondiente en el objeto limiteArray
-        let limite = limiteArray[clave];
+            
+          // validación para  2 valor más allá del Limite de alerta superior o limite de alerta inferior
+            if ((valorpeniultimo > limite.LASresultado && valor > limite.LASresultado) && (valorpeniultimo < limite.LCSresultado && valor < limite.LCSresultado) ) {
+              mensajesValor.push(' el valor supera LAS ');
+            } else if((valorpeniultimo < limite.LAIresultado && valor < limite.LAIresultado) && (valorpeniultimo > limite.LCIresultado && valor > limite.LCIresultado) ) {
+              mensajesValor.push('el valor es Inferior a LAI ');
+            }
 
-        // Si se encuentra el límite correspondiente
-        if (limite) {
-          // Validar si el valor supera el límite superior o es menor que el límite inferior
-          if (valor > limite.LCSresultado) {
-            let valors = 'El valor es superior a LCS: ' + valor;
-            this.mensajesAlerta.push(valors); // Agregar mensaje al array de alerta
-          } else if (valor < limite.LCIresultado) {
-            let valors = 'El valor es inferior a LCI: ' + valor;
-            this.mensajesAlerta.push(valors); // Agregar mensaje al array de alerta
-          } else {
-            console.log('Valores correctos');
+            // Validar el orden de los últimos 5 valores
+            if (this.verificarOrdenAscendente(this.obtenerUltimosNValores(valorArray, 5))) {
+              mensajesValor.push(' Los últimos 5 valores no están en orden ascendente. ');
+            }
+            if (this.verificarOrdenDescendente(this.obtenerUltimosNValores(valorArray, 5))) {
+              mensajesValor.push(' Los últimos 5 valores no están en orden descendente. ');
+            }
+
+            // Validar si los últimos 5 valores superan la media
+            const ultimos5Valores = this.obtenerUltimosNValores(valorArray, 5);
+            const cantidadValoresSuperan = ultimos5Valores.filter(valor => valor > limite.MasDes && valor < limite.LASresultado).length;
+            const cantidadValoresMenores = ultimos5Valores.filter(valor => valor < limite.MenDes && valor > limite.LASresultado).length;
+
+            if (cantidadValoresSuperan >= 4) {
+              mensajesValor.push(' Al menos 4 de los últimos 5 valores superan el límite superior. ');
+            } else if (cantidadValoresMenores >= 4) {
+              mensajesValor.push(' Al menos 4 de los últimos 5 valores son menores que el límite inferior. ');
+            }
+
+            // Guardar los mensajes de alerta asociados a este valor
+            if (mensajesValor.length > 0) {
+              this.mensajesAlerta[valor] = mensajesValor;
+            }
+
           }
         }
       }
+
+      // Mostrar ventana de alerta con los mensajes de alerta y abrir las ventanas de observación
+      if (Object.keys(this.mensajesAlerta).length > 0) {
+        this.mostrarAlertaConObservacion(this.mensajesAlerta);
+      } else {
+        this.insertCartVerificacion()
+      }
     }
-  }
-
-  // Mostrar ventana de alerta con los mensajes de alerta y abrir las ventanas de observación
-  if (this.mensajesAlerta.length > 0) {
-    this.mostrarAlertaConObservacion(this.mensajesAlerta);
-  }
-},
-
-mostrarAlertaConObservacion(mensajes) {
-  this.$q.dialog({
-    title: 'Alerta',
-    message: mensajes,
-    ok: true,
-    cancel: {
-      push: true,
-      color: 'negative'
-    },
-    persistent: true
-  }).onOk(() => {
-    // Llamada para abrir las ventanas de observación
-    this.abrirVentanasObservacion();
-  });
-},
-
-abrirVentanasObservacion() {
-  let promesaObservaciones = Promise.resolve();
-  // Abrir las ventanas de observación una por una
-  for (let mensaje of this.mensajesAlerta) {
-    promesaObservaciones = promesaObservaciones.then(() => this.mostrarVentanaObservacion(mensaje));
-   
-  }
-  console.log(this.mensajess)
-},
-
-mostrarVentanaObservacion(mensaje) {
-  return new Promise((resolve, reject) => {
-    this.$q.dialog({
-      title: 'Observación',
-      message: mensaje,
-      prompt: {
-        model: '',
-        type: 'text' // optional
-      },
-      cancel: true,
-      persistent: true
-    }).onOk(data => {
-      this.mensajess.push( data ),
-      console.log(this.mensajess)
-      resolve();
-    }).onCancel(() => {
-      // console.log('>>>> Cancel')
-      reject();
-    }).onDismiss(() => {
-      // console.log('I am triggered on both OK and Cancel')
-    });
-  });
-
-
-  console.log(this.mensajess)
-}
-
     ,
+    ValidacionesCartRPD() {
+      if (this.valor.length === 0) {
+        this.triggerNegative();
+        console.log('rpd')
+        return;
+      } 
+
+      this.OnSubmit();
+      console.log('?', this.valoresAnteriores);
+      console.log('?', this.Limites);
+
+      this.mensajesAlerta = {};
+
+      // Iterar sobre los arrays de valores y limites
+      for (let clave in this.valoresAnteriores) {
+        if (this.valoresAnteriores.hasOwnProperty(clave)) {
+          let valorArray = this.valoresAnteriores[clave];
+          let limiteArray = this.Limites;
+          this.clavesObserva.push(clave)
+          // Verificar si valorArray es un objeto
+          if (typeof valorArray === 'object' && valorArray !== null) {
+            // Acceder al valor que escribio el usuario
+            let valor = valorArray[valorArray.length - 1];
+            let valorpeniultimo = valorArray[valorArray.length - 2];
+            console.log(valorpeniultimo,valor)
+            // Buscar el límite correspondiente en el objeto limiteArray
+            let limite = limiteArray[clave];
+            let mensajesValor = [];
+
+            // Si se encuentra el límite correspondiente
+            if (limite) {
+              // Validar si un  valor supera el límite control superior o es menor que el límite control inferior
+              if (valor > limite.LCSresultado) {
+                mensajesValor.push(' Es superior a LCS ');
+              } 
+            }
+
+            
+          // validación para  2 valor más allá del Limite de alerta superior o limite de alerta inferior
+            if ((valorpeniultimo > limite.LASresultado && valor > limite.LASresultado) && (valorpeniultimo < limite.LCSresultado && valor < limite.LCSresultado) ) {
+              mensajesValor.push(' el valor supera LAS ');
+            } 
+
+            // Validar el orden de los últimos 5 valores
+            if (this.verificarOrdenAscendente(this.obtenerUltimosNValores(valorArray, 5))) {
+              mensajesValor.push(' Los últimos 5 valores no están en orden ascendente. ');
+            }
+            if (this.verificarOrdenDescendente(this.obtenerUltimosNValores(valorArray, 5))) {
+              mensajesValor.push(' Los últimos 5 valores no están en orden descendente. ');
+            }
+
+            // Validar si los últimos 5 valores superan la media
+            const ultimos5Valores = this.obtenerUltimosNValores(valorArray, 5);
+            const cantidadValoresSuperan = ultimos5Valores.filter(valor => valor > limite.MasDes && valor < limite.LASresultado).length;
+ 
+
+            if (cantidadValoresSuperan >= 4) {
+              mensajesValor.push(' Al menos 4 de los últimos 5 valores superan el límite superior. ');
+            } 
+
+            // Guardar los mensajes de alerta asociados a este valor
+            if (mensajesValor.length > 0) {
+              this.mensajesAlerta[valor] = mensajesValor;
+            }
+
+          }
+        }
+      }
+
+      // Mostrar ventana de alerta con los mensajes de alerta y abrir las ventanas de observación
+      if (Object.keys(this.mensajesAlerta).length > 0) {
+        this.mostrarAlertaConObservacion(this.mensajesAlerta);
+      } else {
+        this.insertCartVerificacion()
+      }
+    }
+    ,
+    mostrarAlertaConObservacion(mensajesPorValor) {
+      let mensajes = '';
+      for (const valor in mensajesPorValor) {
+        if (mensajesPorValor.hasOwnProperty(valor)) {
+          const mensajesValor = mensajesPorValor[valor];
+          mensajes += `<strong>Valor: ${valor}</strong><br>`;
+          mensajes += mensajesValor.join('<br>') + '<br><br>';
+        }
+      }
+
+      this.$q.dialog({
+        title: 'Alerta',
+        message: mensajes,
+        html: true, // Indicar a Vue que interprete el mensaje como HTML
+        ok: {
+          push: true,
+          color: 'positive'
+
+        },
+        cancel: {
+          push: true,
+          color: 'negative'
+        },
+        persistent: true
+      }).onOk(() => {
+        // Llamada para abrir las ventanas de observación
+        this.abrirVentanasObservacion();
+      }).onCancel(() => {
+        // console.log('>>>> Cancel')
+        console.log('cancelo valor')
+        this.valoresAnteriores = this.valoresAnterioresO
+      });
+    },
+
+
+    abrirVentanasObservacion() {
+      let promesaObservaciones = Promise.resolve();
+      let totalVentanas = Object.keys(this.mensajesAlerta).length; // Número total de ventanas esperadas
+      let ventanasAbiertas = 0; // Contador de ventanas abiertas
+
+      // Verificar si this.mensajesAlerta es un objeto y no está vacío
+      if (typeof this.mensajesAlerta === 'object' && totalVentanas > 0) {
+        // Iterar sobre los valores del objeto mensajesAlerta
+        Object.values(this.mensajesAlerta).forEach(mensajes => {
+          promesaObservaciones = promesaObservaciones.then(() => {
+            return this.mostrarVentanaObservacion(mensajes).then(() => {
+              ventanasAbiertas++; // Incrementar el contador de ventanas abiertas
+              // Verificar si se han abierto todas las ventanas esperadas
+              if (ventanasAbiertas === totalVentanas) {
+
+                // Ejecutar otras acciones después de abrir todas las ventanas
+                this.ordenarObservacion();
+                this.insertCartVerificacion();
+              }
+            });
+          });
+        });
+      } else {
+        // No hay ventanas para abrir
+        console.log('No hay ventanas de observación para abrir');
+      }
+
+
+    },
+
+    mostrarVentanaObservacion(mensaje) {
+      return new Promise((resolve, reject) => {
+        this.$q.dialog({
+          title: 'Observación',
+          message: mensaje,
+          prompt: {
+            model: '',
+            type: 'text' // optional
+          },
+          cancel: true,
+          persistent: true
+        }).onOk(data => {
+          this.mensajess.push(data),
+
+            resolve();
+        }).onCancel(() => {
+          // console.log('>>>> Cancel')
+          reject();
+        }).onDismiss(() => {
+          // console.log('I am triggered on both OK and Cancel')
+        });
+      });
+
+
+
+    },
+    verificarOrdenAscendente(valores) {
+      for (let i = 0; i < valores.length - 1; i++) {
+        if (valores[i] > valores[i + 1]) {
+          return false;
+        }
+      }
+      return true;
+    },
+
+    verificarOrdenDescendente(valores) {
+      for (let i = 0; i < valores.length - 1; i++) {
+        if (valores[i] < valores[i + 1]) {
+          return false;
+        }
+      }
+      return true;
+    },
+
+    obtenerUltimosNValores(array, n) {
+      return array.slice(Math.max(array.length - n, 0));
+    },
+    ordenarObservacion() {
+
+      let observacionesPorClave = {};
+      for (let i = 0; i < this.clavesObserva.length; i++) {
+        let clave = this.clavesObserva[i];
+        if (this.mensajess[i]) {
+          observacionesPorClave[clave] = this.mensajess[i];
+        }
+      }
+
+      this.observacions = observacionesPorClave
+      console.log(this.observacions)
+      // Utilizar observacionesPorClave en lugar de mensajess si necesitas los mensajes asociados con las claves
+
+    },
+
     insertCartVerificacion() {
+      // Iterar sobre cada fila de datos
+      const data = this.groups.map((item, index) => {
+        const IdSolucionPatron = item.id;
+        const valor = this.valores[index];
+        const clave = item.valor;
+        console.log('valor', valor);
 
+        // Obtener la observación asociada al valor específico
+        let observacion = null;
+        if (this.observacions.hasOwnProperty(clave)) {
+          observacion = this.observacions[clave];
+        }
 
-      // Crear un array para almacenar los mensajes de error
-      this.errores = [];
+        return {
+          IdSolucionPatron: IdSolucionPatron,
+          valor: valor,
+          Observacion: observacion,
+          Login: this.usuario.Login
+        };
+      });
 
-      //  Iterar sobre cada fila de datos
-      // this.row.forEach((item, index) => {
-      //   const valor = this.valores[index];
-      //   console.log(item)
-      //   console.log(valor)
-      //   // Obtener los límites inferior y superior específicos para esta fila
-      //   
-
-      
-
-      //   console.log(this.errores)
-      // });
+      console.log(data);
 
       // // // Verificar si hay errores
       // if (this.errores.length > 0) {
@@ -503,31 +821,33 @@ mostrarVentanaObservacion(mensaje) {
       // }
       // else {
       //   // No hay errores, proceder con el envío de datos al servidor
-      //   const data = this.row.map((item, index) => ({
-      //     IdSolucionPatron: item.IdSolucion,
-      //     valor: this.valores[index],
-      //     Login: this.usuario.Login
-      //   }));
+      // const data = this.row.map((item, index) => ({
+      //   IdSolucionPatron: item.IdSolucion,
+      //   valor: this.valores[index],
+      //   Login: this.usuario.Login
+      // }));
 
       // }
-      //   const self = this;
-      //   self.$q.loading.show();
-      //   api.post('/usuario/InsertarCartaVerificacion', data)
-      //     .then((response) => {
-      //       console.log(response.data);
-      //       self.$q.loading.hide();
-      //     })
-      //     .catch((error) => {
-      //       utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
-      //       self.$q.loading.hide();
-      //     });
+      // const self = this;
+      // self.$q.loading.show();
+      // api.post('/usuario/InsertarCartaVerificacion', data)
+      //   .then((response) => {
+      //     console.log(response.data);
+      //     self.$q.loading.hide();
+      //   })
+      //   .catch((error) => {
+      //     utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
+      //     self.$q.loading.hide();
+      //   });
 
-      //   this.Metodo = "";
-      //   this.rows = [];
-      //   this.valores = [];
-      //   console.log(data);
-      //   console.log(this.usuario);
-      // }
+      this.Metodo = "";
+      this.row = []
+      this.rows = [];
+      this.valores = [];
+      this.groups = []
+      console.log(data);
+      console.log(this.usuario);
+
     },
     insertarCartRPD() {
 
@@ -615,9 +935,9 @@ mostrarVentanaObservacion(mensaje) {
       if (this.Metodo && this.Metodo.id) {
         const data = {
           IdMetodo: this.Metodo.id,
-          Fecha: "2024-01-10" // Usar la fecha actual formateada
+          Fecha: "2024-02-10" // Usar la fecha actual formateada
         };
-
+        console.log(data)
         const self = this;
         self.$q.loading.show();
         api.post('/usuario/ObtenerTendencias', data)
@@ -625,7 +945,45 @@ mostrarVentanaObservacion(mensaje) {
 
             const datos = response
             this.valoresAnteriores = datos.data.ValoresAnteriores
+            console.log('valores prueba',this.valoresAnteriores)
             this.Limites = datos.data.EstadisticasMensuales
+            console.log(this.Limites)
+            this.limpiarJSON()
+
+            self.$q.loading.hide();
+          })
+          .catch((error) => {
+            utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
+            self.$q.loading.hide();
+          });
+      } else {
+        console.error('El objeto Metodo verificacion o su propiedad id es nulo o indefinido.');
+      }
+    },
+    ObtenerTendenciasRPD() {
+      const fechaActual = new Date();
+      const year = fechaActual.getFullYear();
+      const month = String(fechaActual.getMonth() + 1).padStart(2, '0');
+      const day = String(fechaActual.getDate()).padStart(2, '0');
+      const fechaFormateada = `${year}-${month}-${day}`;
+
+      // Accediendo a this.Metodo.id, se supone que deberías usar el await ya que api.get() es asíncrono.
+      // Además, es recomendable verificar que this.Metodo exista antes de intentar acceder a sus propiedades.
+      if (this.MetodoRPD && this.MetodoRPD.id) {
+        const data = {
+          IdMetodo: this.MetodoRPD.id,
+          Fecha: "2024-01-10" // Usar la fecha actual formateada
+        };
+        console.log(data)
+        const self = this;
+        self.$q.loading.show();
+        api.post('/usuario/ObtenerTendenciasRPD', data)
+          .then((response) => {
+
+            const datos = response
+            this.valoresAnteriores = datos.data.ValoresAnteriores
+            this.Limites = datos.data.EstadisticasMensuales
+            console.log('limites',this.Limites)
             this.limpiarJSON()
 
             self.$q.loading.hide();
@@ -638,6 +996,7 @@ mostrarVentanaObservacion(mensaje) {
         console.error('El objeto Metodo o su propiedad id es nulo o indefinido.');
       }
     }
+
 
   },
 
