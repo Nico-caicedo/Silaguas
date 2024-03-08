@@ -62,7 +62,7 @@ export default class UsuariosDAO_ {
       })
       .catch((error) => {
         utilidades.mensaje('Fail conexion - Autentication ' + error)
-        self.$q.loading.hide()
+        self.$q.loading.hide() 
       })
   }
   cargarAccesos (rolUsuario, moduloUsuario, self) {

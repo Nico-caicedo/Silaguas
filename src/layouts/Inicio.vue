@@ -10,9 +10,9 @@
       </q-header>
       <q-page-container>
         <div>
-          <q-form class="q-pa-md">
-            <div class="row justify-center q-pt-sm">
-              <img class="col-xs-10 col-sm-5 col-md-3" src="~assets/logo.png"/>
+          <q-form class="q-pa-md ">
+            <div class="row justify-center q-pt-sm" >
+              <img class="col-xs-10 col-sm-5 col-md-3" style="width: 30%; height: 30%;" src="../assets/Logo_Sevaf.png"/>
             </div>
             <div class="row justify-center q-pt-sm">
               <q-input v-model="Usuario.Login" class="col-xs-12 col-sm-6 col-md-4"
@@ -72,12 +72,13 @@ export default {
     
       this.Usuario = this.usuDao.login(self, self.Usuario)
       console.log(self, self.Usuario)
-
+      this.limpiar()
       // self.Usuario = usuarios_.login(self, self.Usuario)
     },
     limpiar(){
       console.Log(this.Usuario.Login )
-      this.Usuario.Password = null
+      this.Usuario.Password = '',
+      this.Usuario.Login = ''
     }
   }
 }

@@ -1,154 +1,164 @@
 <template>
-  <q-layout style="min-height: 859px;">
-
-    <q-header class="bg-green-8">
-      <q-toolbar>
-        <q-avatar>
-          <q-btn flat round dense icon="assignment_add" />
-        </q-avatar>
-
-        <q-toolbar-title>
-          Carta Control
-        </q-toolbar-title>
-        <q-btn flat icon="refresh" label="Refrescar" @click="load" />
-      </q-toolbar>
-    </q-header>
-    <q-page padding>
-
-      <q-form>
+  <q-layout>
 
 
-        <div class="column justify-around q-gutter-y-lg q-mt-xl">
-          <div class="row q-gutter-x-lg ">
-            <q-btn label="Ver Carta Control" style="background-color: #589ce0;" icon="bar_chart" />
-            <q-btn label="Consultar limites" style="background-color: #f86d2c;" icon="dangerous" class="bg-alert"
+    <div class="row  justify-end q-gutter-x-lg q-ma-sm">
+      <q-btn label="Grafico" style="background-color: #01B9FF;" icon="bar_chart" />
+
+      <q-btn label="Diseño" style="background-color: #BFFE00;" icon="picture_as_pdf" class="bg-alert"
+        @click="section = 'formato'" />
+      <q-btn label="Carta Control" v-if="rol === 'dirCalidad'" style="background-color: #01B9FF;" icon="dangerous"
+        class="bg-alert" @click="section = 'cartaControl'" />
+      <q-btn label="resultados" style="background-color: #BFFE00;" icon="receipt_long" class="bg-alert"
+        @click="section = 'resultados'" />
+    </div>
+    <q-page style="min-height: unset;" padding v-if="section === 'cartaControl'">
+      <q-scroll-area style="height: 600px;">
+
+
+        <q-form style="height: 300px;">
+          <div>
+            <q-btn label="Consultar limites" style="background-color: #FF5D25;" icon="dangerous" class="bg-alert"
               @click="activar" :disabled="!VerLimites" />
           </div>
 
-          <q-dialog v-model="inception">
-            <q-card>
+          <div class="column justify-around q-gutter-y-lg q-mt-xl">
+
+
+            <q-dialog v-model="inception">
+              <q-card>
+                <q-card-section>
+                  <div class="text-h6">Limites de {{ MetodoRPD.label }} {{ Metodo.label }}</div>
+                </q-card-section>
+
+                <q-card-section v-html="Showlimite" class="q-pt-none ">
+
+                </q-card-section>
+
+                <q-card-actions align="right" class="text-primary">
+
+                  <q-btn flat label="Close" class="text-white bg-negative" v-close-popup />
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
+
+
+            <div class="row justify-center items-center q-gutter-x-xl q-mt-none" style="height:420px">
+              <div class="q-gutter-y-xl col-xs-12 col-sm-12" style="width: 30%;">
+                <div class="options row items-center justify-center  text-h6  "
+                  :class="{ selected: shape === 'Verificacion' }" @click="selectOption('Verificacion')">
+                  Carta Control Verificación
+                </div>
+                <div class="options row items-center justify-center text-h6" :class="{ selected: shape === 'RPD' }"
+                  @click="selectOption('RPD')">
+                  Carta Control RPD
+                </div>
+                <div class="row justify-center " style="height:100%">
+                  <q-btn v-if="show" class="color-white q-ma-sm  text-h6"
+                    style="background: #00F370;width: 120px; height: 50px;" label="Enviar"
+                    @click="ValidacionesCartVerificacion" :disabled="!opcionSeleccionada1" />
+                  <q-btn v-if="show == false" class="color-white q-ma-sm  text-h6"
+                    style="width: 120px; height: 50px; background: #00F370;" @click="ValidacionesCartRPD" label="Enviar"
+                    :disabled="!opcionSeleccionada2" />
+
+                </div>
+              </div>
+
+              <div v-if="show" class="q-gutter-y-lg col-12 col-sm-12 " style="width: 40%; height: 100%;">
+                <q-select filled v-model="Metodo" :options="MetodoSelect" label="Método"
+                  @input="Concentraciones(); VericarOpt();" />
+                <div class="shadow-1 q-pa-md" style="width: 100%; height: 325px; background-color: rgb(238, 238, 238);">
+                  <!-- <q-table style="height: 300px;" title="Solución Patrón" :data="rows" :columns="columns" row-key="name" /> -->
+
+                  <q-scroll-area style="height: 300px;">
+
+                    <q-option-group class="text-h5" :options="row" type="checkbox" v-model="groups"
+                      @input="VericarOpt" />
+
+
+                  </q-scroll-area>
+                </div>
+
+
+              </div>
+
+              <div v-if="show == false" class="column items-center  q-pt-xl q-gutter-y-lg  "
+                style="width: 40%; height: 90%; ">
+                <q-select class="" style="width: 65%;" filled v-model="MetodoRPD" :options="MetodoSelect" label="Método"
+                  @input="VericarOpt" />
+                <q-select filled class="q-mt-xl" style="width: 65%;" v-model="matriz" :options="matrizSelect"
+                  @input="VericarOpt(); Concentraciones();" label="Tipo Matriz" />
+              </div>
+            </div>
+
+            <div class="q-px-lg" style="width: 100%; background-color: rgb(238, 238, 238);">
+              <div class=" row  items-center justify-center relative-position q-pa-sm">
+                <h3 class="row justify-center   q-my-sm">Verificación Metrológica</h3>
+
+              </div>
+              <div class="q-pa-md">
+                <q-scroll-area style="height: 190px;">
+                  <div class="row justify-center q-gutter-sm">
+                    <q-intersection v-if="show" v-for="(item, index) in groups" :key="item.id" class="example-item">
+                      <q-card class="q-ma-sm">
+                        <q-card-section>
+                          <div class="text-h5">Concentración #{{ index + 1 }}</div>
+                          <div class="text-h4">{{ `Valor: ${item.valor} ${item.unidad}` }}</div>
+                          <q-input outlined v-model="valores[index]" step="any" type="number" label="Valor" lazy-rules
+                            :rules="[
+          val => val !== null && val !== '' || 'Ingrese un valor',
+
+        ]" />
+                        </q-card-section>
+                      </q-card>
+                    </q-intersection>
+                    <q-intersection v-if="show == false" v-for="(item, index) in [1]" :key="index" class="example-item"
+                      style="width: 25%;">
+                      <q-card class="q-ma-sm">
+                        <q-card-section>
+                          <div class="text-h5">Metodo: {{ MetodoRPD.label }}</div>
+                          <div class="text-h5"> Tipo matriz: {{ matriz.label }}</div>
+                          <q-input outlined v-model="LecturaRPD" step="any" type="number" label="Valor" lazy-rules />
+                        </q-card-section>
+                      </q-card>
+                    </q-intersection>
+                  </div>
+                </q-scroll-area>
+              </div>
+            </div>
+          </div>
+
+
+          <q-dialog v-model="confirm" persistent>
+            <q-card style="min-width: 350px">
               <q-card-section>
-                <div class="text-h6">Limites de {{ MetodoRPD.label }} {{Metodo.label }}</div>
+                <div class="text-h6">Observación</div>
               </q-card-section>
 
-              <q-card-section v-html="Showlimite" class="q-pt-none ">
-
+              <q-card-section class="q-pt-none">
+                <q-input dense autogrow v-model="observacion" autofocus @keyup.enter="prompt = false" />
               </q-card-section>
 
               <q-card-actions align="right" class="text-primary">
-
-                <q-btn flat label="Close" class="text-white bg-negative" v-close-popup />
+                <q-btn flat label="Cancel" v-close-popup />
+                <q-btn flat label="Add address" v-close-popup />
               </q-card-actions>
             </q-card>
           </q-dialog>
+        </q-form>
+
+      </q-scroll-area>
 
 
-          <div class="row justify-center items-center q-gutter-x-xl q-mt-none" style="height:420px">
-            <div class="q-gutter-y-xl col-xs-12 col-sm-12" style="width: 30%;">
-              <div class="options row items-center justify-center  text-h6  "
-                :class="{ selected: shape === 'Verificacion' }" @click="selectOption('Verificacion')">
-                Carta Control Verificación
-              </div>
-              <div class="options row items-center justify-center text-h6" :class="{ selected: shape === 'RPD' }"
-                @click="selectOption('RPD')">
-                Carta Control RPD
-              </div>
-              <div class="row justify-center " style="height:100%">
-                <q-btn v-if="show" class="color-white q-ma-sm bg-positive text-h6" style="width: 120px; height: 50px;"
-                  label="Enviar" @click="ValidacionesCartVerificacion" :disabled="!opcionSeleccionada1" />
-                <q-btn v-if="show == false" class="color-white q-ma-sm bg-positive text-h6"
-                  style="width: 120px; height: 50px;"  @click="ValidacionesCartRPD" label="Enviar" :disabled="!opcionSeleccionada2" />
-
-              </div>
-            </div>
-
-            <div v-if="show" class="q-gutter-y-lg col-12 col-sm-12 " style="width: 40%; height: 100%;">
-              <q-select filled v-model="Metodo" :options="MetodoSelect" label="Método"
-                @input="Concentraciones(); VericarOpt();" />
-              <div class="shadow-1 q-pa-md" style="width: 100%; height: 325px; background-color: rgb(238, 238, 238);">
-                <!-- <q-table style="height: 300px;" title="Solución Patrón" :data="rows" :columns="columns" row-key="name" /> -->
-
-                <q-scroll-area style="height: 300px;">
-
-                  <q-option-group class="text-h5" :options="row" type="checkbox" v-model="groups" @input="VericarOpt" />
-
-
-                </q-scroll-area>
-              </div>
-
-
-            </div>
-
-            <div v-if="show == false" class="column items-center  q-pt-xl q-gutter-y-lg  "
-              style="width: 40%; height: 90%; ">
-              <q-select class="" style="width: 65%;" filled v-model="MetodoRPD" :options="MetodoSelect" label="Método"
-                @input="VericarOpt" />
-              <q-select filled class="q-mt-xl" style="width: 65%;" v-model="matriz" :options="matrizSelect"
-              @input="VericarOpt(); Concentraciones();"     label="Tipo Matriz" />
-            </div>
-          </div>
-
-          <div class="q-px-lg" style="width: 100%; background-color: rgb(238, 238, 238);">
-            <div class=" row  items-center justify-center relative-position q-pa-sm">
-              <h3 class="row justify-center   q-my-sm">Verificación Metrológica</h3>
-
-            </div>
-            <div class="q-pa-md">
-              <q-scroll-area style="height: 200px;">
-                <div class="row justify-center q-gutter-sm">
-                  <q-intersection v-if="show" v-for="(item, index) in groups" :key="item.id" class="example-item">
-                    <q-card class="q-ma-sm">
-                      <q-card-section>
-                        <div class="text-h5">Concentración #{{ index + 1 }}</div>
-                        <div class="text-h4">{{ `Valor: ${item.valor} ${item.unidad}` }}</div>
-                        <q-input outlined v-model="valores[index]" step="any" type="number" label="Valor" lazy-rules
-                          :rules="[
-                            val => val !== null && val !== '' || 'Ingrese un valor',
-
-                          ]" />
-                      </q-card-section>
-                    </q-card>
-                  </q-intersection>
-                  <q-intersection v-if="show == false" v-for="(item, index) in [1]" :key="index" class="example-item"
-                    style="width: 25%;">
-                    <q-card class="q-ma-sm">
-                      <q-card-section>
-                        <div class="text-h5">Metodo: {{ Metodo.label }}</div>
-                        <div class="text-h5"> Tipo matriz: {{ matriz.label }}</div>
-                        <q-input outlined v-model="valor" step="any" type="number" label="Valor" lazy-rules :rules="[
-                          val => val !== null && val !== '' || 'Ingrese un valor',
-
-                        ]" />
-                      </q-card-section>
-                    </q-card>
-                  </q-intersection>
-                </div>
-              </q-scroll-area>
-            </div>
-          </div>
-        </div>
-
-
-        <q-dialog v-model="confirm" persistent>
-          <q-card style="min-width: 350px">
-            <q-card-section>
-              <div class="text-h6">Observación</div>
-            </q-card-section>
-
-            <q-card-section class="q-pt-none">
-              <q-input dense autogrow v-model="observacion" autofocus @keyup.enter="prompt = false" />
-            </q-card-section>
-
-            <q-card-actions align="right" class="text-primary">
-              <q-btn flat label="Cancel" v-close-popup />
-              <q-btn flat label="Add address" v-close-popup />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-      </q-form>
+    </q-page>
 
 
 
+    <q-page style="height: 100px; min-height: unset;" v-if="section === 'formato'">
+      <formato />
+    </q-page>
+    <q-page style="height: 300px; min-height: unset;" v-if="section === 'resultados'">
+      <resultados />
     </q-page>
   </q-layout>
 </template>
@@ -156,12 +166,17 @@
 <script>
 import { api } from 'boot/axios'
 import utilidades from '../../commons/utilidades.js'
+import formato from '../Administracion/DisenoPdf.vue'
+import resultados from '../Administracion/ResultadosCarta.vue'
 export default {
+  components: { formato, resultados },
   data() {
     return {
+      rol: "dirCalidad",
+      section: "resultados",
       OptionGroup: [],
       groups: [],
-      valor: "",
+      LecturaRPD: "",
       cantidad: "",
       shape: "Verificacion",
       valores: [],
@@ -188,13 +203,13 @@ export default {
       usuario: [],
       confirm: false,
       errores: [],
-      observacion: "",
+      observacion: null,
       Tendencias: [],
       Limites: [],
       valoresAnteriores: [],
       opcionSeleccionada1: false,
       opcionSeleccionada2: false,
-    
+      valorRPD: "",
       mensajesAlerta: [],
       mensajess: [],
       mensajesAlerta: [],
@@ -205,14 +220,15 @@ export default {
       Showlimite: [],
       VerLimites: false,
       MetodoRPD: "",
+      Repetir: 0
     };
   },
   methods: {
     activar() {
       // permite desactivar el botón de consultar limites
-     
+
       let mensajesValor = '';
-console.log('lo',this.Limites)
+      console.log('lo', this.Limites)
       if (this.Metodo) {
         this.inception = true;
         for (let clave in this.Limites) {
@@ -231,16 +247,16 @@ console.log('lo',this.Limites)
         }
       } else if (this.MetodoRPD) {
         this.inception = true;
-  const limite = this.Limites[0]
-  console.log(limite)
-     // Concatenar la información para cada objeto en el array
-      mensajesValor += `<strong>Limites RPD</strong><br>`;
-      mensajesValor += `LCS: ${limite.LCSresultado} <br>`;
-      mensajesValor += `LAS: ${limite.LASresultado}<br>`;
-      mensajesValor += `+1s: ${limite.MasDes}<br>`;
-      mensajesValor += `Media: ${limite.Media.toFixed(2)} <br><br>`;
-   
-  }else {
+        const limite = this.Limites[0]
+        console.log(limite)
+        // Concatenar la información para cada objeto en el array
+        mensajesValor += `<strong>Limites RPD</strong><br>`;
+        mensajesValor += `LCS: ${limite.LCSresultado} <br>`;
+        mensajesValor += `LAS: ${limite.LASresultado}<br>`;
+        mensajesValor += `+1s: ${limite.MasDes}<br>`;
+        mensajesValor += `Media: ${limite.Media.toFixed(2)} <br><br>`;
+
+      } else {
         mensajesValor = "Sin Limites aún"
       }
 
@@ -266,9 +282,9 @@ console.log('lo',this.Limites)
         this.VerLimites = false
       }
 
-      if(this.MetodoRPD){
+      if (this.MetodoRPD) {
         this.opcionSeleccionada2 = true
-      }else{
+      } else {
         this.opcionSeleccionada2 = false
       }
 
@@ -445,8 +461,8 @@ console.log('lo',this.Limites)
     },
     Concentraciones() {
 
-      
-     
+
+
       this.groups = []
       this.VericarOpt()
       // this.valores = []
@@ -525,7 +541,7 @@ console.log('lo',this.Limites)
             // Acceder al valor que escribio el usuario
             let valor = valorArray[valorArray.length - 1];
             let valorpeniultimo = valorArray[valorArray.length - 2];
-            console.log(valorpeniultimo,valor)
+            console.log(valorpeniultimo, valor)
             // Buscar el límite correspondiente en el objeto limiteArray
             let limite = limiteArray[clave];
             let mensajesValor = [];
@@ -540,11 +556,11 @@ console.log('lo',this.Limites)
               }
             }
 
-            
-          // validación para  2 valor más allá del Limite de alerta superior o limite de alerta inferior
-            if ((valorpeniultimo > limite.LASresultado && valor > limite.LASresultado) && (valorpeniultimo < limite.LCSresultado && valor < limite.LCSresultado) ) {
+
+            // validación para  2 valor más allá del Limite de alerta superior o limite de alerta inferior
+            if ((valorpeniultimo > limite.LASresultado && valor > limite.LASresultado) && (valorpeniultimo < limite.LCSresultado && valor < limite.LCSresultado)) {
               mensajesValor.push(' el valor supera LAS ');
-            } else if((valorpeniultimo < limite.LAIresultado && valor < limite.LAIresultado) && (valorpeniultimo > limite.LCIresultado && valor > limite.LCIresultado) ) {
+            } else if ((valorpeniultimo < limite.LAIresultado && valor < limite.LAIresultado) && (valorpeniultimo > limite.LCIresultado && valor > limite.LCIresultado)) {
               mensajesValor.push('el valor es Inferior a LAI ');
             }
 
@@ -584,81 +600,150 @@ console.log('lo',this.Limites)
       }
     }
     ,
+
     ValidacionesCartRPD() {
-      if (this.valor.length === 0) {
+
+      const fecha = this.obtenerFecha()
+
+
+
+      if (this.LecturaRPD.length === 0) {
         this.triggerNegative();
         console.log('rpd')
         return;
-      } 
-
-      this.OnSubmit();
-      console.log('?', this.valoresAnteriores);
-      console.log('?', this.Limites);
-
-      this.mensajesAlerta = {};
-
-      // Iterar sobre los arrays de valores y limites
-      for (let clave in this.valoresAnteriores) {
-        if (this.valoresAnteriores.hasOwnProperty(clave)) {
-          let valorArray = this.valoresAnteriores[clave];
-          let limiteArray = this.Limites;
-          this.clavesObserva.push(clave)
-          // Verificar si valorArray es un objeto
-          if (typeof valorArray === 'object' && valorArray !== null) {
-            // Acceder al valor que escribio el usuario
-            let valor = valorArray[valorArray.length - 1];
-            let valorpeniultimo = valorArray[valorArray.length - 2];
-            console.log(valorpeniultimo,valor)
-            // Buscar el límite correspondiente en el objeto limiteArray
-            let limite = limiteArray[clave];
-            let mensajesValor = [];
-
-            // Si se encuentra el límite correspondiente
-            if (limite) {
-              // Validar si un  valor supera el límite control superior o es menor que el límite control inferior
-              if (valor > limite.LCSresultado) {
-                mensajesValor.push(' Es superior a LCS ');
-              } 
-            }
-
-            
-          // validación para  2 valor más allá del Limite de alerta superior o limite de alerta inferior
-            if ((valorpeniultimo > limite.LASresultado && valor > limite.LASresultado) && (valorpeniultimo < limite.LCSresultado && valor < limite.LCSresultado) ) {
-              mensajesValor.push(' el valor supera LAS ');
-            } 
-
-            // Validar el orden de los últimos 5 valores
-            if (this.verificarOrdenAscendente(this.obtenerUltimosNValores(valorArray, 5))) {
-              mensajesValor.push(' Los últimos 5 valores no están en orden ascendente. ');
-            }
-            if (this.verificarOrdenDescendente(this.obtenerUltimosNValores(valorArray, 5))) {
-              mensajesValor.push(' Los últimos 5 valores no están en orden descendente. ');
-            }
-
-            // Validar si los últimos 5 valores superan la media
-            const ultimos5Valores = this.obtenerUltimosNValores(valorArray, 5);
-            const cantidadValoresSuperan = ultimos5Valores.filter(valor => valor > limite.MasDes && valor < limite.LASresultado).length;
- 
-
-            if (cantidadValoresSuperan >= 4) {
-              mensajesValor.push(' Al menos 4 de los últimos 5 valores superan el límite superior. ');
-            } 
-
-            // Guardar los mensajes de alerta asociados a este valor
-            if (mensajesValor.length > 0) {
-              this.mensajesAlerta[valor] = mensajesValor;
-            }
-
-          }
-        }
       }
+
+
+      const data = {
+        IdMetodo: this.MetodoRPD.id,
+        IdTipoMatriz: this.matriz.id,
+        Lectura: this.LecturaRPD,
+        Login: this.usuario.Login
+      }
+
+      console.log(data)
+      const self = this;
+      self.$q.loading.show();
+      api.post('/usuario/InsertLecturaRPD', data)
+        .then((response) => {
+
+          var LCS = this.Limites[0].LCSresultado;
+          LCS *= 0.90;
+
+          self.$q.loading.hide();
+        
+          if (response.data >= 0) {
+            this.SendCheck()
+            // this.LimpiarDatosRPD()
+            this.valorRPD = response.data
+            this.insertarCartRPD()
+          }
+          if (response.data < 0) {
+            this.SendCheck()
+            this.LimpiarDatosRPD()
+          }
+
+          if (this.valorRPD > LCS) {
+            this.Repetir = 1
+            this.alertRPD();
+          }
+
+
+        })
+        .catch((error) => {
+          console.log('err', error)
+          const errorMessage = `Ya has ingresado las Lecturas Diarias para el Método ${this.MetodoRPD.label} con Matriz ${this.matriz.label}.`;
+          const options = {
+            color: 'negative',
+            message: errorMessage,
+            position: 'top',
+            timeout: 5000, // Tiempo en milisegundos para que el mensaje desaparezca automáticamente
+            actions: [{ label: 'OK', color: 'white' }] // Botón de acción para cerrar el mensaje
+          };
+          this.$q.notify(options); // Muestra la notificación con el mensaje formateado
+          self.$q.loading.hide();
+          this.LimpiarDatosRPD()
+        });
+
+
+
+
+      // this.OnSubmit();
+      // console.log('?', this.valoresAnteriores);
+      // console.log('?', this.Limites);
+
+      // this.mensajesAlerta = {};
+
+      // // Iterar sobre los arrays de valores y limites
+      // for (let clave in this.valoresAnteriores) {
+      //   if (this.valoresAnteriores.hasOwnProperty(clave)) {
+      //     let valorArray = this.valoresAnteriores[clave];
+      //     let limiteArray = this.Limites;
+      //     this.clavesObserva.push(clave)
+      //     // Verificar si valorArray es un objeto
+      //     if (typeof valorArray === 'object' && valorArray !== null) {
+      //       // Acceder al valor que escribio el usuario
+      //       let valor = valorArray[valorArray.length - 1];
+      //       let valorpeniultimo = valorArray[valorArray.length - 2];
+      //       console.log(valorpeniultimo,valor)
+      //       // Buscar el límite correspondiente en el objeto limiteArray
+      //       let limite = limiteArray[clave];
+      //       let mensajesValor = [];
+
+      //       // Si se encuentra el límite correspondiente
+      //       if (limite) {
+      //         // Validar si un  valor supera el límite control superior o es menor que el límite control inferior
+      //         if (valor > limite.LCSresultado) {
+      //           mensajesValor.push(' Es superior a LCS ');
+      //         } 
+      //       }
+
+
+      //     // validación para  2 valor más allá del Limite de alerta superior o limite de alerta inferior
+      //       if ((valorpeniultimo > limite.LASresultado && valor > limite.LASresultado) && (valorpeniultimo < limite.LCSresultado && valor < limite.LCSresultado) ) {
+      //         mensajesValor.push(' el valor supera LAS ');
+      //       } 
+
+      //       // Validar el orden de los últimos 5 valores
+      //       if (this.verificarOrdenAscendente(this.obtenerUltimosNValores(valorArray, 5))) {
+      //         mensajesValor.push(' Los últimos 5 valores no están en orden ascendente. ');
+      //       }
+      //       if (this.verificarOrdenDescendente(this.obtenerUltimosNValores(valorArray, 5))) {
+      //         mensajesValor.push(' Los últimos 5 valores no están en orden descendente. ');
+      //       }
+
+      //       // Validar si los últimos 5 valores superan la media
+      //       const ultimos5Valores = this.obtenerUltimosNValores(valorArray, 5);
+      //       const cantidadValoresSuperan = ultimos5Valores.filter(valor => valor > limite.MasDes && valor < limite.LASresultado).length;
+
+
+      //       if (cantidadValoresSuperan >= 4) {
+      //         mensajesValor.push(' Al menos 4 de los últimos 5 valores superan el límite superior. ');
+      //       } 
+
+      //       // Guardar los mensajes de alerta asociados a este valor
+      //       if (mensajesValor.length > 0) {
+      //         this.mensajesAlerta[valor] = mensajesValor;
+      //       }
+
+      //    }
+      //   }
+      // }
 
       // Mostrar ventana de alerta con los mensajes de alerta y abrir las ventanas de observación
-      if (Object.keys(this.mensajesAlerta).length > 0) {
-        this.mostrarAlertaConObservacion(this.mensajesAlerta);
-      } else {
-        this.insertCartVerificacion()
-      }
+      // if (Object.keys(this.mensajesAlerta).length > 0) {
+      //   this.mostrarAlertaConObservacion(this.mensajesAlerta);
+      // } else {
+      //   this.insertCartVerificacion()
+      // }
+    },
+    LimpiarDatosRPD() {
+      this.MetodoRPD = ""
+      this.matriz = ""
+      this.LecturaRPD = ""
+      this.Limites = ""
+      this.VerLimites = false
+      this.opcionSeleccionada2 = false
     }
     ,
     mostrarAlertaConObservacion(mensajesPorValor) {
@@ -795,7 +880,7 @@ console.log('lo',this.Limites)
         const IdSolucionPatron = item.id;
         const valor = this.valores[index];
         const clave = item.valor;
-        console.log('valor', valor);
+
 
         // Obtener la observación asociada al valor específico
         let observacion = null;
@@ -811,7 +896,7 @@ console.log('lo',this.Limites)
         };
       });
 
-      console.log(data);
+
 
       // // // Verificar si hay errores
       // if (this.errores.length > 0) {
@@ -849,30 +934,42 @@ console.log('lo',this.Limites)
       console.log(this.usuario);
 
     },
-    insertarCartRPD() {
+    insertarCartRPD(valor) {
+
 
       const data = {
-        IdMetodo: this.Metodo.id,
+        IdMetodo: this.MetodoRPD.id,
         IdTipoMatriz: this.matriz.id,
-        Valor: this.valor,
-        Login: this.usuario.Login
+        valor: valor,
+        Observacion: this.observacion,
+        Login: this.usuario.Login,
+        Repetir: this.Repetir
       }
+      console.log('RPD', data)
+      const self = this;
+      self.$q.loading.show();
+      api.post('/usuario/guardarCartRPD', data)
+        .then((response) => {
 
-      // const self = this;
-      // self.$q.loading.show();
-      // api.post('/usuario/guardarCartRPD', data)
-      //   .then((response) => {
-      //     console.log(response.data);
-      //     self.$q.loading.hide();
-      //     this.Metodo = ""
-      //     this.matriz = ""
-      //     this.valor = ""
-      //   })
-      //   .catch((error) => {
-      //     utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
-      //     self.$q.loading.hide();
-      //   });
+          self.$q.loading.hide();
+          this.LimpiarDatosRPD()
+        })
+        .catch((error) => {
+          utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
+          self.$q.loading.hide();
+          this.LimpiarDatosRPD()
+        });
     }
+    ,
+    obtenerFecha() {
+      const fechaActual = new Date();
+      const year = fechaActual.getFullYear();
+      const month = String(fechaActual.getMonth() + 1).padStart(2, '0');
+      const day = String(fechaActual.getDate()).padStart(2, '0');
+      const fechaFormateada = `${year}-${month}-${day}`;
+      return fechaFormateada;
+    }
+
     ,
     triggerNegative() {
       this.$q.notify({
@@ -893,6 +990,13 @@ console.log('lo',this.Limites)
         message: `campos llenos`
       })
     },
+    SendCheck() {
+      this.$q.notify({
+        type: 'positive',
+        message: `Lectura guardada exitosamente`
+      })
+    }
+    ,
     mostrarDialogoErrores() {
       this.$q.dialog({
         title: '<h5 class="prueba" >¡¡ALERTA!!</h5>',
@@ -923,12 +1027,54 @@ console.log('lo',this.Limites)
       });
 
     },
+
+    alertRPD() {
+      let seconds = 5
+
+      const dialog = this.$q.dialog({
+        title: 'El valor final ha superado el LCS',
+        message: `Acontinuación ingrese la observación`
+      }).onOk(() => {
+        this.ObservacionRPD()
+      }).onCancel(() => {
+        // console.log('Cancel')
+      }).onDismiss(() => {
+        clearTimeout(timer)
+        // console.log('I am triggered on both OK and Cancel')
+      })
+
+      const timer = setInterval(() => {
+        seconds--
+
+        if (seconds > 0) {
+          clearInterval(timer)
+          dialog.hide()
+          this.ObservacionRPD()
+        }
+      }, 3000)
+    },
+    ObservacionRPD() {
+      this.$q.dialog({
+        title: 'OBSERVACIÓN',
+        message: 'Escriba la observación para el valor ' + this.valorRPD + ' del Método '
+          + this.MetodoRPD.label + ' con la matríz ' + this.matriz.label,
+        prompt: {
+          model: '',
+          isValid: val => val.length >= 0, // << here is the magic
+          type: 'text' // optional
+        },
+        cancel: true,
+        persistent: true
+      }).onOk(data => {
+        this.observacion = data;
+        this.insertarCartRPD(this.valorRPD)
+        this.LimpiarDatosRPD()
+      })
+    }
+    ,
     ObtenerTendencias() {
-      const fechaActual = new Date();
-      const year = fechaActual.getFullYear();
-      const month = String(fechaActual.getMonth() + 1).padStart(2, '0');
-      const day = String(fechaActual.getDate()).padStart(2, '0');
-      const fechaFormateada = `${year}-${month}-${day}`;
+
+      const fechaFormateada = this.obtenerFecha();
 
       // Accediendo a this.Metodo.id, se supone que deberías usar el await ya que api.get() es asíncrono.
       // Además, es recomendable verificar que this.Metodo exista antes de intentar acceder a sus propiedades.
@@ -945,7 +1091,7 @@ console.log('lo',this.Limites)
 
             const datos = response
             this.valoresAnteriores = datos.data.ValoresAnteriores
-            console.log('valores prueba',this.valoresAnteriores)
+            console.log('valores prueba', this.valoresAnteriores)
             this.Limites = datos.data.EstadisticasMensuales
             console.log(this.Limites)
             this.limpiarJSON()
@@ -983,7 +1129,7 @@ console.log('lo',this.Limites)
             const datos = response
             this.valoresAnteriores = datos.data.ValoresAnteriores
             this.Limites = datos.data.EstadisticasMensuales
-            console.log('limites',this.Limites)
+            console.log('limites', this.Limites)
             this.limpiarJSON()
 
             self.$q.loading.hide();
