@@ -16,7 +16,6 @@
     "core-js": "^3.6.5",
     "localforage": "^1.10.0",
     "localstorage": "^1.0.1",
-    "pdfmake": "^0.2.10",
     "quasar": "^1.0.0"
   },
   "devDependencies": {

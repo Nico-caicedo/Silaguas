@@ -1,12 +1,13 @@
 <template>
-  <q-layout>
+  <q-page>
 
 
     <div class="row  justify-end q-gutter-x-lg q-ma-sm">
       <q-btn label="Grafico" style="background-color: #01B9FF;" icon="bar_chart" />
 
-      <q-btn label="Diseño" style="background-color: #BFFE00;" icon="picture_as_pdf" class="bg-alert"
-        @click="section = 'formato'" />
+      <q-btn label="Diseño" style="background-color: #BFFE00;" icon="picture_as_pdf" class="bg-alert ellipsis"
+        @click="section = 'formato'">
+      </q-btn>
       <q-btn label="Carta Control" v-if="rol === 'dirCalidad'" style="background-color: #01B9FF;" icon="dangerous"
         class="bg-alert" @click="section = 'cartaControl'" />
       <q-btn label="resultados" style="background-color: #BFFE00;" icon="receipt_long" class="bg-alert"
@@ -160,7 +161,7 @@
     <q-page style="height: 300px; min-height: unset;" v-if="section === 'resultados'">
       <resultados />
     </q-page>
-  </q-layout>
+  </q-page>
 </template>
 
 <script>
@@ -212,7 +213,6 @@ export default {
       valorRPD: "",
       mensajesAlerta: [],
       mensajess: [],
-      mensajesAlerta: [],
       valoresAnterioresO: [],
       clavesObserva: [],
       observacions: [],
@@ -631,7 +631,7 @@ export default {
           LCS *= 0.90;
 
           self.$q.loading.hide();
-        
+
           if (response.data >= 0) {
             this.SendCheck()
             // this.LimpiarDatosRPD()

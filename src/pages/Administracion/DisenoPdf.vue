@@ -1,4 +1,5 @@
 <template >
+    <q-page>
     <div style="height: 100px; ">
         <q-scroll-area style="height: 600px;">
 
@@ -89,6 +90,7 @@
 
         </q-scroll-area>
     </div>
+</q-page>
 </template>
 <script>
 import { api } from 'boot/axios'
