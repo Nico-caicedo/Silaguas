@@ -8,8 +8,8 @@
         <q-toolbar-title class="text-weight-light ">
           Usuarios del Sistema
         </q-toolbar-title>
-        <q-btn label="" icon="replay" color="white" class="ellipsis inset-shadow " outline
-          align="center" @click="regresar" v-close-popup />
+        <q-btn label="" icon="replay" color="white" class="ellipsis inset-shadow " outline align="center"
+          @click="regresar" v-close-popup />
       </q-toolbar>
     </q-header>
     <q-footer class="q-pa-sm bg-grey-4 shadow-up-3 ">
@@ -18,8 +18,8 @@
           class="ellipsis col-xs  " />
         <q-btn icon="delete" label="" @click="limpiarTercero" color="red-10" outline align="center"
           class="ellipsis col-xs   " />
-        <q-btn label="" color="grey-10" class="ellipsis inset-shadow col-xs "
-          icon="vpn_key" outline align="center" @click="restablecerClave" />
+        <q-btn label="" color="grey-10" class="ellipsis inset-shadow col-xs " icon="vpn_key" outline align="center"
+          @click="restablecerClave" />
       </div>
     </q-footer>
 
@@ -29,10 +29,10 @@
         <q-form ref="formCl" @submit="guardarUsu(usuarioAcceso)">
           <div class="q-pa-sm q-col-gutter-sm">
             <div class="col-grow">
-               <div class="row q-col-gutter-sm">
-                <q-select filled v-model="filtroBuscaUsuario" class="col-xs-12 col-sm col-md q-field--with-bottom" map-options emit-value
-                  option-value="usuario" option-label="RazonSocial" :options="listaUsuarios" use-input
-                  hide-dropdown-icon hide-selected fill-input input-debounce="0" label="Buscar Usuario"
+              <div class="row q-col-gutter-sm">
+                <q-select filled v-model="filtroBuscaUsuario" class="col-xs-12 col-sm col-md q-field--with-bottom"
+                  map-options emit-value option-value="usuario" option-label="RazonSocial" :options="listaUsuarios"
+                  use-input hide-dropdown-icon hide-selected fill-input input-debounce="0" label="Buscar Usuario"
                   @filter="filterFnUsuario" @input="val => { cargarUsuario(val) }">
                   <template v-slot:prepend>
                     <q-icon name="search" />
@@ -54,8 +54,8 @@
                   </template>
                 </q-select>
 
-                <q-select filled model="filtroBusca" class="col-xs-12 col-sm col-md q-field--with-bottom" map-options emit-value
-                  option-value="tercero" option-label="Identificacion" :options="listaTerceros" use-input
+                <q-select filled model="filtroBusca" class="col-xs-12 col-sm col-md q-field--with-bottom" map-options
+                  emit-value option-value="tercero" option-label="Identificacion" :options="listaTerceros" use-input
                   hide-dropdown-icon hide-selected fill-input input-debounce="0" label="Buscar Tercero"
                   @filter="filterFn" @input="val => { cargarTercero(val) }">
                   <template v-slot:prepend>
@@ -84,71 +84,71 @@
               </div>
 
 
-               <div class="row q-gutter-sm">
-                <q-input class="col-xs-12 col-sm col-md q-field--with-bottom" outlined readonly v-model="tercero.RazonSocial"
-                  label="Tercero" />
-                <q-input class="col-xs-12 col-sm col-md q-field--with-bottom" outlined v-model="usuarioAcceso.Login" label="Usuario"
-                  :rules="[regla]">
+              <div class="row q-gutter-sm">
+                <q-input class="col-xs-12 col-sm col-md q-field--with-bottom" outlined readonly
+                  v-model="tercero.RazonSocial" label="Tercero" />
+                <q-input class="col-xs-12 col-sm col-md q-field--with-bottom" outlined v-model="usuarioAcceso.Login"
+                  label="Usuario" :rules="[regla]">
                   <template v-slot:prepend>
                     <q-icon name="account_circle" size="lg" />
                   </template>
                 </q-input>
-                <q-select class="col-xs-12 col-sm col-md q-field--with-bottom" filled v-model="usuarioAcceso.IdRol" :rules="[regla]"
-                  map-options emit-value option-value="IdRol" option-label="Nombre" :options="listaRoles"
-                  label="Rol Usuario">
+                <q-select class="col-xs-12 col-sm col-md q-field--with-bottom" filled v-model="usuarioAcceso.IdRol"
+                  :rules="[regla]" map-options emit-value option-value="IdRol" option-label="Nombre"
+                  :options="listaRoles" label="Rol Usuario">
                   <template v-slot:prepend>
                     <q-icon name="accessibility" size="lg" />
                   </template>
                 </q-select>
-                <q-input class="col-xs-12 col-sm col-md q-field--with-bottom" outlined readonly v-model="usuarioAcceso.IdTercero"
-                  :rules="[regla]" label="Id Persona" />
+                <q-input class="col-xs-12 col-sm col-md q-field--with-bottom" outlined readonly
+                  v-model="usuarioAcceso.IdTercero" :rules="[regla]" label="Id Persona" />
               </div>
 
 
 
               <div class="row q-gutter-sm">
-                <q-input class="col-xs-12 col-sm  col-md q-field--with-bottom" outlined readonly v-model="usuarioAcceso.LoginCrea"
-                  label="Creado por">
+                <q-input class="col-xs-12 col-sm  col-md q-field--with-bottom" outlined readonly
+                  v-model="usuarioAcceso.LoginCrea" label="Creado por">
                   <template v-slot:prepend>
                     <q-icon name="vpn_key" size="lg" />
                   </template>
                 </q-input>
 
-                <q-input class="col-xs-12 col-sm col-md q-field--with-bottom" outlined readonly type="date" v-model="usuarioAcceso.Fecha"
-                  label="Fecha creado">
+                <q-input class="col-xs-12 col-sm col-md q-field--with-bottom" outlined readonly type="date"
+                  v-model="usuarioAcceso.Fecha" label="Fecha creado">
                   <template v-slot:prepend>
                     <q-icon name="date_range" size="lg" />
                   </template>
                 </q-input>
-                <q-input class="col-xs-12 col-sm col-md q-field--with-bottom" outlined readonly v-model="usuarioAcceso.ProximoCambio"
-                  label="Fecha proximo cambio">
+                <q-input class="col-xs-12 col-sm col-md q-field--with-bottom" outlined readonly
+                  v-model="usuarioAcceso.ProximoCambio" label="Fecha proximo cambio">
                   <template v-slot:prepend>
                     <q-icon name="date_range" size="lg" />
                   </template>
                 </q-input>
-               </div>
+              </div>
 
               <div class="row q-gutter-sm ">
                 <q-input class="col-xs-12 col-sm col-md" outlined v-model="usuarioAcceso.Observacion" label="Cargo" />
-                <q-select class="col-xs-12 col-sm col-md" filled v-model="usuarioAcceso.PeriodoCambio"
-                  :rules="[regla]" map-options emit-value :options="periodoCambio" label="Cambio (meses)">
+                <q-select class="col-xs-12 col-sm col-md" filled v-model="usuarioAcceso.PeriodoCambio" :rules="[regla]"
+                  map-options emit-value :options="periodoCambio" label="Cambio (meses)">
                   <template v-slot:prepend>
                     <q-icon name="today" size="lg" />
                   </template>
                 </q-select>
               </div>
               <div class="row q-gutter-xs">
-                <q-toggle class="ellipsis col-xs-12 col-sm col-md" v-model="usuarioAcceso.Passnoexpire" checked-icon="check"
-                  :rules="[regla]" :true-value=true :false-value=false color="green" label="El password no expira"
-                  unchecked-icon="clear" />
+                <q-toggle class="ellipsis col-xs-12 col-sm col-md" v-model="usuarioAcceso.Passnoexpire"
+                  checked-icon="check" :rules="[regla]" :true-value=true :false-value=false color="green"
+                  label="El password no expira" unchecked-icon="clear" />
                 <q-toggle class=" ellipsis  col-xs-12 col-sm col-md" v-model="usuarioAcceso.Activo" :true-value="1"
                   :false-value="0" color="green" label="Usuario activo en el sistema" checked-icon="check"
                   unchecked-icon="clear" />
-                <q-toggle class="ellipsis  col-xs-12 col-sm col-md" v-model="usuarioAcceso.Nomodpass" checked-icon="check"
-                  :true-value="true" :false-value="false" :rules="[regla]" color="green"
+                <q-toggle class="ellipsis  col-xs-12 col-sm col-md" v-model="usuarioAcceso.Nomodpass"
+                  checked-icon="check" :true-value="true" :false-value="false" :rules="[regla]" color="green"
                   label="No puede cambiar password" unchecked-icon="clear" />
-                <q-toggle class="ellipsis  col-xs-12 col-sm col-md" v-model="usuarioAcceso.Modpasspi" checked-icon="check"
-                  :true-value=true :false-value=false :rules="[regla]" color="green"
+                <q-toggle class="ellipsis  col-xs-12 col-sm col-md" v-model="usuarioAcceso.Modpasspi"
+                  checked-icon="check" :true-value=true :false-value=false :rules="[regla]" color="green"
                   label="Cambiar password en el proximo inicio" unchecked-icon="clear" />
                 <q-btn label="Guardar" color="green-10" icon="save" outline type="submit"
                   class="ellipsis col-xs col-sm col-md" />
@@ -158,7 +158,7 @@
 
             <!-- cuadro para mostrar usuarios-->
             <div class="col-xs col-sm col-md col-xl col-lg">
-              <q-separator color="primary"  size="2px" />
+              <q-separator color="primary" size="2px" />
               <div :class="['bg-grey', listaUsuarios.length > 0 ? 'bg-blue' : 'bg-grey'], 'text-white'"
                 class="inset-shadow">
                 <q-toolbar rounded>
@@ -170,40 +170,54 @@
               <q-list class="col-xs col-sm col-md">
 
                 <template v-if="listaUsuarios.length > 0">
-                  <q-scroll-area  style="height: calc(450px - 40px)">
-                  <q-item v-for="usu in listaUsuarios" :key="usu.Login" @click.native="cargarUsuario(usu)"
-                    clickable rounded-borders>
-                    <q-separator color="red" size="3px"/>
-                    <q-item-section avatar>
-                      <q-icon name="person" color="black" />
-                    </q-item-section>
-                    <q-separator  vertical />
-                    <q-item-section>
-                      <q-separator color="grey" size="1px" />
-                      <q-item-label class="col text-center text-italic q-pa-sm"> <b> {{ usu.RazonSocial }} </b>
-                      </q-item-label>
-                      <q-separator color="grey" size="1px" />
-                      <q-item-label class="q-pa-md">
-                        <div class="row q-gutter-y-xs">
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">I</b>d Persona: <b>{{ usu.IdTercero }}</b></div>
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">U</b>suario:<b>{{ usu.Login }}</b> </div>
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">C</b>reado por: <b>{{ usu.LoginCrea }}</b></div>
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">I</b>d Rol: <b>{{ usu.IdRol }}</b></div>
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">P</b>eriodo cambio Password: <b>{{ usu.PeriodoCambio }}</b></div>
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">P</b>róximo Cambio: <b>{{ usu.ProximoCambio }}</b></div>
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">F</b>echa creación: <b>{{ usu.Fecha.slice(0, 10) }}</b></div>
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">E</b>l Password nunca expira: <b>{{ usu.Passnoexpire }}</b></div>
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">A</b>ctivo en el Sistema: <b>{{ usu.Activo }}</b></div>
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">N</b>o puede cambiar el password: <b>{{ usu.NoModPass }}</b></div>
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">P</b>róximo cambio del password: <b>{{ usu.ModPasspi }}</b></div>
-                          <div class="col-xs-6 col-md-2"><b style="color: black;">C</b>argo: <b>{{ usu.Observacion }}</b></div>
-                        </div>
-                      </q-item-label>
-                      <q-separator color="grey" size="1px" />
-                    </q-item-section>
-                    <q-separator  vertical />
-                  </q-item>
-                </q-scroll-area>
+                  <q-scroll-area style="height: calc(450px - 40px)">
+                    <q-item v-for="usu in listaUsuarios" :key="usu.Login" @click.native="cargarUsuario(usu)" clickable
+                      rounded-borders>
+                      <q-separator color="red" size="3px" />
+                      <q-item-section avatar>
+                        <q-icon name="person" color="black" />
+                      </q-item-section>
+                      <q-separator vertical />
+                      <q-item-section>
+                        <q-separator color="grey" size="1px" />
+                        <q-item-label class="col text-center text-italic q-pa-sm"> <b> {{ usu.RazonSocial }} </b>
+                        </q-item-label>
+                        <q-separator color="grey" size="1px" />
+                        <q-item-label class="q-pa-md">
+                          <div class="row q-gutter-y-xs">
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">I</b>d Persona: <b>{{ usu.IdTercero
+                                }}</b></div>
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">U</b>suario:<b>{{ usu.Login }}</b>
+                            </div>
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">C</b>reado por: <b>{{ usu.LoginCrea
+                                }}</b></div>
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">I</b>d Rol: <b>{{ usu.IdRol }}</b>
+                            </div>
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">P</b>eriodo cambio Password: <b>{{
+            usu.PeriodoCambio }}</b></div>
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">P</b>róximo Cambio: <b>{{
+            usu.ProximoCambio }}</b></div>
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">F</b>echa creación: <b>{{
+            usu.Fecha.slice(0, 10) }}</b></div>
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">E</b>l Password nunca expira: <b>{{
+            usu.Passnoexpire }}</b></div>
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">A</b>ctivo en el Sistema: <b>{{
+            usu.Activo }}</b></div>
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">N</b>o puede cambiar el password:
+                              <b>{{ usu.NoModPass }}</b>
+                            </div>
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">P</b>róximo cambio del password:
+                              <b>{{ usu.ModPasspi }}</b>
+                            </div>
+                            <div class="col-xs-6 col-md-2"><b style="color: black;">C</b>argo: <b>{{ usu.Observacion
+                                }}</b></div>
+                          </div>
+                        </q-item-label>
+                        <q-separator color="grey" size="1px" />
+                      </q-item-section>
+                      <q-separator vertical />
+                    </q-item>
+                  </q-scroll-area>
                 </template>
 
                 <template v-else>
@@ -216,15 +230,12 @@
 
               </q-list>
             </div>
-
+            <div class="col-xs-12 col-sm-12 col-md-5">
+            </div>
           </div>
 
         </q-form>
-
-        <!-- componente tercero -->
         <TerceroFiltro ref="busquedaTercero" :onSeleccionTercero="seleccionarTercero" />
-
-        <!-- componenet dialog -->
         <q-dialog v-model="isDialogComponenteTerceros" style="max-width: 650px" :maximized="true">
           <q-card>
             <q-bar>
