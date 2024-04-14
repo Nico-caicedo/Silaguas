@@ -229,8 +229,8 @@
 </style>
 
 <script>
-import { api } from 'boot/axios'
-import utilidades from '../commons/utilidades.js'
+import { api } from 'src/boot/axios'
+import utilidades from 'src/commons/utilidades'
 export default {
   props: {
     onSeleccionTercero: Function

@@ -8,17 +8,18 @@
             <q-avatar>
                 <q-btn flat round dense icon="delete" @click="limpiarTercero"/>
             </q-avatar>
-            <q-toolbar-title>
+            <q-toolbar-title class="text-weight-light ">
               Información Terceros
             </q-toolbar-title>
             <q-btn flat icon="person_add" label="Terceros" />
         </q-toolbar>
     </q-header>
+    
     <q-page-container>
       <q-form @submit="guardarCambios">
         <div class="q-pa-md">
           <div class="row q-col-gutter-sm">
-            <q-input class="col-xs-12 col-md-2 q-field--with-bottom"
+            <q-input class="col-xs-12 col-md-2 q-field-with-bottom"
               filled
               v-model="tercero.IdTercero"
               type="number"
@@ -214,7 +215,7 @@
             </q-btn>
           </q-bar>
           <q-card-section>
-            <component tercero = @tercero 
+            <component tercero = @tercero
               :is="componenteTerceros">
             </component>
           </q-card-section>
@@ -429,7 +430,7 @@ export default {
       const self = this
       let resultado = true
       if (self.tercero.IdTercero > 0) {
-      
+
         self.$q.dialog({
           title: 'Silaguas',
           dark: true,

@@ -1,199 +1,177 @@
-import { Dialog, LocalStorage, date } from 'quasar'
-import { api } from 'boot/axios'
-import utilidades from '../utilidades.js'
+import { ref } from 'vue';
+import { Dialog, LocalStorage, Loading } from 'quasar';
+import { api } from 'boot/axios';
+import { useRouter } from 'vue-router';
+import utilidades from '../utilidades.js';
 
 listaUsuarios: []
 listaUsuariosBD: []
 
-export default class UsuariosDAO_ {    
-  traerUsuario () {
+export default class UsuariosDAO_ {
+  traerUsuario() {
     const value = LocalStorage.getItem('usuarioSilaguas')
     return value
   }
-  traerAccesos () {
+  traerAccesos() {
     const value = LocalStorage.getItem('usuarioSilaguas')
     const accesos = value.ListaAccesos
     return accesos
   }
-  verificarUsuario (login, self) {
-    self.$q.loading.show()
+
+  verificarUsuario(login) {
+    const router = useRouter();
+    Loading.show();
     api.get(`/usuario/verificacion/${login}`)
       .then((response) => {
-        var usuario = response.data
+        var usuario = response.data;
         if (!usuario.Login) {
-          self.$q.localStorage.remove('usuarioSilaguas')
-          self.$q.localStorage.remove('accesosSilaguas')
-          self.$router.push('/')
+          LocalStorage.remove('usuarioSilaguas');
+          LocalStorage.remove('accesosSilaguas');
+          router.push('/');
         } else {
           if (usuario.Activo === 1) {
-            self.$q.localStorage.set('usuarioSilaguas', usuario)
+            LocalStorage.set('usuarioSilaguas', usuario);
           } else {
-            self.$q.localStorage.remove('usuarioSilaguas')
-            self.$q.localStorage.remove('accesosSilaguas')
-            self.$router.push('/')
+            LocalStorage.remove('usuarioSilaguas');
+            localStorage.remove('accesosSilaguas');
+            router.push('/Admin');
           }
         }
-        self.$q.loading.hide()
+        Loading.hide();
       })
       .catch((error) => {
-        self.$q.loading.hide()
-      })
-      
+        Loading.hide();
+      });
   }
-  login (self, usuB) {
-    self.$q.loading.show()
-    api.post('/usuario/autenticacion', usuB)
-      .then((response) => {
-        var usuario = response.data
-        if (usuario.Login === null) {
-          self.$q.loading.hide()  
-          utilidades.mensaje('Verifique usuario o passwordS')
-        } else {
-          self.$q.localStorage.set('usuarioSilaguas', usuario)
-          // cargarAccesos(usuario.IdRol, '-1', self)
-          clearTimeout(this.timeout)
-          self.timeout = setTimeout(() => {
-            // const accesos = usuario.ListaAccesos
-            self.menuElements = usuario.ListaAccesos
-            self.$router.push('/Admin')
-          }, 500)
-        }
-        self.$q.loading.hide()
-      })
-      .catch((error) => {
-        utilidades.mensaje('Fail conexion - Autentication ' + error)
-        self.$q.loading.hide()
-      })
-  }
-  cargarAccesos (rolUsuario, moduloUsuario, self) {
-    self.$q.loading.show()
-    api.get(`/usuario/cargarAccesos/${rolUsuario}/${moduloUsuario}`)
-      .then((response) => {
-        // self.menuElements = response.data
-        self.$q.localStorage.set('accesosSilaguas', response.data)
-        self.$q.loading.hide()
-      })
-      .catch((error) => {
-        mensaje('Fallo la conexion ' + error)
-        self.$q.loading.hide()
-      })
-  }
-  cambiarClave (usuario, self) {
-    self.$q.loading.show()
-    api.post('/usuario/modificaPassword', usuario)
-      .then((response) => {
-        var datos = response.data
-        if (datos > 0) {
-          utilidades.mensaje('La contraseña ha sido modificada con éxito')
-          // self.$router.push('/admin')
-        } else {
-          utilidades.mensaje('La contraseña no fue modificada, comuniquese con el administrador')
-        }
-        self.$q.loading.hide()
-      })
-      .catch((error) => {
-        utilidades.mensaje('Cambio Clave - Fallo la conexion ' + error)
-        self.$q.loading.hide()
-      })
-  }
-  filterBuscaTercero (val, update, abort, self) {
-    var listaTerceros = []
-    if (val.length === 0) {
-      abort()
-      return
+
+
+  async login(usuB) {
+    try {
+      const response = await api.post('/usuario/autenticacion', usuB);
+      return response.data;
+    } catch (error) {
+      console.error('Error al obtener datos Login', error);
+      throw error;
     }
-    clearTimeout(self.timeout)
+  }
+
+
+  async cargarAccesos(rolUsuario, moduloUsuario) {
+    try {
+      const response = await api.get(`/usuario/cargarAccesos/${rolUsuario}/${moduloUsuario}`);
+      const accesos = response.data;
+      LocalStorage.set('accesosSilaguas', accesos);
+      return accesos;
+    } catch (error) {
+      utilidades.mensaje('Fallo la conexion ' + error);
+      throw error;
+    }
+  }
+
+
+  async cambiarClave(usuario) {
+    try {
+      const response = await api.post('/usuario/modificaPassword', usuario);
+      const datos = response.data;
+      if (datos > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      utilidades.mensaje('Cambio Clave - Fallo la conexión ' + error);
+      throw error;
+    }
+  }
+
+
+  filterBuscaTercero(val, self) {
+    const Loading = ref(false);
+    Loading.value = true;
+    var listaTerceros = [];
+    if (val.length === 0) {
+      Loading.value = false;
+      return listaTerceros;
+    }
+    clearTimeout(self.timeout);
     self.timeout = setTimeout(() => {
       api.get(`/tercero/mostrarTerceroFiltroGral/${val}`)
         .then((response) => {
-          update(() => {
-            listaTerceros = response.data
-            self.$q.loading.hide()
-          })
+          listaTerceros = response.data;
+          Loading.value = false;
         })
         .catch((error) => {
-          utilidades.mensaje('Fallo la conexion ' + error)
-          self.$q.loading.hide()
-        })
-    }, 500)
-    return listaTerceros
+          utilidades.mensaje('Fallo la conexion ' + error);
+          Loading.value = false;
+        });
+    }, 500);
+    return Loading;
   }
-  filterFnUsuario (val, update, abort) {
+
+  filterFnUsuario(val) {
+    const Loading = ref(false);
+    Loading.value = true;
+    var listaUsuarios = [];
     if (val.length === 0) {
-      abort()
-      return
+      Loading.value = false;
+      return listaUsuarios;
     }
     if (this.listaUsuariosBD) {
-      const arreglo = val.split(' ')
-      this.listaUsuarios = []
-      clearTimeout(this.timeout)
+      const arreglo = val.split(' ');
+      this.listaUsuarios = [];
+      clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
         for (var i = 0; i < this.listaUsuariosBD.length; i++) {
           for (var texto of arreglo) {
             if (isNaN(val) === false) {
               if (val.length < 7) {
                 if (this.listaUsuariosBD[i].Tercero.IdTercero.toString() === val && val.length < 7) {
-                  update(() => {
-                    const tercero = this.listaUsuariosBD[i]
-                    this.listaUsuarios.push(tercero)
-                  })
+                  listaUsuarios.push(this.listaUsuariosBD[i]);
                 }
               } else if (this.listaUsuariosBD[i].Tercero.Identificacion.toString().includes(val)) {
-                update(() => {
-                  const tercero = this.listaUsuariosBD[i]
-                  this.listaUsuarios.push(tercero)
-                })
+                listaUsuarios.push(this.listaUsuariosBD[i]);
               } else if (this.listaUsuariosBD[i].Tercero.Celular.includes(val.toUpperCase())) {
-                update(() => {
-                  const tercero = this.listaUsuariosBD[i]
-                  this.listaUsuarios.push(tercero)
-                })
+                listaUsuarios.push(this.listaUsuariosBD[i]);
               } else if (this.listaUsuariosBD[i].Tercero.Telefono.includes(val.toUpperCase())) {
-                update(() => {
-                  const tercero = this.listaUsuariosBD[i]
-                  this.listaUsuarios.push(tercero)
-                })
+                listaUsuarios.push(this.listaUsuariosBD[i]);
               }
             } else {
               if (this.listaUsuariosBD[i].RazonSocial.includes(texto.toUpperCase()) || this.listaUsuariosBD[i].Login.includes(texto.toUpperCase()) || this.listaUsuariosBD[i].Tercero.Alias.includes(texto.toUpperCase())) {
-                update(() => {
-                  const usuario = this.listaUsuariosBD[i]
-                  // const filtroCN = this.listaUsuarios.filter(c => c.Login === usuario.Login)
-                  // if (filtroCN.length < 1) {
-                  //  this.listaUsuarios.push(usuario)
-                  // }
-                  this.listaUsuarios.push(usuario)
-                })
+                listaUsuarios.push(this.listaUsuariosBD[i]);
               }
-              if (this.listaUsuarios.length) {
-                let indice = 0
-                for (const nTD of this.listaUsuarios) {
-                  if (nTD.RazonSocial.includes(texto.toUpperCase()) || nTD.Login.includes(texto.toUpperCase()) || nTD.Tercero.Alias.includes(texto.toUpperCase())) {
-                    indice++
-                  } else {
-                    update(() => {
-                      this.listaUsuarios.splice(indice)
-                    })
+              if (listaUsuarios.length) {
+                let indice = 0;
+                for (const nTD of listaUsuarios) {
+                  if (!(nTD.RazonSocial.includes(texto.toUpperCase()) || nTD.Login.includes(texto.toUpperCase()) || nTD.Tercero.Alias.includes(texto.toUpperCase()))) {
+                    listaUsuarios.splice(indice, 1);
                   }
+                  indice++;
                 }
               }
             }
           }
         }
-      }, 250)
+        Loading.value = false;
+      }, 250);
     }
+    return Loading;
   }
 
-  cargarListaUsuarios (Consulta, self) {
+  cargarListaUsuarios(Consulta) {
+    const Loading = ref(false);
+    Loading.value = true;
+    var listaUsuariosBD = [];
     api.get(`/usuario/usuariosFiltro/${Consulta}`)
-    .then((response) => {
-      this.listaUsuariosBD = response.data
-      this.listaUsuarios = response.data
-    self.$q.loading.hide()
-    })
-    .catch((error) => {
-    utilidades.mensaje('Fallo la conexion ' + error)
-    self.$q.loading.hide()
-    })
+      .then((response) => {
+        this.listaUsuariosBD = response.data;
+        listaUsuariosBD = response.data;
+        Loading.value = false;
+      })
+      .catch((error) => {
+        utilidades.mensaje('Fallo la conexion ' + error);
+        Loading.value = false;
+      });
+    return Loading;
   }
 }
+

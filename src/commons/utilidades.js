@@ -1,8 +1,8 @@
 import { Dialog, LocalStorage, date, exportFile } from 'quasar'
 import { api } from 'boot/axios'
-import localForage from 'localforage'
+// import localStorage from 'localStorage'
 
-function wrapCsvValue (val, formatFn) {
+function wrapCsvValue(val, formatFn) {
   let formatted = formatFn !== undefined
     ? formatFn(val)
     : val
@@ -23,10 +23,23 @@ function wrapCsvValue (val, formatFn) {
 }
 
 export default {
-  mensaje (texto) {
-    Dialog.create({ title: 'Silaguas', message: texto, dark: true })
+  mensaje(texto) {
+    Dialog.create({
+      title: `<span class="text-bold text-blue-10 rounded-borders text-uppercase text-italic bg-grey flex flex-center inset-shadow" >Silaguas</span>`,
+      message: `<hr style="color:1px dashed red;">
+          <p class="q-pa-sm text-subtitle1 text-center">${texto}</p>
+      `,
+      dark: true,
+      html: true, // Establecer esta opción en true para que el contenido se interprete como HTML
+      style: {
+        'border': '1px dashed white',
+        'background':'shadow-1',
+      }
+    });
   },
-  mensajeConfirmacion (mensaje) {
+
+
+  mensajeConfirmacion(mensaje) {
     Dialog.create({
       title: 'Silaguas',
       dark: true,
@@ -39,13 +52,13 @@ export default {
       return false
     })
   },
-  fechaActual () {
+  fechaActual() {
     return date.formatDate(Date.now(), 'YYYY-MM-DD')
   },
-  fechaHora () {
+  fechaHora() {
     return date.formatDate(Date.now())
   },
-  convertirFecha (fecha) {
+  convertirFecha(fecha) {
     var dia = fecha.slice(0, 2)
     var mes = ''
     var ano = ''
@@ -71,7 +84,7 @@ export default {
     const fechaResultado = ano + '-' + mes + '-' + dia
     return fechaResultado
   },
-  formatoNumero (amount, decimals) {
+  formatoNumero(amount, decimals) {
     amount += ''
     amount = parseFloat(amount.replace(/[^0-9/.]/g, ''))
     decimals = decimals || 0
@@ -90,7 +103,7 @@ export default {
 
     return amountParts.join(',')
   },
-  exportTable (nombreArchivo, tablaE, columnasE) {
+  exportTable(nombreArchivo, tablaE, columnasE) {
     // naive encoding to csv format
     const content = [columnasE.map(col => wrapCsvValue(col.label))].concat(
       tablaE.map(row => columnasE.map(col => wrapCsvValue(
@@ -118,7 +131,7 @@ export default {
       })
     }
   },
-  sumarDias (date, dias) {
+  sumarDias(date, dias) {
     var res = new Date(date)
     res.setDate(res.getDate() + dias);
     // res.formatDate(Date.now(), 'YYYY-MM-DD')
