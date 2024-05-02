@@ -6,7 +6,8 @@
       <div class="row  items-center text-center col-xs-12 col-sm-12 col-md col-xl col-lg-4">
         <welcome :DatosCarta="DatosCarta" :Fecha="Fecha" class="col-xs-12 col-sm-12 col-md col-xl col-lg" />
       </div>
-      <div class="row justify-between items-center justify-stretch q-gutter-xs col-xs-12 col-sm-6 col-md col-xl col-lg-4">
+      <div
+        class="row justify-between items-center justify-stretch q-gutter-xs col-xs-12 col-sm-6 col-md col-xl col-lg-4">
         <CardData v-for="(item, index) in cardData" :key="index" :Nombre="index" :valor="item"
           :icon="getIconByNombre(index)" :backgroundcolor="getColorByNombre(index)"
           class="shadow-1 col-grow ellipsis" />
@@ -44,10 +45,10 @@
     </div>
     <div class="row items-stretch content-stretch q-gutter-sm">
       <div class="row q-gutter-y-xs col-xs-12 col-sm-12 col-md col-xl col-lg">
-        <Knob v-for="(valor, nombre) in ContadorFilas" :Nombre="nombre" :valor="valor" :key="nombre"  />
+        <Knob v-for="(valor, nombre) in ContadorFilas" :Nombre="nombre" :valor="valor" :key="nombre" />
       </div>
       <div class="row col-xs-12 col-sm col-md col-xl col-lg-4">
-        <Pie v-if="loaded" :key="keyToRerender" :dataPie="dataPie" :optionspie="optionspie" class="col-grow"/>
+        <Pie v-if="loaded" :key="keyToRerender" :dataPie="dataPie" :optionspie="optionspie" class="col-grow" />
       </div>
       <div class="row col-xs-12 col-sm col-md col-xl col-lg-4">
         <Pie v-if="loaded" :key="keyToRerender" :dataPie="dataPiedos" :optionspie="optionspie" />
@@ -536,6 +537,4 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
-
 </style>

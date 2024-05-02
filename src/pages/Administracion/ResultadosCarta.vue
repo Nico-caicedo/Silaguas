@@ -5,12 +5,12 @@
       <!-- Filtros -->
       <div class="col-xs col-sm-12  col-md-9 col-9 row justify-center items-center q-gutter-sm q-gutter-y-sm">
         <q-select  class="col-sm-3 col-md-3 col-12 " v-model="cartaControl" :options="cartasControl" label="Carta Control"
-          @input="llenarDatos" />
-        <q-select class="col-sm-3 col-md-3 col-12" v-model="Metodo" :options="metodos" label="Método" @input="llenarDatos" />
+        @update:model-value="llenarDatos" />
+        <q-select class="col-sm-3 col-md-3 col-12" v-model="Metodo" :options="metodos" label="Método"  @update:model-value="llenarDatos" />
         <q-select class="col-sm-3 col-md-3 col-12" v-if="cartaControl.value === 'CCV'" v-model="Solucion" :options="soluciones"
-          label="Solución" @input="llenarDatos" />
+          label="Solución"  @update:model-value="llenarDatos" />
         <q-select class="col-sm-3 col-md-3 col-12" v-if="cartaControl.value === 'CCRPD'" v-model="Matriz" :options="matrices"
-          label="Matriz" @input="llenarDatos" />
+          label="Matriz"  @update:model-value="llenarDatos" />
       </div>
     </div>
     <div class="column justify-center  items-center q-gutter-sm " style="height: 400px;">
@@ -37,9 +37,9 @@
     <!-- hacer funcion para marcar todos los resultados -->
     <!-- <q-btn label="Marcar" @click="toggleMarcado" /> -->
     <q-btn class="bg-primary text-white" icon="add_circle" @click="CrearObservacion" v-if="EstadoObservacion === false" label="Crear Observación general"
-      style="width: auto;" />
+      style="width: auto;" :disabled="itemsCarta.length === 0" />
       <q-btn class="bg-primary text-white" icon="search" @click="CallObservacion" v-if="EstadoObservacion === true"
-      label="Observación general" style="width: auto;" />
+      label="Observación general" style="width: auto;"  />
 
       <q-btn class="bg-positive text-white" :disabled="IdsAprobar.length === 0" icon="send" label="Enviar" @click="Aprobar" />
   </div>
@@ -193,6 +193,7 @@ export default {
       this.IdsAprobar = true
     },
     llenarDatos() {
+      console.log('hola mundo')
       this.datosCartas = {
         TipoCarta: this.cartaControl.value
 
@@ -553,8 +554,15 @@ export default {
 </script>
 <style>
 
+
+@media only screen and (max-width: 900px) {
+  .LetraT{
+  font-size: 3.5rem;
+}
+}
+
 /* esta clase hace referencia a letra tamaño de ahí el nombre LetraT */
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 700px) {
   .LetraT{
   font-size: 1rem;
 }
