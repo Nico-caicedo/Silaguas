@@ -23,7 +23,6 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v1.quasar.dev/quasar-cli/boot-files
     boot: [
-
       'axios',
     ],
 
@@ -41,7 +40,6 @@ module.exports = function (/* ctx */) {
       // 'themify',
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
-
       'roboto-font', // optional, you are not bound to it
       'material-icons', // optional, you are not bound to it
     ],
@@ -49,9 +47,11 @@ module.exports = function (/* ctx */) {
     // Full list of options: https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
-
       // transpile: false,
-
+      publicPath: "",
+      extendViteConf(viteConf, { isServer, isClient }) {
+        viteConf.base = "";
+      },
       // Add dependencies for transpiling with Babel (Array of string/regex)
       // (from node_modules, which are by default not transpiled).
       // Applies only if "transpile" is set to true.
@@ -62,7 +62,7 @@ module.exports = function (/* ctx */) {
       // showProgress: false,
       // gzip: true,
       // analyze: true,
-
+      distDir: 'C:/xampp/htdocs/Silaguas',
       // Options below are automatically set depending on the env, set them if you want to override
       // extractCSS: false,
 
@@ -73,7 +73,7 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      https: false,
+      http: false,
       port: process.env.MODE_SSR ? 9100 : 8080,
       open: true // abre automáticamente la ventana del navegador
     },

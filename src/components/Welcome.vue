@@ -1,10 +1,10 @@
 <template>
-  <div  class="row bg-blue-5 justify-center items-center  q-pl-xs" style="border-radius: 10px;">
+  <div  class="row bg-blue-5 justify-center items-center  q-pl-xs col-xs-12 col-sm-12 col-md col-xl col-lg" style="border-radius: 10px;">
     <div class=" col-xs-9 col-sm-9 col-md-10 col-lg col-xl">
       <div class="column items-center">
         <div class="text-white q-pt-sm text-weight-bold">{{ saludoBienvenida }},Bienvenido {{ nombreUsuario }} {{ apellido1 }}</div>
 
-        <div class="row text-weight-bold  items-center">
+        <div class="row text-bold  items-center">
           <p v-if="DatosCarta.data === 'CCV'">{{ DatosCarta.solucion ? 'Carta Control Verificación - Solución: ' + DatosCarta.solucion : 'Carta Control Verificación' }}</p>
           <p v-else-if="DatosCarta.data === 'CCRPD'">{{ DatosCarta.metodo && DatosCarta.matriz ? 'Carta Control RPD - Método: ' + DatosCarta.metodo + '- Matriz: ' + DatosCarta.matriz : 'Carta Control RPD' }}</p>
           <p>-{{ mesEnLetras(Fecha.mes) }}-{{ Fecha.año }}</p>

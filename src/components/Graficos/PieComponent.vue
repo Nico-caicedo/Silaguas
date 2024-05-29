@@ -6,11 +6,11 @@
     <template v-else >
       <q-item >
         <q-item-section class="text-grey-10 text-bold">
-          <q-separator  class="bg-primary"/>
-          <q-space/>
+          <q-separator class="bg-primary" />
+          <q-space />
           Sin datos disponibles.
-          <q-space/>
-          <q-separator  class="bg-primary"/>
+          <q-space />
+          <q-separator class="bg-primary" />
         </q-item-section>
       </q-item>
     </template>

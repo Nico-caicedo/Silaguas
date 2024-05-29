@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white shadow-1 col column" style="border-radius: 10px;">
+  <div class="bg-white shadow-1 col column" style="border-radius: 10px; height: 330px;">
     <q-toolbar class="bg-primary text-white shadow-1" style="border-radius: 10px 10px 0 0;">
       <q-toolbar-title class="text-bold">Observaciones</q-toolbar-title>
       <q-item class="items-center text-center">{{ nombreMes }} - {{ fecha.año }}</q-item>
@@ -8,8 +8,8 @@
     <q-separator color="orange-12" size="2px" />
 
     <template v-if="List.length > 0">
-      <q-scroll-area :bar-style="barStyle" :thumb-style="thumbStyle" class="col column  justify-center items-center">
-        <q-list class="">
+      <q-scroll-area :bar-style="barStyle" :thumb-style="thumbStyle" class="col row " >
+        <q-list class=" col justify-between" >
           <q-expansion-item v-for="contact in List" :key="contact.Dia" expand-separator>
             <template v-slot:header>
               <q-item-section avatar>
@@ -38,13 +38,11 @@
     </template>
     <template v-else>
       <q-item class="col row justify-center items-center">
+        <q-separator class="bg-primary" inset size="1px"/>
         <q-item-section class="text-grey-9 justify-center items-center text-bold">
-          <q-separator class="bg-primary"/>
-          <q-space/>
           Sin observaciones disponibles.
-          <q-space/>
-          <q-separator class="bg-primary"/>
         </q-item-section>
+        <q-separator class="bg-primary" inset size="1px"/>
       </q-item>
     </template>
     <q-separator color="orange-12" inset size="1px" />
@@ -67,10 +65,7 @@ export default {
   },
 
   setup(props) {
-    // const list = ref(props.Fecha);
     const fecha = ref(props.Fecha);
-    //  console.log('Contenido de List:', props);
-
     const mesEnLetras = (numeroMes) => {
       const meses = [
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -80,12 +75,10 @@ export default {
     };
 
     const nombreMes = mesEnLetras(fecha.value.mes);
-
     return {
       mesEnLetras,
       nombreMes,
        fecha,
-      // list,
       thumbStyle: {
         right: '4px',
         borderRadius: '5px',

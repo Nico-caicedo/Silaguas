@@ -1,7 +1,6 @@
 <template>
   <q-page>
 
-
     <div class="row  justify-end q-gutter-x-lg q-ma-sm">
       <q-btn label="Grafico" style="background-color: #01B9FF;" icon="bar_chart" />
 
@@ -15,8 +14,6 @@
     </div>
     <q-page style="min-height: unset;" padding v-if="section === 'cartaControl'">
       <q-scroll-area style="height: 600px;">
-
-
         <q-form style="height: 300px;">
           <div>
             <q-btn label="Consultar limites" style="background-color: #FF5D25;" icon="dangerous" class="bg-alert"
@@ -24,7 +21,6 @@
           </div>
 
           <div class="column justify-around q-gutter-y-lg q-mt-xl">
-
 
             <q-dialog v-model="inception">
               <q-card>
@@ -695,14 +691,14 @@ export default {
       //         // Validar si un  valor supera el límite control superior o es menor que el límite control inferior
       //         if (valor > limite.LCSresultado) {
       //           mensajesValor.push(' Es superior a LCS ');
-      //         } 
+      //         }
       //       }
 
 
       //     // validación para  2 valor más allá del Limite de alerta superior o limite de alerta inferior
       //       if ((valorpeniultimo > limite.LASresultado && valor > limite.LASresultado) && (valorpeniultimo < limite.LCSresultado && valor < limite.LCSresultado) ) {
       //         mensajesValor.push(' el valor supera LAS ');
-      //       } 
+      //       }
 
       //       // Validar el orden de los últimos 5 valores
       //       if (this.verificarOrdenAscendente(this.obtenerUltimosNValores(valorArray, 5))) {
@@ -719,7 +715,7 @@ export default {
 
       //       if (cantidadValoresSuperan >= 4) {
       //         mensajesValor.push(' Al menos 4 de los últimos 5 valores superan el límite superior. ');
-      //       } 
+      //       }
 
       //       // Guardar los mensajes de alerta asociados a este valor
       //       if (mensajesValor.length > 0) {
@@ -1001,9 +997,9 @@ export default {
       this.$q.dialog({
         title: '<h5 class="prueba" >¡¡ALERTA!!</h5>',
         message: `
-       
+
         <p>${this.errores.join('<br>')}</p><br>
-    
+
       `,
         class: "prueba",
         html: true,

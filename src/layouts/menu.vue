@@ -1,11 +1,11 @@
-<template>
+<!-- <template>
   <q-layout container style="height: 90vh">
       <q-header class="bg-light-blue-9">
         <q-toolbar>
           <q-avatar>
             <q-btn flat round dense icon="vpn_key" />
           </q-avatar>
-          <q-toolbar-title>SILAMED</q-toolbar-title>
+          <q-toolbar-title>Silaguas</q-toolbar-title>
         </q-toolbar>
       </q-header>
       <q-page-container>
@@ -40,6 +40,7 @@
   <script>
   import { api } from 'boot/axios'
   import utils from '../commons/utils.js'
+import UsuariosDAO_ from 'src/commons/Datos/usuariosDAO_'
   export default {
     data () {
       return {
@@ -49,7 +50,7 @@
       }
     },
     created () {
-      const value = this.$q.localStorage.getItem('usuarioSILAMED')
+      const value = this.$q.localStorage.getItem('usuarioSilaguas')
       if (value) {
         this.$router.push('/admin')
       }
@@ -58,15 +59,15 @@
       login () {
         const self = this
         self.$q.loading.show()
-        api.post('/usuario/autenticacion', this.usuario)
+        api.post('/usuarios/autenticacion', this.usuario)
           .then((response) => {
             var datos = response.data
             if (datos.LoginUsuario === null) {
               self.$q.loading.hide()
               utils.mensaje('Verify username or password')
             } else {
-              self.$q.localStorage.set('usuarioSILAMED', datos)
-              utils.cargarAccesos(datos.IdRol, '-1', this)
+              self.$q.localStorage.set('usuarioSilaguas', datos)
+              UsuariosDAO_.cargarAccesos(datos.IdRol, '-1', this)
               this.ingresar(datos)
             }
             self.$q.loading.hide()
@@ -77,8 +78,8 @@
           })
       },
       salir () {
-        this.$q.localStorage.remove('usuarioSILAMED')
-        this.$q.localStorage.remove('accesosSILAMED')
+        this.$q.localStorage.remove('usuarioSilaguas')
+        this.$q.localStorage.remove('accesosSilaguas')
         this.$router.push('/')
       },
       ingresar (datos) {
@@ -130,4 +131,4 @@
       }
     }
   }
-  </script>
+  </script> -->

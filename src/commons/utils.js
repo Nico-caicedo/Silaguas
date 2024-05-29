@@ -1,4 +1,4 @@
-import { Dialog, Notify, Loading, QSpinnerFacebook } from 'quasar'
+import { Dialog, Notify, Loading, QSpinnerFacebook ,date} from 'quasar'
 const Utils = {
   confirmarAccion: async (mensaje) => {
     return new Promise((resolve) => {
@@ -21,6 +21,10 @@ const Utils = {
     } else {
       return true;
     }
+  },
+
+  fechaActual() {
+    return date.formatDate(Date.now(), 'DD/MM/YYYY')
   },
 
   reglaBloqueada: (val, estado) => {
