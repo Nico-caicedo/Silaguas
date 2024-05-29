@@ -4,8 +4,9 @@
     <div class="row  justify-end q-gutter-x-lg q-ma-sm">
       <q-btn label="Grafico" style="background-color: #01B9FF;" icon="bar_chart" />
 
-      <q-btn label="Diseño" style="background-color: #BFFE00;" icon="picture_as_pdf" class="bg-alert ellipsis"
+      <q-btn style="background-color: #BFFE00;width: 35px;" icon="picture_as_pdf" class="bg-alert ellipsis"
         @click="section = 'formato'">
+        <div class="ellipsis">diseño</div>
       </q-btn>
       <q-btn label="Carta Control" v-if="rol === 'dirCalidad'" style="background-color: #01B9FF;" icon="dangerous"
         class="bg-alert" @click="section = 'cartaControl'" />
@@ -63,14 +64,14 @@
 
               <div v-if="show" class="q-gutter-y-lg col-12 col-sm-12 " style="width: 40%; height: 100%;">
                 <q-select filled v-model="Metodo" :options="MetodoSelect" label="Método"
-                  @input="Concentraciones(); VericarOpt();" />
+                @update:model-value="Concentraciones(); VericarOpt();" />
                 <div class="shadow-1 q-pa-md" style="width: 100%; height: 325px; background-color: rgb(238, 238, 238);">
                   <!-- <q-table style="height: 300px;" title="Solución Patrón" :data="rows" :columns="columns" row-key="name" /> -->
 
                   <q-scroll-area style="height: 300px;">
 
                     <q-option-group class="text-h5" :options="row" type="checkbox" v-model="groups"
-                      @input="VericarOpt" />
+                    @update:model-value="VericarOpt" />
 
 
                   </q-scroll-area>
@@ -82,9 +83,9 @@
               <div v-if="show == false" class="column items-center  q-pt-xl q-gutter-y-lg  "
                 style="width: 40%; height: 90%; ">
                 <q-select class="" style="width: 65%;" filled v-model="MetodoRPD" :options="MetodoSelect" label="Método"
-                  @input="VericarOpt" />
+                @update:model-value="VericarOpt" />
                 <q-select filled class="q-mt-xl" style="width: 65%;" v-model="matriz" :options="matrizSelect"
-                  @input="VericarOpt(); Concentraciones();" label="Tipo Matriz" />
+                @update:model-value="VericarOpt(); Concentraciones();" label="Tipo Matriz" />
               </div>
             </div>
 
