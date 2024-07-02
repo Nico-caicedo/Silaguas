@@ -6,22 +6,15 @@
         </div>
     </q-page>
 </template>
-<script>
+<script setup>
 
 import { api } from 'boot/axios'
 import utilidades from '../../commons/utilidades.js'
-import html2pdf from 'html2pdf.js'
+
 import html2canvas from 'html2canvas';
-export default {
-    data() {
-        return {
 
 
-        }
-    },
-    methods: {
-
-        Imprimir() {
+      const  Imprimir = () => {
             this.$q.loading.show()
       api.get('/usuario/imprimirOrdenEntradaPDF/', { responseType: 'arraybuffer' })
         .then(response => {
@@ -73,13 +66,8 @@ export default {
 
 
 
-// seccionCapturar, capturar
+// seccionCapturar, capturar,
 
-    },
-    created() {
-
-    }
-}
 
 
 

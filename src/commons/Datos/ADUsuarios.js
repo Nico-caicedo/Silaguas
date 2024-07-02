@@ -51,6 +51,7 @@ export default {
       return response.data;
     } catch (error) {
       utilidades.mensaje(`login - Fallo la conexión, ${error}`);
+      Loading.hide();
     }
   },
 

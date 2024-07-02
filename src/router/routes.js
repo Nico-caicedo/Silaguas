@@ -33,8 +33,8 @@ const routes = [
       {
         name: 'Dashboard',
         path: '/Administracion/Dashboard', component: () => import('pages/Administracion/Dashboard.vue')
-      }
-
+      },
+     
 
 
     ]

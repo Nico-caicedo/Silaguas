@@ -59,7 +59,7 @@ const $router = useRouter();
 
 const login = async () => {
   if (!usuario.value.Login || !usuario.value.Password) {
-    utils.Notify("Por favor, complete todos los campos", "error");
+    utilidades.Notify("Por favor, complete todos los campos", "error");
     return;
   }
   try {
@@ -67,8 +67,9 @@ const login = async () => {
     ADUsuario.login(usuario.value).then((response) => {
       var datos = response;
       if (datos.Login === null) {
+  
+        utilidades.Notify("Nombre y Password incorrectos", "advertencia");
         $q.loading.hide();
-        utils.Notify("Nombre y Password incorrectos", "advertencia");
       } else {
         $q.localStorage.set("usuarioSilaguas", datos);
         ingresar(datos);
@@ -78,12 +79,13 @@ const login = async () => {
   } catch (error) {
     utilidades.mensaje("Fail conexion - Autentication " + error);
     $q.loading.hide();
+    
   }
 };
 const ingresar = (datos) => {
   if (datos.Activo === "0") {
     utilidades.mensaje(
-      "El usuario se encuentra inactivo, consulte con el administrador del software"
+      "El usuario se encuentra inactivo, consulte con el administrador del software " 
     );
   }
   if (datos.ModpasspiUsuario === "1") {

@@ -83,9 +83,9 @@ const renderChart = (chartDom, chartData) => {
     lineStyle: {
       width: 1,
     },
-    symbolSize: 40,
-    symbol: "emptyPin",
-    smooth: false,
+    symbolSize: 0,
+    symbol: "circle",
+    smooth: true,
     series: chartData.datasets.map((dataset, index) => ({
       name: dataset.label,
       type: index === 0 || dataset.label === 'Agua Cruda' ? 'scatter' : 'line',

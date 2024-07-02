@@ -7,7 +7,7 @@ app.config.globalProperties.$axios = axios;
 
 //ip local
   const api = axios.create({ baseURL: 'https://localhost:44346/api' });
-
+  //const api = axios.create({ baseURL: 'https://localhost:63331/api' });
 // ip servaf
 //  const api = axios.create({ baseURL: 'http://192.168.137.152/WebApiSilaguas/api' });
 /* <preference name="scheme" value="https" /> */
