@@ -88,6 +88,15 @@ const renderChart = (chartDom, chartData) => {
         end: 100,
       },
     ],
+    itemStyle: {
+      borderWidth: 4,
+    },
+    lineStyle: {
+      width: 1,
+    },
+    symbolSize: 40,
+    symbol: "emptyPin",
+    smooth: false,
     series: chartData.datasets.map((dataset, index) => ({
       name: dataset.label,
       type: 'line',

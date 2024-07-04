@@ -2,7 +2,7 @@
   <q-page>
 
     <div class="row  justify-end q-gutter-x-lg q-ma-sm">
-      <q-btn label="Grafico" style="background-color: #01B9FF;" icon="bar_chart" />
+      <q-btn label="Grafico" style="background-color: #01B9FF;" icon="bar_chart" to="/Administracion/Dashboard" />
 
       <q-btn style="background-color: #BFFE00;width: 35px;" icon="picture_as_pdf" class="bg-alert ellipsis"
         @click="section = 'formato'">
@@ -157,37 +157,44 @@
     </q-page>
     <q-page style="height: 300px; min-height: unset;" v-if="section === 'resultados'">
       <resultados />
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae nam dignissimos explicabo eius voluptas veniam et est beatae numquam distinctio.
     </q-page>
   </q-page>
 </template>
 
-<script>
+<script setup>
 import { api } from 'boot/axios'
+import { ref, onMounted, computed } from "vue";
+import { date, useQuasar } from "quasar";
+import { useRouter } from 'vue-router'
 import utilidades from '../../commons/utilidades.js'
 
 import resultados from '../Administracion/ResultadosCarta.vue'
-export default {
-  // components: { formato, resultados },
-  data() {
-    return {
-      rol: "dirCalidad",
-      section: "resultados",
-      OptionGroup: [],
-      groups: [],
-      LecturaRPD: "",
-      cantidad: "",
-      shape: "Verificacion",
-      valores: [],
-      verificacion: true,
-      show: true,
-      MetodoSelect: [],
-      matrizSelect: [],
-      Metodo: "",
-      matriz: [],
-      selectedOption: null,
-      rows: [],
-      row: [],
-      columns: [
+
+
+ const components = {
+    formato, resultados
+  }
+  const $q = useQuasar();
+  const $router = useRouter();
+  const rol = ref("dirCalidad")
+  const section =  ref("resultados")
+  const OptionGroup = ref([])
+  const groups = ref([])
+  const LecturaRPD =  ref("")
+   const cantidad = ref("")
+   const  shape = ref("Verificacion")
+   const   valores = ref([])
+    const  verificacion = ref(true)
+    const  show = ref(true)
+    const  MetodoSelect = ref([])
+    const  matrizSelect = ref([])
+     const Metodo =  ref("")
+    const matriz = ref([])
+     const selectedOption = ref(null)
+     const rows = ref([])
+     const row = ref([])
+    const columns =  ref([
         {
           name: 'descripcion', align: 'center', label: 'Descripcion', field: 'descripcion', sortable: true
         },
@@ -197,43 +204,45 @@ export default {
         {
           name: 'unidad', align: 'center', label: 'Unidad Medida', field: 'unidad', sortable: true
         },
-      ],
-      usuario: [],
-      confirm: false,
-      errores: [],
-      observacion: null,
-      Tendencias: [],
-      Limites: [],
-      valoresAnteriores: [],
-      opcionSeleccionada1: false,
-      opcionSeleccionada2: false,
-      valorRPD: "",
-      mensajesAlerta: [],
-      mensajess: [],
-      valoresAnterioresO: [],
-      clavesObserva: [],
-      observacions: [],
-      inception: false,
-      Showlimite: [],
-      VerLimites: false,
-      MetodoRPD: "",
-      Repetir: 0
-    };
-  },
-  methods: {
-    activar() {
+      ])
+    const usuario = ref([])
+     const confirm = ref(false)
+     const errores = ref([])
+     const observacion = ref(null)
+     const Tendencias = ref([])
+      const Limites = ref([])
+      const valoresAnteriores = ref([])
+      const opcionSeleccionada1 = ref(false)
+      const opcionSeleccionada2 =  ref(false)
+      const valorRPD = ref("")
+      const mensajesAlert = ref([])
+      const mensajess = ref([])
+      const valoresAnterioresO =  ref([])
+      const clavesObserva =  ref([])
+      const observacions = ref([])
+      const inception = ref(false)
+      const Showlimite = ref([])
+      const VerLimites = ref(false)
+      const MetodoRPD = ref("")
+      const Repetir = ref(0)
+
+  const grafico = () =>{
+    $router("Dashboard.vue")
+  }
+
+   const activar = () => {
       // permite desactivar el botón de consultar limites
 
       let mensajesValor = '';
-      console.log('lo', this.Limites)
-      if (this.Metodo) {
-        this.inception = true;
-        for (let clave in this.Limites) {
-          if (this.Limites.hasOwnProperty(clave)) {
-            const valor = this.Limites[clave];
-
+      console.log('lo', Limites.value)
+      if (Metodo.value) {
+        inception.value = true;
+        for (let clave in Limites.value) {
+          if (Limites.value.hasOwnProperty(clave)) {
+            const valor = Limites.value[clave];
+            console.log('row',row.value[0].value.unidad)
             // Concatenar la información para cada clave
-            mensajesValor += `<strong> Solución ${clave} ${this.row[0].value.unidad}</strong><br>`;
+            mensajesValor += `<strong> Solución ${clave} ${row.value[0].value.unidad}</strong><br>`;
             mensajesValor += `LCS: ${valor.LCSresultado}` + " - " + `LCI: ${valor.LCIresultado}<br>`;
             mensajesValor += `LAS: ${valor.LASresultado}` + " - " + `LAI: ${valor.LAIresultado}<br>`;
             mensajesValor += `+1s: ${valor.MasDes}` + " / " + `-1s: ${valor.MenosDes}<br>`;
@@ -242,10 +251,10 @@ export default {
 
           }
         }
-      } else if (this.MetodoRPD) {
-        this.inception = true;
-        const limite = this.Limites[0]
-        console.log(limite)
+      } else if (MetodoRPD.value) {
+        inception.value = true;
+        const limite = Limites.value
+        console.log('LIMI',Limites.value)
         // Concatenar la información para cada objeto en el array
         mensajesValor += `<strong>Limites RPD</strong><br>`;
         mensajesValor += `LCS: ${limite.LCSresultado} <br>`;
@@ -257,57 +266,57 @@ export default {
         mensajesValor = "Sin Limites aún"
       }
 
-      this.Showlimite = mensajesValor; // Mostrar mensajesValor completo
+      Showlimite.value = mensajesValor; // Mostrar mensajesValor completo
     }
 
-    ,
-    VericarOpt() {
+
+   const VericarOpt = () => {
       // permite desactivar el botón de envío
-      if (this.groups.length > 0) {
-        this.opcionSeleccionada1 = true
+      if (groups.value.length > 0) {
+        opcionSeleccionada1.value = true
 
       } else {
-        this.opcionSeleccionada1 = false
+        opcionSeleccionada1.value = false
       }
 
 
-      if (this.Metodo) {
-        this.VerLimites = true
-      } else if (this.matriz) {
-        this.VerLimites = true
+      if (Metodo.value) {
+        VerLimites.value = true
+      } else if (matriz.value) {
+        VerLimites.value = true
       } else {
-        this.VerLimites = false
+        VerLimites.value = false
       }
 
-      if (this.MetodoRPD) {
-        this.opcionSeleccionada2 = true
+      if (MetodoRPD.value) {
+        opcionSeleccionada2.value = true
       } else {
-        this.opcionSeleccionada2 = false
+        opcionSeleccionada2.value = false
       }
 
 
-      if (this.matriz) {
-        this.opcionSeleccionada2 = true
+      if (matriz.value) {
+        opcionSeleccionada2.value = true
       } else {
-        this.opcionSeleccionada2 = false
+        opcionSeleccionada2.value = false
       }
 
-    },
-    limpiarJSON() {
+    }
+  const  limpiarJSON = () => {
 
 
       let elementosLimites = {};
 
-      for (let clave in this.Limites) {
+      for (let clave in Limites.value) {
         // Verificamos si el valor es un array
-        if (Array.isArray(this.Limites[clave])) {
+        if (Array.isArray(Limites.value[clave])) {
           // Copiamos el array interno al nuevo objeto con la misma clave
-          elementosLimites[clave] = this.Limites[clave].map(elemento => elemento);
+          elementosLimites[clave] = Limites.value[clave].map(elemento => elemento);
           // Asignamos el primer elemento del array al objeto elementosLimites bajo la misma clave
           elementosLimites[clave] = elementosLimites[clave][0];
         } else {
           // Si no es un array, simplemente asignamos el valor al nuevo objeto con la misma clave
-          elementosLimites[clave] = this.Limites[clave];
+          elementosLimites[clave] = Limites.value[clave];
         }
       }
 
@@ -318,13 +327,13 @@ export default {
       let elementosValoresAnteriores = {};
 
       // Recorrer y transformar los arrays internos en this.valoresAnteriores
-      for (let clave in this.valoresAnteriores) {
+      for (let clave in valoresAnteriores.value) {
         // Verificar si el valor es un array
-        if (Array.isArray(this.valoresAnteriores[clave])) {
+        if (Array.isArray(valoresAnteriores.value[clave])) {
           // Crear un nuevo array para almacenar los elementos
           let elementos = [];
           // Iterar sobre cada elemento del array interno
-          this.valoresAnteriores[clave].forEach((arrayInterno, indice) => {
+          valoresAnteriores.value[clave].forEach((arrayInterno, indice) => {
             // Extraer el valor correspondiente a la clave "Valor"
             let valor = arrayInterno['Valor'];
             // Agregar el valor al nuevo array
@@ -334,43 +343,43 @@ export default {
           elementosValoresAnteriores[clave] = elementos;
         } else {
           // Si no es un array, simplemente asignar el valor al nuevo objeto con la misma clave
-          elementosValoresAnteriores[clave] = this.valoresAnteriores[clave];
+          elementosValoresAnteriores[clave] = valoresAnteriores.value[clave];
         }
       }
 
-      this.valoresAnterioresO = elementosValoresAnteriores
-      this.Limites = elementosLimites
-      this.valoresAnteriores = elementosValoresAnteriores
+      valoresAnterioresO.value = elementosValoresAnteriores
+      Limites.value = elementosLimites
+      valoresAnteriores.value = elementosValoresAnteriores
 
 
       // Ahora puedes usar el array elementosAlmacenados como desees
 
-    },
-    OnSubmit() {
+    }
+  const  OnSubmit = () => {
 
 
       let valoresEmparejados = {};
 
       // Iterar sobre los grupos seleccionados
-      for (let i = 0; i < this.groups.length; i++) {
+      for (let i = 0; i < groups.value.length; i++) {
         // Comprobar si se ingresó un valor para el grupo actual
-        if (this.valores[i] !== undefined) {
+        if (valores.value[i] !== undefined) {
           // Buscar el valor correspondiente al id en this.valoresAnteriores
-          let id = this.groups[i].value;
-          let valorAnterior = this.valoresAnteriores[id];
+          let id = groups.value[i].value;
+          let valorAnterior = valoresAnteriores.value[id];
 
           // Si se encuentra el valor anterior, agregar el nuevo valor
           if (valorAnterior !== undefined) {
             // Si el valor anterior es un array, agregamos el nuevo valor a ese array
             if (Array.isArray(valorAnterior)) {
-              valorAnterior.push(this.valores[i]);
+              valorAnterior.push(valores.value[i]);
             } else {
               // Si el valor anterior no es un array, lo convertimos en uno y agregamos los valores
-              this.valoresAnteriores[id] = [valorAnterior, this.valores[i]];
+              valoresAnteriores.value[id] = [valorAnterior, valores.value[i]];
             }
           } else {
             // Si no se encuentra el valor anterior, creamos un nuevo array con el nuevo valor
-            this.valoresAnteriores[id] = [this.valores[i]];
+            valoresAnteriores.value[id] = [valores.value[i]];
           }
 
           // Agregar el valor emparejado al objeto valoresEmparejados
@@ -379,110 +388,110 @@ export default {
       }
 
       // Iterar sobre los valores anteriores para eliminar aquellos que no fueron emparejados
-      for (let key in this.valoresAnteriores) {
+      for (let key in valoresAnteriores.value) {
         if (!valoresEmparejados[key]) {
-          delete this.valoresAnteriores[key];
+          delete valoresAnteriores.value[key];
         }
       }
 
     }
-    ,
-    selectOption(option) {
-      this.shape = this.shape === option ? null : option;
 
-      if (this.shape === "RPD") {
+  const selectOption = (option) => {
+      shape.value = shape.value === option ? null : option;
+
+      if (shape.value === "RPD") {
         console.log('hola mundo')
-        this.show = false;
-        this.Metodo = ''
-        this.row = []
-        this.opcionSeleccionada1 = false;
-        this.groups = []
-        this.VerLimites = false
+        show.value = false;
+        Metodo.value = ''
+        row.value = []
+        opcionSeleccionada1.value = false;
+        groups.value = []
+        VerLimites.value = false
 
-      } else if (this.shape === "Verificacion") {
-        this.show = true;
-        this.matriz = ''
-        this.valor = ''
+      } else if (shape.value === "Verificacion") {
+        show.value = true;
+        matriz.value = ''
+        // valor.value = ''
         console.log('hola mundo dos')
-        this.opcionSeleccionada2 = false;
-        this.VerLimites = false
-        this.MetodoRPD = ''
+        opcionSeleccionada2.value = false;
+        VerLimites.value = false
+        MetodoRPD.value = ''
       }
-    },
+    }
 
-    mostrar() {
-      if (this.shape === "RPD") {
-        this.RPD = true;
-      } else if (this.shape === "Verificacion") {
-        this.verificacion = false;
+    const mostrar = () => {
+      if (shape.value === "RPD") {
+        RPD.value = true;
+      } else if (shape.value === "Verificacion") {
+        verificacion.value = false;
       }
-    },
-    ObtenerMetodos() {
-      const self = this
-      self.$q.loading.show()
-      api.get('/usuario/MostrarMetodo')
+    }
+   const ObtenerMetodos = () => {
+
+      $q.loading.show()
+      api.get('/Metodo/MostrarMetodo')
         .then((response) => {
           const listMetodo = response.data.ListMetodo;
-          self.MetodoSelect = listMetodo.map(item => ({
+          MetodoSelect.value = listMetodo.map(item => ({
             label: item.Nombre,
             id: item.IdMetodo,
           }));
 
-          self.$forceUpdate();
-          self.$q.loading.hide()
+          // $forceUpdate();
+          $q.loading.hide()
         })
         .catch((error) => {
-          utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error)
-          self.$q.loading.hide()
+          utilidades.mensaje('Tipo Identificacion1 - Fallo la conexion ' + error)
+          $q.loading.hide()
         })
-    },
-    matrices() {
-      const self = this
-      self.$q.loading.show()
-      api.get('/usuario/ListarMatrices')
-        .then((response) => {
-          const Matrices = response.data.Matrices;
+    }
+  const  matrices = () => {
 
-          self.matrizSelect = Matrices.map(item => ({
+      $q.loading.show()
+      api.get('/Matriz/ListarMatrices')
+        .then((response) => {
+          const Matrices = response.data.ListarMatrices;
+console.log(Matrices)
+          matrizSelect.value = Matrices.map(item => ({
             label: item.Nombre,
             id: item.IdTipoMatriz,
           }));
-          self.$forceUpdate();
-          self.$q.loading.hide()
+          console.log('matriz',matrizSelect)
+          // $forceUpdate();
+          $q.loading.hide()
 
         })
         .catch((error) => {
-          utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error)
-          self.$q.loading.hide()
+          utilidades.mensaje('Tipo Identificacion2 - Fallo la conexion ' + error)
+          $q.loading.hide()
         })
-    },
-    Concentraciones() {
+    }
+   const Concentraciones = () => {
 
 
 
-      this.groups = []
-      this.VericarOpt()
+      groups.value = []
+      VericarOpt()
       // this.valores = []
 
-      if (this.Metodo) {
+      if (Metodo.value) {
 
-        this.ObtenerTendencias()
-        const self = this
-        self.$q.loading.show()
-        api.post(`/usuario/CallSolPatron/${self.Metodo.id}`)
+        ObtenerTendencias()
+
+        $q.loading.show()
+        api.post(`/solucion/CallSolPatron/${Metodo.value.id}`)
           .then((response) => {
-
-            self.cantidad = response.data.response.length;
-            self.rows = response.data.response.map(item => ({
+            console.log('response',response)
+            cantidad.value = response.data.length;
+            rows.value = response.data.map(item => ({
               descripcion: item.Descripcion,
               valor: item.Concentracion,
               unidad: item.IdUnidadMedida,
               IdSolucion: item.IdSolucion,
-              LimiteInferior: item.LimiteInferior,
-              LimiteSuperior: item.LimiteSuperior,
+
             }));
 
-            self.row = response.data.response.map(item => ({
+            row.value = response.data.map(item => ({
               label: ("Concentración" + " " + item.Concentracion + " " + item.IdUnidadMedida),
               value: {
                 value: item.Concentracion,
@@ -493,46 +502,46 @@ export default {
               },
               IdSolucion: item.IdSolucion,
             }));
-            self.$q.loading.hide()
+            console.log(row)
+            $q.loading.hide()
           })
           .catch((error) => {
-            utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error)
-            self.$q.loading.hide()
+            utilidades.mensaje('Tipo Identificacion3 - Fallo la conexion ' + error)
+            $q.loading.hide()
           })
 
       }
-      if (this.MetodoRPD) {
-        this.ObtenerTendenciasRPD()
+
+      if (MetodoRPD.value) {
+        ObtenerTendenciasRPD()
       }
 
 
 
 
 
-    },
-    load() {
-      this.ObtenerMetodos();
-    },
-    ValidacionesCartVerificacion() {
-      if (this.valores.length === 0) {
-        this.triggerNegative();
+    }
+
+   const ValidacionesCartVerificacion = () => {
+      if (valores.value.length === 0) {
+        triggerNegative();
         return;
-      } else if (this.valores.length !== this.groups.length) {
-        this.AllCampos();
+      } else if (valores.value.length !== groups.value.length) {
+        AllCampos();
         return;
       }
       this.OnSubmit();
-      console.log('?', this.valoresAnteriores);
-      console.log('?', this.Limites);
+      console.log('?', valoresAnteriores.value);
+      console.log('?', Limites.value);
 
-      this.mensajesAlerta = {};
+      mensajesAlerta.value = {};
 
       // Iterar sobre los arrays de valores y limites
       for (let clave in this.valoresAnteriores) {
-        if (this.valoresAnteriores.hasOwnProperty(clave)) {
-          let valorArray = this.valoresAnteriores[clave];
-          let limiteArray = this.Limites;
-          this.clavesObserva.push(clave)
+        if (valoresAnteriores.value.hasOwnProperty(clave)) {
+          let valorArray = valoresAnteriores.value[clave];
+          let limiteArray = Limites.value;
+          clavesObserva.value.push(clave)
           // Verificar si valorArray es un objeto
           if (typeof valorArray === 'object' && valorArray !== null) {
             // Acceder al valor que escribio el usuario
@@ -562,15 +571,15 @@ export default {
             }
 
             // Validar el orden de los últimos 5 valores
-            if (this.verificarOrdenAscendente(this.obtenerUltimosNValores(valorArray, 5))) {
+            if (verificarOrdenAscendente(obtenerUltimosNValores(valorArray, 5))) {
               mensajesValor.push(' Los últimos 5 valores no están en orden ascendente. ');
             }
-            if (this.verificarOrdenDescendente(this.obtenerUltimosNValores(valorArray, 5))) {
+            if (verificarOrdenDescendente(obtenerUltimosNValores(valorArray, 5))) {
               mensajesValor.push(' Los últimos 5 valores no están en orden descendente. ');
             }
 
             // Validar si los últimos 5 valores superan la media
-            const ultimos5Valores = this.obtenerUltimosNValores(valorArray, 5);
+            const ultimos5Valores = obtenerUltimosNValores(valorArray, 5);
             const cantidadValoresSuperan = ultimos5Valores.filter(valor => valor > limite.MasDes && valor < limite.LASresultado).length;
             const cantidadValoresMenores = ultimos5Valores.filter(valor => valor < limite.MenDes && valor > limite.LASresultado).length;
 
@@ -590,66 +599,65 @@ export default {
       }
 
       // Mostrar ventana de alerta con los mensajes de alerta y abrir las ventanas de observación
-      if (Object.keys(this.mensajesAlerta).length > 0) {
-        this.mostrarAlertaConObservacion(this.mensajesAlerta);
+      if (Object.keys(mensajesAlerta.value).length > 0) {
+        mostrarAlertaConObservacion(mensajesAlerta.value);
       } else {
-        this.insertCartVerificacion()
+        insertCartVerificacion()
       }
     }
-    ,
 
-    ValidacionesCartRPD() {
+  const ValidacionesCartRPD = () => {
 
-      const fecha = this.obtenerFecha()
-
+      const fecha = obtenerFecha()
 
 
-      if (this.LecturaRPD.length === 0) {
-        this.triggerNegative();
+
+      if (LecturaRPD.value.length === 0) {
+        triggerNegative();
         console.log('rpd')
         return;
       }
 
 
-      const data = {
-        IdMetodo: this.MetodoRPD.id,
-        IdTipoMatriz: this.matriz.id,
-        Lectura: this.LecturaRPD,
-        Login: this.usuario.Login
+      const data =  {
+        IdMetodo: MetodoRPD.value.id,
+        IdTipoMatriz: matriz.value.id,
+        Lectura: LecturaRPD.value,
+        Login: usuario.value.Login
       }
 
       console.log(data)
-      const self = this;
-      self.$q.loading.show();
+
+      $q.loading.show();
       api.post('/usuario/InsertLecturaRPD', data)
         .then((response) => {
 
-          var LCS = this.Limites[0].LCSresultado;
+          var LCS = Limites.value[0].LCSresultado;
           LCS *= 0.90;
 
-          self.$q.loading.hide();
+          $q.loading.hide();
 
           if (response.data >= 0) {
-            this.SendCheck()
+            SendCheck()
             // this.LimpiarDatosRPD()
-            this.valorRPD = response.data
-            this.insertarCartRPD()
+            valorRPD.value = response.data
+            insertarCartRPD()
           }
           if (response.data < 0) {
-            this.SendCheck()
-            this.LimpiarDatosRPD()
+            SendCheck()
+            LimpiarDatosRPD()
           }
 
-          if (this.valorRPD > LCS) {
-            this.Repetir = 1
-            this.alertRPD();
+          if (valorRPD.value > LCS) {
+            Repetir.value = 1
+            alertRPD();
           }
 
 
         })
         .catch((error) => {
           console.log('err', error)
-          const errorMessage = `Ya has ingresado las Lecturas Diarias para el Método ${this.MetodoRPD.label} con Matriz ${this.matriz.label}.`;
+          const errorMessage = `Ya has ingresado las Lecturas Diarias para el Método ${MetodoRPD.value.label} con Matriz ${this.matriz.label}.`;
           const options = {
             color: 'negative',
             message: errorMessage,
@@ -657,9 +665,9 @@ export default {
             timeout: 5000, // Tiempo en milisegundos para que el mensaje desaparezca automáticamente
             actions: [{ label: 'OK', color: 'white' }] // Botón de acción para cerrar el mensaje
           };
-          this.$q.notify(options); // Muestra la notificación con el mensaje formateado
-          self.$q.loading.hide();
-          this.LimpiarDatosRPD()
+          $q.notify(options); // Muestra la notificación con el mensaje formateado
+          $q.loading.hide();
+          LimpiarDatosRPD()
         });
 
 
@@ -733,17 +741,17 @@ export default {
       // } else {
       //   this.insertCartVerificacion()
       // }
-    },
-    LimpiarDatosRPD() {
-      this.MetodoRPD = ""
-      this.matriz = ""
-      this.LecturaRPD = ""
-      this.Limites = ""
-      this.VerLimites = false
-      this.opcionSeleccionada2 = false
     }
-    ,
-    mostrarAlertaConObservacion(mensajesPorValor) {
+   const LimpiarDatosRPD = () => {
+      MetodoRPD.value = ""
+      matriz.value = ""
+      LecturaRPD.value = ""
+      Limites.value = ""
+      VerLimites.value = false
+      opcionSeleccionada2.value = false
+    }
+
+   const mostrarAlertaConObservacion = (mensajesPorValor) =>{
       let mensajes = '';
       for (const valor in mensajesPorValor) {
         if (mensajesPorValor.hasOwnProperty(valor)) {
@@ -753,7 +761,7 @@ export default {
         }
       }
 
-      this.$q.dialog({
+      $q.dialog({
         title: 'Alerta',
         message: mensajes,
         html: true, // Indicar a Vue que interprete el mensaje como HTML
@@ -769,24 +777,24 @@ export default {
         persistent: true
       }).onOk(() => {
         // Llamada para abrir las ventanas de observación
-        this.abrirVentanasObservacion();
+        abrirVentanasObservacion();
       }).onCancel(() => {
         // console.log('>>>> Cancel')
         console.log('cancelo valor')
-        this.valoresAnteriores = this.valoresAnterioresO
+        valoresAnteriores.value = valoresAnterioresO.value
       });
-    },
+    }
 
 
-    abrirVentanasObservacion() {
+ const abrirVentanasObservacion = () => {
       let promesaObservaciones = Promise.resolve();
-      let totalVentanas = Object.keys(this.mensajesAlerta).length; // Número total de ventanas esperadas
+      let totalVentanas = Object.keys(mensajesAlerta.value).length; // Número total de ventanas esperadas
       let ventanasAbiertas = 0; // Contador de ventanas abiertas
 
       // Verificar si this.mensajesAlerta es un objeto y no está vacío
-      if (typeof this.mensajesAlerta === 'object' && totalVentanas > 0) {
+      if (typeof mensajesAlerta.value === 'object' && totalVentanas > 0) {
         // Iterar sobre los valores del objeto mensajesAlerta
-        Object.values(this.mensajesAlerta).forEach(mensajes => {
+        Object.values(mensajesAlerta.value).forEach(mensajes => {
           promesaObservaciones = promesaObservaciones.then(() => {
             return this.mostrarVentanaObservacion(mensajes).then(() => {
               ventanasAbiertas++; // Incrementar el contador de ventanas abiertas
@@ -794,8 +802,8 @@ export default {
               if (ventanasAbiertas === totalVentanas) {
 
                 // Ejecutar otras acciones después de abrir todas las ventanas
-                this.ordenarObservacion();
-                this.insertCartVerificacion();
+                ordenarObservacion();
+                insertCartVerificacion();
               }
             });
           });
@@ -806,11 +814,11 @@ export default {
       }
 
 
-    },
+    }
 
-    mostrarVentanaObservacion(mensaje) {
+  const mostrarVentanaObservacion = (mensaje) =>{
       return new Promise((resolve, reject) => {
-        this.$q.dialog({
+        $q.dialog({
           title: 'Observación',
           message: mensaje,
           prompt: {
@@ -820,7 +828,7 @@ export default {
           cancel: true,
           persistent: true
         }).onOk(data => {
-          this.mensajess.push(data),
+          mensajess.value.push(data),
 
             resolve();
         }).onCancel(() => {
@@ -833,63 +841,63 @@ export default {
 
 
 
-    },
-    verificarOrdenAscendente(valores) {
+    }
+   const verificarOrdenAscendente = (valores) =>{
       for (let i = 0; i < valores.length - 1; i++) {
         if (valores[i] > valores[i + 1]) {
           return false;
         }
       }
       return true;
-    },
+    }
 
-    verificarOrdenDescendente(valores) {
+   const verificarOrdenDescendente = (valores) =>{
       for (let i = 0; i < valores.length - 1; i++) {
         if (valores[i] < valores[i + 1]) {
           return false;
         }
       }
       return true;
-    },
+    }
 
-    obtenerUltimosNValores(array, n) {
+   const obtenerUltimosNValores = (array, n) =>{
       return array.slice(Math.max(array.length - n, 0));
-    },
-    ordenarObservacion() {
+    }
+  const ordenarObservacion = () => {
 
       let observacionesPorClave = {};
-      for (let i = 0; i < this.clavesObserva.length; i++) {
-        let clave = this.clavesObserva[i];
-        if (this.mensajess[i]) {
-          observacionesPorClave[clave] = this.mensajess[i];
+      for (let i = 0; i < clavesObserva.value.length; i++) {
+        let clave = clavesObserva.value[i];
+        if (mensajess.value[i]) {
+          observacionesPorClave[clave] = mensajess.value[i];
         }
       }
 
-      this.observacions = observacionesPorClave
-      console.log(this.observacions)
+      observacions.value = observacionesPorClave
+      console.log(observacions.value)
       // Utilizar observacionesPorClave en lugar de mensajess si necesitas los mensajes asociados con las claves
 
-    },
+    }
 
-    insertCartVerificacion() {
+    const insertCartVerificacion = () => {
       // Iterar sobre cada fila de datos
-      const data = this.groups.map((item, index) => {
+      const data = groups.value.map((item, index) => {
         const IdSolucionPatron = item.id;
-        const valor = this.valores[index];
+        const valor = valores.value[index];
         const clave = item.valor;
 
 
         // Obtener la observación asociada al valor específico
         let observacion = null;
-        if (this.observacions.hasOwnProperty(clave)) {
-          observacion = this.observacions[clave];
+        if (observacions.value.hasOwnProperty(clave)) {
+          observacion = observacions.value[clave];
         }
 
         return {
           IdSolucionPatron: IdSolucionPatron,
           valor: valor,
           Observacion: observacion,
-          Login: this.usuario.Login
+          Login: usuario.value.Login
         };
       });
 
@@ -922,43 +930,43 @@ export default {
       //     self.$q.loading.hide();
       //   });
 
-      this.Metodo = "";
-      this.row = []
-      this.rows = [];
-      this.valores = [];
-      this.groups = []
+      Metodo.value = "";
+      row.value = []
+      rows.value = [];
+      valores.value = [];
+      groups.value = []
       console.log(data);
-      console.log(this.usuario);
+      console.log(usuario.value);
 
-    },
-    insertarCartRPD(valor) {
+    }
+   const insertarCartRPD = (valor) => {
 
 
       const data = {
-        IdMetodo: this.MetodoRPD.id,
-        IdTipoMatriz: this.matriz.id,
+        IdMetodo: MetodoRPD.value.id,
+        IdTipoMatriz: matriz.value.id,
         valor: valor,
-        Observacion: this.observacion,
-        Login: this.usuario.Login,
-        Repetir: this.Repetir
+        Observacion: observacion.value,
+        Login: usuario.value.Login,
+        Repetir: Repetir.value
       }
       console.log('RPD', data)
-      const self = this;
-      self.$q.loading.show();
+
+      $q.loading.show();
       api.post('/usuario/guardarCartRPD', data)
         .then((response) => {
 
-          self.$q.loading.hide();
-          this.LimpiarDatosRPD()
+          $q.loading.hide();
+          LimpiarDatosRPD()
         })
         .catch((error) => {
-          utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
-          self.$q.loading.hide();
-          this.LimpiarDatosRPD()
+          utilidades.mensaje('Tipo Identificacion4 - Fallo la conexion ' + error);
+          $q.loading.hide();
+          LimpiarDatosRPD()
         });
     }
-    ,
-    obtenerFecha() {
+
+ const obtenerFecha = () => {
       const fechaActual = new Date();
       const year = fechaActual.getFullYear();
       const month = String(fechaActual.getMonth() + 1).padStart(2, '0');
@@ -967,39 +975,39 @@ export default {
       return fechaFormateada;
     }
 
-    ,
-    triggerNegative() {
-      this.$q.notify({
+
+  const  triggerNegative = ()=> {
+      $q.notify({
         type: 'negative',
         message: `Debe ingresar al menos un valor.`
       })
     }
-    ,
-    AllCampos() {
-      this.$q.notify({
+
+ const  AllCampos = ()=> {
+      $q.notify({
         type: 'negative',
         message: `Debe rellenar todos los campos seleccionados.`
       })
-    },
-    Campos() {
-      this.$q.notify({
+    }
+    const Campos = () =>{
+      $q.notify({
         type: 'positive',
         message: `campos llenos`
       })
-    },
-    SendCheck() {
-      this.$q.notify({
+    }
+   const SendCheck  = () =>{
+      $q.notify({
         type: 'positive',
         message: `Lectura guardada exitosamente`
       })
     }
-    ,
-    mostrarDialogoErrores() {
-      this.$q.dialog({
+
+  const  mostrarDialogoErrores = () => {
+      $q.dialog({
         title: '<h5 class="prueba" >¡¡ALERTA!!</h5>',
         message: `
 
-        <p>${this.errores.join('<br>')}</p><br>
+        <p>${errores.value.join('<br>')}</p><br>
 
       `,
         class: "prueba",
@@ -1019,20 +1027,20 @@ export default {
         },
         persistent: true,
       }).onOk(() => {
-        this.confirm = true;
-        this.valores = [];
+        confirm.value = true;
+        valores.value = [];
       });
 
-    },
+    }
 
-    alertRPD() {
+   const alertRPD = () => {
       let seconds = 5
 
-      const dialog = this.$q.dialog({
+      const dialog = $q.dialog({
         title: 'El valor final ha superado el LCS',
         message: `Acontinuación ingrese la observación`
       }).onOk(() => {
-        this.ObservacionRPD()
+        ObservacionRPD()
       }).onCancel(() => {
         // console.log('Cancel')
       }).onDismiss(() => {
@@ -1046,15 +1054,15 @@ export default {
         if (seconds > 0) {
           clearInterval(timer)
           dialog.hide()
-          this.ObservacionRPD()
+          ObservacionRPD()
         }
       }, 3000)
-    },
-    ObservacionRPD() {
-      this.$q.dialog({
+    }
+   const ObservacionRPD = () => {
+      $q.dialog({
         title: 'OBSERVACIÓN',
-        message: 'Escriba la observación para el valor ' + this.valorRPD + ' del Método '
-          + this.MetodoRPD.label + ' con la matríz ' + this.matriz.label,
+        message: 'Escriba la observación para el valor ' + valorRPD.value + ' del Método '
+          + MetodoRPD.value.label + ' con la matríz ' + matriz.value.label,
         prompt: {
           model: '',
           isValid: val => val.length >= 0, // << here is the magic
@@ -1063,47 +1071,48 @@ export default {
         cancel: true,
         persistent: true
       }).onOk(data => {
-        this.observacion = data;
-        this.insertarCartRPD(this.valorRPD)
-        this.LimpiarDatosRPD()
+        observacion.value = data;
+        insertarCartRPD(valorRPD.value)
+        LimpiarDatosRPD()
       })
     }
-    ,
-    ObtenerTendencias() {
 
-      const fechaFormateada = this.obtenerFecha();
+  const ObtenerTendencias = () => {
+
+      const fechaFormateada = obtenerFecha();
 
       // Accediendo a this.Metodo.id, se supone que deberías usar el await ya que api.get() es asíncrono.
       // Además, es recomendable verificar que this.Metodo exista antes de intentar acceder a sus propiedades.
-      if (this.Metodo && this.Metodo.id) {
+      if (Metodo.value && Metodo.value.id) {
         const data = {
-          IdMetodo: this.Metodo.id,
+          IdMetodo: Metodo.value.id,
           Fecha: "2024-02-10" // Usar la fecha actual formateada
         };
-        console.log(data)
-        const self = this;
-        self.$q.loading.show();
-        api.post('/usuario/ObtenerTendencias', data)
+
+
+        $q.loading.show();
+        api.post('/grafico/ObtenerTendencias', data)
           .then((response) => {
 
             const datos = response
-            this.valoresAnteriores = datos.data.ValoresAnteriores
-            console.log('valores prueba', this.valoresAnteriores)
-            this.Limites = datos.data.EstadisticasMensuales
-            console.log(this.Limites)
-            this.limpiarJSON()
+            console.log('responsee',response)
+            valoresAnteriores.value = datos.data.ValoresAnteriores
+            console.log('valores prueba', valoresAnteriores.value)
+            Limites.value = datos.data.EstadisticasMensuales
+            console.log('lll',Limites.value)
+            limpiarJSON()
 
-            self.$q.loading.hide();
+            $q.loading.hide();
           })
           .catch((error) => {
-            utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
-            self.$q.loading.hide();
+            utilidades.mensaje('Tipo Identificacion5 - Fallo la conexion ' + error);
+            $q.loading.hide();
           });
       } else {
         console.error('El objeto Metodo verificacion o su propiedad id es nulo o indefinido.');
       }
-    },
-    ObtenerTendenciasRPD() {
+    }
+  const  ObtenerTendenciasRPD = () => {
       const fechaActual = new Date();
       const year = fechaActual.getFullYear();
       const month = String(fechaActual.getMonth() + 1).padStart(2, '0');
@@ -1112,28 +1121,29 @@ export default {
 
       // Accediendo a this.Metodo.id, se supone que deberías usar el await ya que api.get() es asíncrono.
       // Además, es recomendable verificar que this.Metodo exista antes de intentar acceder a sus propiedades.
-      if (this.MetodoRPD && this.MetodoRPD.id) {
+      if (MetodoRPD.value && MetodoRPD.value.id) {
         const data = {
-          IdMetodo: this.MetodoRPD.id,
+          IdMetodo: MetodoRPD.value.id,
           Fecha: "2024-01-10" // Usar la fecha actual formateada
         };
         console.log(data)
-        const self = this;
-        self.$q.loading.show();
-        api.post('/usuario/ObtenerTendenciasRPD', data)
+
+        $q.loading.show();
+        api.post('/grafico/ObtenerTendenciasRPD', data)
           .then((response) => {
 
             const datos = response
-            this.valoresAnteriores = datos.data.ValoresAnteriores
-            this.Limites = datos.data.EstadisticasMensuales
-            console.log('limites', this.Limites)
-            this.limpiarJSON()
+            console.log('rpd',response)
+            valoresAnteriores.value = datos.data.ValoresAnteriores
+            Limites.value = datos.data.EstadisticasMensuales[0]
+            console.log('limitessss', Limites.value)
+            limpiarJSON()
 
-            self.$q.loading.hide();
+            $q.loading.hide();
           })
           .catch((error) => {
-            utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
-            self.$q.loading.hide();
+            utilidades.mensaje('Tipo Identificacion6 - Fallo la conexion ' + error);
+            $q.loading.hide();
           });
       } else {
         console.error('El objeto Metodo o su propiedad id es nulo o indefinido.');
@@ -1141,23 +1151,23 @@ export default {
     }
 
 
-  },
+onMounted(()=>{
 
-  mounted() {
 
-    const value = this.$q.localStorage.getItem('usuarioSilaguas')
+  const value = $q.localStorage.getItem('usuarioSilaguas')
     if (value) {
-      this.usuario = value
+      usuario.value = value
       // this.limpiarTercero()
     }
     // utilidades.verificarUsuario(this.usuario.Login, this)
-  },
-  created() {
-    this.ObtenerMetodos();
-    this.matrices();
-    // this.ObtenerTendencias();
-  },
-};
+    ObtenerMetodos();
+    matrices();
+
+})
+
+
+
+
 </script>
 
 <style scoped>

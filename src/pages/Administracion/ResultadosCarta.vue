@@ -31,7 +31,7 @@
       <p class="text-h6">Fecha:</p>
       <p class="">{{ Fecha }}</p>
     </div>
-
+ 
   </div>
   <div class="row justify-around q-mb-sm q-mr-xs" style="width: 100%;  width: 100%;">
     <!-- hacer funcion para marcar todos los resultados -->
@@ -140,6 +140,7 @@ import utilidades from '../../commons/utilidades.js'
 export default {
   data() {
     return {
+      Ruta: 'http://192.168.1.103:3000/ImagenesActulizacion/2024Img0000030informe.jpg',
       val: false,
       color: 'green',
       usuario: '',
@@ -188,6 +189,39 @@ export default {
     }
   },
   methods: {
+    Descarga() {
+  try {
+    if (!this.Ruta) {
+      this.$q.notify({
+        type: 'negative',
+        message: 'La ruta del archivo no está definida.',
+        position: 'bottom-right'
+      });
+      return;
+    }
+
+    const a = document.createElement('a');
+    a.href = 'file:///E:/pexels-liane-cumming-224181355-15045083.jpg';
+    a.target = '_blank'
+    const fileName = this.Ruta.split('/').pop();
+    a.download = ''; // Nombre del archivo a descargar
+
+    // Agregar el elemento <a> al DOM y simular clic para descargar
+    document.body.appendChild(a);
+    a.click();
+
+    // Eliminar el elemento <a> del DOM después de la descarga
+    document.body.removeChild(a);
+  } catch (error) {
+    console.error('Error al descargar el archivo:', error);
+    this.$q.notify({
+      type: 'negative',
+      message: 'Error al descargar el archivo: ' + error.message,
+      position: 'bottom-right'
+    });
+  }
+}
+,
     toggleMarcado() {
       // Si hay algún checkbox marcado, desmárcalo; de lo contrario, marca todos los checkboxes
       this.IdsAprobar = true
@@ -232,7 +266,7 @@ export default {
       if (this.datosCartas.TipoCarta === 'CCRPD') {
         const self = this;
         self.$q.loading.show();
-        api.post('/usuario/CallCartas', this.datosCartas)
+        api.post('/usuarios/CallCartas', this.datosCartas)
           .then((response) => {
 
 
@@ -270,7 +304,7 @@ export default {
 
         const self = this;
         self.$q.loading.show();
-        api.post('/usuario/CallCartas', this.datosCartas)
+        api.post('/usuarios/CallCartas', this.datosCartas)
           .then((response) => {
 
 
@@ -326,7 +360,7 @@ export default {
         console.log('poo', item)
         const self = this;
         self.$q.loading.show();
-        api.post('/usuario/CallValoresCarta', datos)
+        api.post('/usuarios/CallValoresCarta', datos)
           .then((response) => {
 
 
@@ -379,7 +413,7 @@ export default {
 
         const self = this;
         self.$q.loading.show();
-        api.post('/usuario/CallValoresCarta', datos)
+        api.post('/usuarios/CallValoresCarta', datos)
           .then((response) => {
 
 
@@ -423,7 +457,7 @@ export default {
           };
         });
 
-        api.post('/usuario/AprobarRPD', dataToSend)
+        api.post('/usuarios/AprobarRPD', dataToSend)
           .then((response) => {
             self.callResult(this.DatosRecarga);
             this.IdsAprobar = []
@@ -459,7 +493,7 @@ export default {
       // this.ShowObservacion = true
 
       
-      api.post('/usuario/CallObservacion',this.DatosRecarga)
+      api.post('/usuarios/CallObservacion',this.DatosRecarga)
           .then((response) => {
 
             this.DatosObservacion = response.data[0];
@@ -479,7 +513,7 @@ export default {
       // this.ShowObservacion = true
 
       
-      api.post('/usuario/InsertObservacion',this.DatosRecarga)
+      api.post('/usuarios/InsertObservacion',this.DatosRecarga)
           .then((response) => {
             this.showNotif()
             this.CargarCartas()

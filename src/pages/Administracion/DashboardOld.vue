@@ -51,14 +51,14 @@
       <div class="row justify-center items-center container">
         <div class="col">
           <Pie v-if="loaded" :key="keyToRerender" :dataPie="dataPie" :optionspie="optionspie"
-            style="max-height: 500px max-width:300px;" />
+            style="max-height: 500px ;max-width:300px;" />
         </div>
 
       </div>
       <div class="row justify-center items-center container">
         <div class="col">
           <Pie v-if="loaded" :key="keyToRerender" :dataPie="dataPiedos" :optionspie="optionspie"
-            style="max-height: 500px max-width:300px;" />
+            style="max-height: 500px ;max-width:300px;" /> 
         </div>
       </div>
       <div class="col justify-center items-center container">
