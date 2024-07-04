@@ -3,16 +3,35 @@ import { api } from 'boot/axios';
 
 
 export default {
-  async obtenerDatosGraficos(data, id, Fecha) {
-    console.log('api', data, id, Fecha)
+  async generarPdfGrafica(filtro) {
     try {
-      const response = await api.get(`obtenerDatosGraficos/${data}/${id}/${Fecha}`);
-      return response
+      const response = await api.get('pdf/pdf-cartas', {
+        params: filtro,
+        responseType: 'arraybuffer'
+      });
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const blobURL = URL.createObjectURL(blob);
+      window.open(blobURL);
+
     } catch (error) {
-      console.error('Error al obtener los datos gráficos:', error);
+      console.error('Error generando PDF:', error);
       throw error;
     }
   },
+
+
+
+  // async obtenerDatosGraficos(data, id, Fecha) {
+  //   console.log('api', data, id, Fecha)
+  //   try {
+  //     const response = await api.get(`obtenerDatosGraficos/${data}/${id}/${Fecha}`);
+  //     return response
+  //   } catch (error) {
+  //     console.error('Error al obtener los datos gráficos:', error);
+  //     throw error;
+  //   }
+  // },
 
   async obtenerSolucionPatron() {
     try {

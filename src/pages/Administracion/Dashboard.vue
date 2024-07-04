@@ -20,61 +20,60 @@
         class="row justify-between items-center justify-stretch q-gutter-xs col-xs-12 col-sm-12 col-md col-xl col-lg-4">
         <div class="col q-gutter-xs">
           <Select @FiltroSeleccionado="obtenerCarta" :Fecha="Fecha" :disable="disable" :clearable="clearable"
-            :options="optionsselect" :label="labelselect" class="ellipsis-3-lines col shadow-1"
-            style="border-radius: 100px;" />
+            :options="optionsselect" :label="labelselect" class="col"
+             />
           <Select @FiltroSeleccionado="obtenerTipoMatriz" :Fecha="Fecha" :disable="disableMatriz"
-            :clearable="clearableMatriz" :options="optionsMatriz" :label="labelMatriz" class="ellipsis-3-lines col"
-            style="border-radius: 100px;" />
+            :clearable="clearableMatriz" :options="optionsMatriz" :label="labelMatriz" class="ellipsis-lines col"
+             />
         </div>
         <div class="col q-gutter-xs">
           <Select @FiltroSeleccionado="obtenerSolucionPatron" :Fecha="Fecha" :disable="disableSolucion"
             :clearable="clearableSolucion" :options="optionsSolucion" :label="labelSolucion" class="col "
-            style="border-radius: 100px;" />
+             />
           <Select @FiltroSeleccionado="obtenerMetodos" :Fecha="Fecha" :disable="disableMetodo"
             :clearable="clearableMetodo" :options="optionsMetodo" :label="labelMetodo"
-            class="ellipsis-3-lines col shadow-1" style="border-radius: 100px;" />
+            class="ellipsis-lines col"  />
         </div>
         <div class="col q-gutter-xs">
           <SelectCalendar @FiltroSeleccionado="obtenerFecha" :tipoCarta="tipoCarta" :solucion="solucionCarta"
-            :metodo="metodoCarta" :matriz="matrizCarta" class="column" style="border-radius: 100px;" />
+            :metodo="metodoCarta" :matriz="matrizCarta"  />
+            <q-btn icon="download" label="" @click="confirmarPdf" color="green" outline align="center" class="col row ellipsis">
+              <q-tooltip transition-show="scale" transition-hide="scale" class="bg-grey-10 text-white shadow-4">
+                Descargar pdf
+              </q-tooltip>
+            </q-btn>
         </div>
+
       </div>
     </div>
-    <!-- <div class="row  justify-center  text-center q-col-gutter-xs">
-      <div class="col  col-xs-12 col-sm-12 col-md col-xl col-lg">
-        <Echart  v-if="loaded" :key="keyToRerender" :chartData="lineChartData" :chartOptions="chartOptions" />
-      </div>
-        <div class="col  col-xs-12 col-sm-12 col-md col-xl col-lg">
-           <Line v-if="loaded" :key="keyToRerender" :chartData="lineChartData" :chartOptions="chartOptions" />
-      </div>
-    </div> -->
+
     <!-- seccion componenete grafico lineal -->
-    <div class="row  justify-center  text-center q-col-gutter-xs">
-      <div class="col  col-xs-12 col-sm-12 col-md col-xl col-lg">
-        <Echart v-if="loaded" :key="keyToRerender" :chartData="lineChartData" />
+    <div class="row justify-center text-center q-col-gutter-xs">
+      <div class="col row col-xs-12 col-sm-12 col-md">
+        <Echart class="col row" if="loaded" :key="keyToRerender" :chartData="lineChartData" />
       </div>
-      <!-- seccion componenete observaciones -->
-      <div class="col row col-xs-12 col-sm col-md-3 col-xl-3 col-lg-4">
+      <!-- <div class="col row col-xs-12 col-sm col-md-3 col-xl-3 col-lg-4">
         <ListItems v-if="loaded" :key="keyToRerender" :List="List" :Fecha="Fecha" />
-      </div>
+      </div> -->
     </div>
     <!-- seccion componenete observacion general -->
     <div class="row justify-center  text-center q-col-gutter-xs">
       <div class="row col-xs-12 col-sm col-md col-xl col-lg">
-        <CardObservacion v-if="loaded" :key="keyToRerender" :ObservacionProps="Observacion" :hayDatos="hayDatos"
+        <ListItems v-if="loaded" :key="keyToRerender" :List="List" :Fecha="Fecha" />
+        <!-- <CardObservacion v-if="loaded" :key="keyToRerender" :ObservacionProps="Observacion" :hayDatos="hayDatos"
           :hayCarta="tipoCarta" :Filtro="Filtro" :haySolucion="solucionCarta" :hayMetodo="metodoCarta"
           :hayMatriz="matrizCarta" @guardarObservacion="registrarObservacionGeneral"
-          @ActualizarObservacion="actualizarObservacionGeneral" />
+          @ActualizarObservacion="actualizarObservacionGeneral" /> -->
       </div>
        <!-- seccion componenete contadores -->
-      <div class="row q-gutter-y-xs col-xs-12 col-sm-12 col-md col-xl col-lg">
+      <div class="row q-gutter-y-xs col col-xs-12 col-sm-12 col-md col-xl col-lg">
         <Knob v-for="(valor, nombre) in ContadorFilas" :Nombre="nombre" :valor="valor" :key="nombre" />
       </div>
        <!-- seccion componenete graficos torta -->
-      <div class="row col-xs-12 col-sm col-md col-xl col-lg-4">
+      <div class="row col-xs-12 col-sm col-md col-xl col-lg">
         <Pie v-if="loaded" :key="keyToRerender" :dataPie="dataPie" :optionspie="optionspie" class="col-grow" />
       </div>
-      <div class="row col-xs-12 col-sm col-md col-xl col-lg-4">
+      <div class="row col-xs-12 col-sm col-md col-xl col-lg">
         <Pie v-if="loaded" :key="keyToRerender" :dataPie="dataPiedos" :optionspie="optionspie" />
       </div>
     </div>
@@ -100,6 +99,7 @@ import ListItems from 'src/components/ListItemsComponents.vue';
 import CardObservacion from 'src/components/CardObservacionComponent.vue'
 // servicio api graficos
 import ApiService from 'src/commons/Datos/ADDashboard.js';
+import { api } from 'src/boot/axios';
 
 const $q = useQuasar();
 const keyToRerender = ref(true);
@@ -150,6 +150,9 @@ const optionspie = {
   maintainAspectRatio: true,
 };
 
+
+
+
 // Funciones de utilidad
 const getColorByNombre = (backgroundcolor) => {
   const colorMap = {
@@ -174,6 +177,8 @@ const getIconByNombre = (icon) => {
   };
   return iconMap[icon] || "";
 }
+
+
 
 // Funciones para obtener y manejar datos
 const obtenerCarta = async (carta, fecha) => {
@@ -333,6 +338,7 @@ const obtenerFecha = async (data, dia, mes, año, solucion, metodo, matriz) => {
     await obtenerObservacione(filtro);
     await obteneObservacionGeneral(filtro);
     await obtenerAprobadosYverficados(filtro);
+    // await confirmarPdf(filtro);
     // await actualizarObservacionGeneral(filtro);
     Filtro.value = filtro;
   } catch (error) {
@@ -341,6 +347,67 @@ const obtenerFecha = async (data, dia, mes, año, solucion, metodo, matriz) => {
     $q.loading.value = false;
   }
 }
+
+
+const confirmarPdf = async () => {
+  const filtrocarta = Filtro.value;
+  try {
+    if (lineChartData.value.datasets && lineChartData.value.datasets.length > 0 && Filtro.value.Metodo != "") {
+    $q.dialog({
+      title: `<span class="text-bold text-blue-10 rounded-borders text-uppercase text-italic bg-grey flex flex-center inset-shadow" >Silaguas</span>`,
+      dark: true,
+      message: `<hr style="color:1px dashed red;">
+          <p class="q-pa-xs text-subtitle1 text-center">¿Seguro de Generar Pdf?</p>
+      `,
+      ok: {
+        label: "Si",
+        color: "blue-10",
+        textColor: "white",
+        style: {
+          margin: "",
+          border: "1px dashed lightblue",
+          background: "shadow-1",
+        },
+      },
+      dark: false,
+      html: true,
+      style: {
+        border: "1px dashed blue",
+        background: "shadow-1",
+      },
+      cancel: {
+        label: "No",
+        color: "red-6",
+        textColor: "white",
+        style: {
+          margin: "",
+          border: "1px dashed red",
+          background: "shadow-1",
+        },
+      },
+      persistent: true,
+    })
+      .onOk(async () => {
+        await generarPdfGrafica(filtrocarta);
+      })
+      .onCancel(() => { });
+    }else {
+      utilidades.mensaje("Sin Datos en el Grafico Principal :)");
+    }
+  } catch (error) {
+    utilidades.mensaje("error en confirmacion de generar pdf cartas" + error);
+  }
+};
+
+const generarPdfGrafica = async (filtro) => {
+  try {
+    await ApiService.generarPdfGrafica(filtro);
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+  }
+};
+
+
 
 const obtenerAnalisisDatos = async (filtro) => {
   $q.loading.value = true;
@@ -486,4 +553,4 @@ const hayDatos = computed(() => {
   return Object.keys(List.value).length > 0;
 });
 </script>
-src/commons/Datos/ApiService
+

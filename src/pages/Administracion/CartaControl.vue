@@ -164,10 +164,10 @@
 <script>
 import { api } from 'boot/axios'
 import utilidades from '../../commons/utilidades.js'
-import formato from '../Administracion/DisenoPdf.vue'
+
 import resultados from '../Administracion/ResultadosCarta.vue'
 export default {
-  components: { formato, resultados },
+  // components: { formato, resultados },
   data() {
     return {
       rol: "dirCalidad",

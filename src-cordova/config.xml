@@ -9,5 +9,4 @@
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-navigation href="about:*" />
-    <preference name="scheme" value="http" />
 </widget>

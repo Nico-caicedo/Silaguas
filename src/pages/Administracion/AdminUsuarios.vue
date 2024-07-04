@@ -89,11 +89,10 @@
                   </template>
                 </q-select>
 
-                <q-select filled v-model="filtroBuscaTercero" class="col-xs-12 col-sm col-md q-field--with-bottom"
-                  map-options emit-value option-value="tercero" option-label="Identificacion" :options="listaTerceros"
+                <q-select filled v-model="filtroBuscaTercero" class="col-xs-12 col-sm col-md q-field--with-bottom" map-options emit-value option-value="tercero" option-label="Identificacion" :options="listaTerceros"
                   use-input hide-dropdown-icon hide-selected fill-input input-debounce="0" label="Buscar Tercero"
                   :clearable="clearableTercero" @clear="limpiarTercero" @filter="filterFnTercero" :onUpdate:modelValue="(val) => {
-                    cargarTercero(val);
+            cargarTercero(val);
           }">
                   <template v-slot:prepend>
                     <q-icon name="person" size="lg" />
@@ -692,7 +691,7 @@ const guardarUsu = async () => {
         .onOk(async () => {
           await modificarContraseña();
         })
-        .onCancel(() => {});
+        .onCancel(() => { });
     }
     // Si el usuario tiene un ID de tercero válido y fue filtrado por tercero
     else if (usuarioAcceso.value.IdTercero > 0 && filtroBuscaTercero.value) {
@@ -716,8 +715,8 @@ const guardarUsu = async () => {
         .onOk(async () => {
           await nuevaContraseña();
         })
-        .onCancel(() => {});
-    }else{
+        .onCancel(() => { });
+    } else {
       utilidades.mensaje("seleciona un Tercero o un Usuario :)");
     }
   } catch (error) {

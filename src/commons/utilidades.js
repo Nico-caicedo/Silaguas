@@ -100,10 +100,37 @@ export default {
 
   mensajeConfirmacion(mensaje) {
     Dialog.create({
-      title: "Silaguas",
+      title: `<span class="text-bold text-blue-10 rounded-borders text-uppercase text-italic bg-grey flex flex-center inset-shadow" >Silaguas</span>`,
       dark: true,
-      message: mensaje,
-      cancel: true,
+      message: `<hr style="color:1px dashed red;">
+          <p class="q-pa-xs text-subtitle1 text-center">${mensaje}</p>
+      `,
+      ok: {
+        label: "Si",
+        color: "blue-10",
+        textColor: "white",
+        style: {
+          margin: "",
+          border: "1px dashed lightblue",
+          background: "shadow-1",
+        },
+      },
+      dark: false,
+      html: true,
+      style: {
+        border: "1px dashed blue",
+        background: "shadow-1",
+      },
+      cancel: {
+        label: "No",
+        color: "red-6",
+        textColor: "white",
+        style: {
+          margin: "",
+          border: "1px dashed red",
+          background: "shadow-1",
+        },
+      },
       persistent: true,
     })
       .onOk(() => {

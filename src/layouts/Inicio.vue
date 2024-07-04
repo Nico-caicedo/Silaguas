@@ -59,7 +59,7 @@ const $router = useRouter();
 
 const login = async () => {
   if (!usuario.value.Login || !usuario.value.Password) {
-    utils.Notify("Por favor, complete todos los campos", "error");
+    utilidades.Notify("Por favor, complete todos los campos", "error");
     return;
   }
   try {
@@ -68,7 +68,7 @@ const login = async () => {
       var datos = response;
       if (datos.Login === null) {
         $q.loading.hide();
-        utils.Notify("Nombre y Password incorrectos", "advertencia");
+        utilidades.Notify("Nombre y Password incorrectos", "advertencia");
       } else {
         $q.localStorage.set("usuarioSilaguas", datos);
         ingresar(datos);

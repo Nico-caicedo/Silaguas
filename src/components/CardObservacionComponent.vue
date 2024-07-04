@@ -15,8 +15,8 @@
     <q-separator color="blue-9" size="2px" />
     <q-card class="column col">
       <template v-if="ObservacionProps.length > 0">
-        <q-scroll-area  class="col row " >
-        <template :key="observacion.id" v-for="(observacion, index) in  ObservacionProps">
+        <q-scroll-area class="col row ">
+          <template :key="observacion.id" v-for="(observacion, index) in  ObservacionProps">
             <q-card-section class="bg-white column col">
               <q-card-section horizontal class="q-pa-none col">
                 <q-card-section class="q-pa-none col">
@@ -24,20 +24,20 @@
                     <div class="text-h6 text-bold text-orange">{{ observacion.Login }}</div>
                     <div class="col ellipsis-2-lines">{{ observacion.Fecha }}</div>
                     <q-btn @click="actualizarObservacion(observacion)" color="green-10"
-                      :icon="observacion.editando ? 'save' : 'edit'" outline type="submit" class="ellipsis col-md-xs"/>
+                      :icon="observacion.editando ? 'save' : 'edit'" outline type="submit" class="ellipsis col-md-xs" />
                   </q-item>
                   <q-separator color="grey" inset />
                   <div class="text-caption text-grey-10 q-pt-sm q-pb-md">
                     <div v-if="!observacion.editando">{{ observacion.Observacion }}</div>
-                    <q-input v-else v-model="observacionModificada" filled type="textarea"  autogrow />
+                    <q-input v-else v-model="observacionModificada" filled type="textarea" autogrow />
                   </div>
                 </q-card-section>
               </q-card-section>
               <q-separator color="blue-9" />
             </q-card-section>
 
-        </template>
-      </q-scroll-area>
+          </template>
+        </q-scroll-area>
       </template>
       <template v-else>
         <q-card-section class="bg-white column col">

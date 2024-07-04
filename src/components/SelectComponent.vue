@@ -1,7 +1,7 @@
 <template>
-  <q-select rounded outlined :clearable="clearable" v-model="model" :options="options" :label="label"
+  <q-select  outlined :clearable="clearable"  v-model="model" :options="options" :label="label"
     label-color="primary" color="teal" emit-value options-selected-class="text-deep-primary" :dense="dense"
-    :options-dense="denseOpts" class="shadow-1" @clear="onClear">
+    :options-dense="denseOpts" class="ellipsis" @clear="onClear">
     <template v-slot:prepend>
       <q-icon name="filter_alt" color="primary" />
     </template>

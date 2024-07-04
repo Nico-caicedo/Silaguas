@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md bg-white shadow-1 col row justify-center items-center" style="border-radius: 10px;">
+  <div class="q-pa-md bg-white shadow-1 col col-xs-12 col-sm-12 col-md justify-center items-center" style="border-radius: 10px;">
     <div ref="chart" style="width: 100%; height: 300px; border-radius: 10px;"></div>
   </div>
 </template>
@@ -7,6 +7,10 @@
 <script setup>
 import { ref, onMounted, watch, nextTick, defineProps, onBeforeUnmount } from 'vue';
 import * as echarts from 'echarts';
+import ApiService from 'src/commons/Datos/ADDashboard.js';
+import { useQuasar } from 'quasar';
+const $q = useQuasar();
+import utilidades from 'src/commons/utilidades';
 
 const props = defineProps({
   chartData: {
@@ -27,11 +31,10 @@ const renderChart = (chartDom, chartData) => {
     myChart.dispose();
   }
   myChart = echarts.init(chartDom);
+
   const option = {
-    autoResize: true,
-    maintainAspectRatio: true,
     title: {
-      text: "Carta",
+      text: "",
     },
     tooltip: {
       show: true,
@@ -44,16 +47,19 @@ const renderChart = (chartDom, chartData) => {
     grid: {
       left: '0.1%',
       right: '0.1%',
-      bottom: '0.1%',
+      bottom: '1.5%',
       containLabel: true,
     },
     toolbox: {
       feature: {
-        dataZoom: {
-          yAxisIndex: 'none',
-        },
         restore: {},
-        saveAsImage: {},
+        // saveAsImage: {
+        // //   title: 'Guardar como PDF',
+        // //   onclick: () => {
+        // //     const chartContainer = chart.value.parentElement;
+        // //     saveChartImage(chartContainer);
+        // //   },
+        //  },
       },
     },
     xAxis: {
@@ -65,6 +71,11 @@ const renderChart = (chartDom, chartData) => {
       min: value => value.min - 0,
       max: value => value.max - 0,
       boundaryGap: [0, '100%'],
+      axisLabel: {
+        formatter: function (value) {
+          return value != null ? value.toFixed(2) : '';
+        }
+      }
     },
     dataZoom: [
       {
@@ -77,26 +88,18 @@ const renderChart = (chartDom, chartData) => {
         end: 100,
       },
     ],
-    itemStyle: {
-      borderWidth: 4,
-    },
-    lineStyle: {
-      width: 1,
-    },
-    symbolSize: 40,
-    symbol: "emptyPin",
-    smooth: false,
     series: chartData.datasets.map((dataset, index) => ({
       name: dataset.label,
-      type: index === 0 || dataset.label === 'Agua Cruda' ? 'scatter' : 'line',
+      type: 'line',
       smooth: true,
-      data: dataset.data,
+      data: dataset.data.map(value => value != null ? Number(value).toFixed(2) : null),
       itemStyle: {
         color: dataset.backgroundColor,
         borderColor: dataset.borderColor,
       },
     })),
   };
+
   myChart.setOption(option);
   window.addEventListener('resize', myChart.resize);
 };
@@ -134,7 +137,7 @@ const showNoDataWatermark = (chartDom) => {
         z: 100,
         style: {
           fill: '#fff',
-          text: 'No hay datos',
+          text: 'No hay Datos',
           font: 'bold 30px Roboto',
         },
       }],
@@ -146,6 +149,42 @@ const showNoDataWatermark = (chartDom) => {
   myChart.setOption(optionNoData);
   window.addEventListener('resize', myChart.resize);
 };
+
+// const saveChartImage = async (chartContainer) => {
+//   $q.loading.show();
+//   try {
+//     const chartDataUrl = await getChartImageUrl(chartContainer);
+//     // Envía solo la URL de la imagen al backend para generar el PDF
+//     await ApiService.saveChartImage(chartDataUrl);
+//   } catch (error) {
+//     utilidades.mensaje(`Error al guardar la imagen del gráfico: ${error}`);
+//   } finally {
+//     $q.loading.hide();
+//   }
+// };
+
+// const getChartImageUrl = async (chartContainer) => {
+//   return new Promise((resolve, reject) => {
+//     if (!myChart) {
+//       reject('Chart is not initialized.');
+//       return;
+//     }
+
+//     myChart.on('rendered', () => {
+//       try {
+//         myChart.getDataURL({
+//           type: 'png',
+//           pixelRatio: 2,
+//           backgroundColor: '#fff',
+//         }, (dataUrl) => {
+//           resolve(dataUrl);
+//         });
+//       } catch (error) {
+//         reject(error);
+//       }
+//     });
+//   });
+// };
 
 onMounted(() => {
   nextTick(() => {

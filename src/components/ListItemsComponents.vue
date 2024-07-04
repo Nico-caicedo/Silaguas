@@ -8,8 +8,8 @@
     <q-separator color="orange-12" size="2px" />
 
     <template v-if="List.length > 0">
-      <q-scroll-area :bar-style="barStyle" :thumb-style="thumbStyle" class="col row " >
-        <q-list class=" col justify-between" >
+      <q-scroll-area :bar-style="barStyle" :thumb-style="thumbStyle" class="col row ">
+        <q-list class=" col justify-between">
           <q-expansion-item v-for="contact in List" :key="contact.Dia" expand-separator>
             <template v-slot:header>
               <q-item-section avatar>
@@ -38,11 +38,11 @@
     </template>
     <template v-else>
       <q-item class="col row justify-center items-center">
-        <q-separator class="bg-primary" inset size="1px"/>
+        <q-separator class="bg-primary" inset size="1px" />
         <q-item-section class="text-grey-9 justify-center items-center text-bold">
           Sin observaciones disponibles.
         </q-item-section>
-        <q-separator class="bg-primary" inset size="1px"/>
+        <q-separator class="bg-primary" inset size="1px" />
       </q-item>
     </template>
     <q-separator color="orange-12" inset size="1px" />
@@ -78,7 +78,7 @@ export default {
     return {
       mesEnLetras,
       nombreMes,
-       fecha,
+      fecha,
       thumbStyle: {
         right: '4px',
         borderRadius: '5px',
