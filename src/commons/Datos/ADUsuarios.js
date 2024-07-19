@@ -8,13 +8,13 @@ import utilidades from "src/commons/utilidades";
 export default {
   async traerUsuario() {
     const value = LocalStorage.getItem("usuarioSilaguas");
-    console.log(value);
+    // console.log(value);
     return value;
   },
 
   async traerAccesos() {
     const value = LocalStorage.getItem("usuarioSilaguas");
-    console.log(value.ListaAccesos);
+    // console.log(value.ListaAccesos);
     return value.ListaAccesos;
   },
 
@@ -60,7 +60,7 @@ export default {
       const response = await api.get(`acceso/cargar-accesos/${IdRol}/${modulo}`);
       return response.data;
     } catch (error) {
-      utilidades.mensaje("Fallo la conexion - Cargar Accesos " + error);
+      utilidades.mensaje("Fallo la conexion - Cargar Accesos" + error);
       throw error;
     }
   },

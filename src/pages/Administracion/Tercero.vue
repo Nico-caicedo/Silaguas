@@ -9,11 +9,11 @@
           Información Terceros
         </q-toolbar-title>
         <div class="q-gutter-x-sm">
-          <q-btn icon="person" label="" outline unelevated @click="abrirBusqueda()" class="inset-shadow"><q-tooltip
+          <!-- <q-btn icon="person" label="" outline unelevated @click="abrirBusqueda()" class="inset-shadow"><q-tooltip
               transition-show="scale" transition-hide="scale" class="bg-amber text-black shadow-4" :offset="[10, 10]">
               Terceros Inactivos
             </q-tooltip>
-          </q-btn>
+          </q-btn> -->
           <q-btn icon="delete" label="" @click="limpiarTercero()" color="white" outline align="center" class="ellipsis">
             <q-tooltip transition-show="scale" transition-hide="scale" class="bg-primary text-white shadow-4">
               limpiar Campos
@@ -45,8 +45,8 @@
                 use-input hide-dropdown-icon hide-selected fill-input input-debounce="0" type="number"
                 label="Identificacion" :clearable="clearableTercero" @clear="limpiarTercero" @filter="filterTercero"
                 :onUpdate:modelValue="(val) => {
-              cargarDatosIdentificacion(val);
-            }
+            cargarDatosIdentificacion(val);
+          }
             ">
                 <template v-slot:prepend>
                   <q-icon name="person" size="lg" />
@@ -192,11 +192,11 @@
                       {{ accionBoton }}
                     </q-tooltip>
                   </q-btn>
-                  <q-btn icon="delete" label="" round align="center" class="shadow-1" color="negative"
+                  <!-- <q-btn icon="delete" label="" round align="center" class="shadow-1" color="negative"
                     @click="confirmarEliminar(tercero.IdTercero)"><q-tooltip transition-show="scale"
                       transition-hide="scale" class="bg-red text-white shadow-4">
                       Eliminar tercero
-                    </q-tooltip></q-btn>
+                    </q-tooltip></q-btn> -->
                 </div>
               </q-page-sticky>
             </div>
@@ -251,7 +251,6 @@
 
 <script setup>
 import { useRouter } from "vue-router";
-import TerceroFiltro from "../../components/CompTerceroFiltro.vue";
 import { api } from "boot/axios";
 import utilidades from "../../commons/utilidades.js";
 import { date, useQuasar } from "quasar";
@@ -274,7 +273,7 @@ const tercero = ref({
   CodigoDepartamento: '',
   IdTipoIdentificacion: '',
   Sexo: '',
-  DV: -1,
+  DV: "",
   Nacimiento: '',
   OtrosNombres: '',
   Apellido1: '',
@@ -310,7 +309,7 @@ const terceroB = ref([
     CodigoDepartamento: "",
     IdTipoIdentificacion: "",
     Sexo: "",
-    DV: -1,
+    DV: "",
     Nacimiento: utilidades.fechaActual(),
     Otrosnombres: "",
     Apellido1: "",
@@ -360,7 +359,7 @@ const limpiarTercero = async () => {
     CodigoDepartamento: '',
     IdTipoIdentificacion: '',
     Sexo: '',
-    DV: -1,
+    DV: '',
     Nacimiento: utilidades.darFormatofecha(),
     OtrosNombres: '',
     Apellido1: '',
@@ -406,30 +405,7 @@ const filterTercero = async (val, update, abort) => {
   }
 };
 
-const cargarDatosIdentificacion = async () => {
-  if (!tercero.value.Identificacion) {
-    return;
-  }
-  $q.loading.show();
-  try {
-    const identificacion = tercero.value.Identificacion;
-    terceroB.value = {};
-    const response = await api.get(`/tercero/mostrar-identificacion/${identificacion}`);
-    terceroB.value = response.data;
-    $q.loading.hide();
-    if (terceroB.value && terceroB.value.IdTercero > 0) {
-      await seleccionarPersona(terceroB.value);
-    } else {
-      await limpiarTercero();
-      tercero.value.Identificacion = identificacion;
-      await calcularDV();
-      $q.loading.hide();
-    }
-  } catch (error) {
-    utilidades.mensaje(`Buscar Identificacion - Fallo la conexion , ${error}`);
-    $q.loading.hide();
-  }
-};
+
 
 const seleccionarPersona = async (persona) => {
   if (!persona) {
@@ -450,6 +426,33 @@ const seleccionarPersona = async (persona) => {
     }
   }
 };
+
+const cargarDatosIdentificacion = async () => {
+  if (tercero.value.Identificacion == "" ||
+    tercero.Identificacion === undefined) {
+    return;
+  }
+  $q.loading.show();
+  try {
+    const identificacion = tercero.value.Identificacion;
+    terceroB.value = {};
+    const response = await api.get(`/tercero/mostrar-identificacion/${identificacion}`);
+    terceroB.value = response.data;
+    $q.loading.hide();
+    if (terceroB.value.IdTercero > 0) {
+      await seleccionarPersona(terceroB.value);
+    } else {
+      await limpiarTercero();
+      tercero.value.Identificacion = identificacion;
+      await calcularDV(identificacion);
+      $q.loading.hide();
+    }
+  } catch (error) {
+    utilidades.mensaje(`Buscar Identificacion - Fallo la conexion , ${error}`);
+    $q.loading.hide();
+  }
+};
+
 
 
 const activarTercero = async (IdTercero) => {
@@ -665,7 +668,19 @@ const convertirFecha = async () => {
   }
 };
 
-const calcularDigitoVerificacion = async (myNit) => {
+
+const calcularDV = async (identificacion) => {
+
+  const nit = tercero.value.Identificacion;
+  console.log(identificacion);
+  const isNitValid = nit.length;
+  if (isNitValid > 0) {
+    tercero.value.DV = calcularDigitoVerificacion(nit);
+  }
+};
+
+
+const  calcularDigitoVerificacion = async (myNit) => {
   var vpri;
   var x;
   var y;
@@ -707,33 +722,21 @@ const calcularDigitoVerificacion = async (myNit) => {
   for (var i = 0; i < z; i++) {
     y = myNit.substr(i, 1);
     // console.log ( y + "x" + vpri[z-i] + ":" ) ;
+
     x += y * vpri[z - i];
     // console.log ( x ) ;
   }
+
   y = x % 11;
   // console.log ( y ) ;
+
   return y > 1 ? 11 - y : y;
 };
 
-const calcularDV = async () => {
-  const nit = tercero.value.Identificacion;
-  const isNitValid = nit.length;
-  if (isNitValid > 0) {
-    tercero.value.DV = await calcularDigitoVerificacion(nit);
-  }
-};
 
-const regla = async (val) => {
-  try {
-    if (val !== null && val !== "" && val !== undefined) {
-      return true;
-    }
-    return false || "Missing complete information";
-  } catch (error) {
-    utilidades.mensaje("Error en la función regla:", error);
-    return false;
-  }
-};
+
+
+
 
 const regresar = async () => {
   router.push("/admin");

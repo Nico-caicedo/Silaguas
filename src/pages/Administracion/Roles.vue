@@ -24,35 +24,35 @@
         </div>
       </q-toolbar>
     </q-header>
-      <q-footer class="q-pa-sm bg-grey-4 shadow-up-3">
-        <div class="col q-gutter-x-sm">
-          <!-- <q-btn label="" round icon="update" class="shadow-1" align="center" color="indigo-8" unelevated
+    <q-footer class="q-pa-sm bg-grey-4 shadow-up-3">
+      <div class="col q-gutter-x-sm">
+        <!-- <q-btn label="" round icon="update" class="shadow-1" align="center" color="indigo-8" unelevated
           @click="guardarAccesos">
           <q-tooltip transition-show="scale" transition-hide="scale" class="bg-indigo">
             Actualizar accesos
           </q-tooltip>
         </q-btn> -->
-          <q-btn label="" round :icon="iconBoton" class="shadow-4" align="center" :color="colorBoton" unelevated
-            @click="guardarAccesos">
-            <q-tooltip transition-show="scale" transition-hide="scale" :class="tooltipClass">
-              {{ accionBoton }}
-            </q-tooltip>
-          </q-btn>
+        <q-btn label="" round :icon="iconBoton" class="shadow-4" align="center" :color="colorBoton" unelevated
+          @click="guardarAccesos">
+          <q-tooltip transition-show="scale" transition-hide="scale" :class="tooltipClass">
+            {{ accionBoton }}
+          </q-tooltip>
+        </q-btn>
 
-          <q-btn icon="delete" label="" round align="center" class="shadow-1" color="negative"
+        <!-- <q-btn icon="delete" label="" round align="center" class="shadow-1" color="negative"
             @click="confirmarEliminar(accesosRol.IdAcceso)"><q-tooltip transition-show="scale" transition-hide="scale"
               class="bg-red text-white shadow-4">
               Desactivar Rol
-            </q-tooltip></q-btn>
-          <q-btn icon="calendar_month" label="" round align="center" class="shadow-1" color="purple" unelevated
+            </q-tooltip></q-btn> -->
+        <!-- <q-btn icon="calendar_month" label="" round align="center" class="shadow-1" color="purple" unelevated
             @click="guardarPlazo"><q-tooltip transition-show="scale" transition-hide="scale"
               class="bg-purple text-white shadow-4">
               Suspension
-            </q-tooltip></q-btn>
-        </div>
-      </q-footer>
-      <q-page-container>
-        <q-scroll-area class="T-primary" style="height: calc(92vh - 108px)">
+            </q-tooltip></q-btn> -->
+      </div>
+    </q-footer>
+    <q-page-container>
+      <q-scroll-area class="T-primary" style="height: calc(92vh - 108px)">
         <div class="q-pa-md q-mt-none">
           <q-select filled class="col-xs-12 col-sm-6 col-md-4" label="Roles" v-model="idRol" emit-value map-options
             option-value="IdRol" option-label="Nombre" :options="roles" outlined :clearable="clearable"
@@ -92,6 +92,7 @@
           </q-select>
         </div>
         <q-separator color="primary" />
+
         <div class="q-pa-md">
           <q-scroll-area class="" style="height: calc(71vh - 100px)">
             <q-tree class="col-12 col-sm-12" :nodes="accesos" label-key="Descripcion" :expand-on-click="false"
@@ -112,29 +113,29 @@
           </q-scroll-area>
         </div>
         <q-separator color="primary" />
-        </q-scroll-area>
-      </q-page-container>
+      </q-scroll-area>
+    </q-page-container>
 
-      <q-dialog v-model="isDialogComponenteRol" persistent>
-        <q-card>
-          <q-card-section>
-            <div class="text-h6 text-center text-bold">Agregar Nuevo Rol</div>
-          </q-card-section>
-          <q-separator color="blue" />
-          <q-card-section class="q-pa-md q-gutter-sm">
-            <div class="q-pa-none q-ma-none row q-gutter-sm">
-              <q-input outlined dense v-model="rol.IdRol" autofocus label="Id Rol" class="col" />
-              <q-input outlined filled dense v-model="rol.Nombre" label="Nombre Rol" class="col" />
-            </div>
-            <q-input type="textarea" filled dense v-model="rol.Observacion" label="Observacion" />
-          </q-card-section>
-          <q-separator color="blue" />
-          <q-card-actions align="right" class="text-primary">
-            <q-btn flat label="Cancelar" color="white" v-close-popup class="bg-red-9" />
-            <q-btn flat label="Añadir Rol" color="white" @click="guardarRol()" v-close-popup class="bg-blue-9" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
+    <q-dialog v-model="isDialogComponenteRol" persistent>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6 text-center text-bold">Agregar Nuevo Rol</div>
+        </q-card-section>
+        <q-separator color="blue" />
+        <q-card-section class="q-pa-md q-gutter-sm">
+          <div class="q-pa-none q-ma-none row q-gutter-sm">
+            <q-input outlined dense v-model="rol.IdRol" autofocus label="Id Rol" class="col" />
+            <q-input outlined filled dense v-model="rol.Nombre" label="Nombre Rol" class="col" />
+          </div>
+          <q-input type="textarea" filled dense v-model="rol.Observacion" label="Observacion" />
+        </q-card-section>
+        <q-separator color="blue" />
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancelar" color="white" v-close-popup class="bg-red-9" />
+          <q-btn flat label="Añadir Rol" color="white" @click="guardarRol()" v-close-popup class="bg-blue-9" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 
@@ -189,20 +190,6 @@ const limpiarTercero = async () => {
   accesosSeleccion.value = [];
 };
 
-const abrirVentanaUsuarioRol = async () => {
-  isDialogComponenteUsuarios.value = true;
-  $q.loading.show();
-  try {
-    const response = await api.get(`/rol/usuarios`);
-    usuarios.value = response.data;
-    usuariosFiltro.value = usuarios.value;
-    $q.loading.hide();
-  } catch (error) {
-    utilidades.mensaje("Usuarios - Fallo la conexion " + error);
-  } finally {
-    $q.loading.hide();
-  }
-};
 
 const mostrarRolesDialog = async () => {
   isDialogComponenteRol.value = true;
@@ -292,9 +279,9 @@ const guardarAccesos = () => {
   })
     .onOk(async () => {
       if (accesosRol.value.length === 0) {
-        await guardarRolAccesos();
+        await actualizarVistas();
       } else {
-        await modificarRolAccesos();
+        await actualizarVistas();
       }
     })
     .onCancel(() => { });
@@ -316,6 +303,34 @@ const guardarRol = async () => {
   }
 };
 
+const actualizarVistas = async () => {
+  try {
+    if (accesosSeleccion.value.length === 0) {
+      utilidades.mensaje("Por favor seleccione al menos un Acceso");
+      return;
+    }
+
+    const idRolValor = idRol._value || idRol; // Obtener el valor primitivo de idRol
+
+    const payload = {
+      IdRol: idRolValor,
+      Vistas: accesosSeleccion.value.map(acceso => ({
+        IdAcceso: acceso
+      })),
+      Login:usuario.value.Login
+    };
+
+    const response = await api.post("/acceso/actualizar-vistas", payload);
+    utilidades.mensaje(response.data.Mensaje);
+  } catch (error) {
+    console.error("Error al actualizar las vistas:", error);
+    utilidades.mensaje("Ocurrió un error al actualizar las vistas. Por favor, intenta de nuevo.");
+  }
+};
+
+
+
+
 const guardarRolAccesos = async () => {
   if (accesosSeleccion.value.length === 0) {
     utilidades.mensaje("Por favor seleccione al menos un Acceso");
@@ -324,36 +339,21 @@ const guardarRolAccesos = async () => {
   $q.loading.show();
   try {
     nuevoAccesos.value = [];
-    if (accesosSeleccion.value.length > 0) {
-      accesosSeleccion.value.forEach(function (acceso) {
-        const ac = accesosRol.value.find(f => f.IdAcceso === acceso)
-        if (ac) {
-          ac.Estado = 1
-        } else {
-          nuevoAccesos.value.push({ IdAcceso: acceso, IdRol: idRol, Login: usuario.value.Login, Estado: 1 })
-        }
-      })
-    }
+    accesosSeleccion.value.forEach(acceso => {
+      nuevoAccesos.value.push({
+        IdAcceso: acceso,
+        IdRol: idRol,
+        Login: usuario.value.Login,
+        Estado: 1
+      });
+    });
 
-    if (accesosRol.value.length > 0) {
-      accesosRol.value.forEach(function (acceso) {
-        const ac = accesosSeleccion.value.find(f => f === acceso.IdAcceso)
-        if (ac) {
-        } else {
-          nuevoAccesos.value.push({ IdAcceso: acceso.IdAcceso, IdRol: idRol, Login: usuario.valueLogin, Estado: 0 })
-        }
-      })
-    }
+    const response = await api.post("/acceso/guardar-rol-accesos", nuevoAccesos.value);
 
-    const response = await api.post(
-      "/acceso/guardar-rol-accesos",
-      nuevoAccesos.value
-    );
-    ADUsuario.cargarAccesos();
     utilidades.mensaje(response.data.Mensaje);
     await limpiarTercero();
   } catch (error) {
-    utilidades.mensaje("Guardar Rol Accesos - Fallo la conexion " + error);
+    utilidades.mensaje("Guardar Rol Accesos - Fallo la conexión " + error);
   } finally {
     $q.loading.hide();
   }

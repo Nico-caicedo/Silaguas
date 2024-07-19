@@ -1,142 +1,171 @@
 <template>
-  <q-layout>
-    <div  class=" col-md-12 col row " >
-      <h3 class="col-xs  col-sm-12 col-md-3 col-3  row justify-center LetraT " >Cartas Control</h3>
+  <q-layout container style="height: 83.7vh">
+    <header class="justify-between items-center bg-grey-3 q-pa-none">
+      <q-toolbar>
+        <q-toolbar-title class="text-center text-bold text-subtitle1">{{ cartaControl.label }}</q-toolbar-title>
+      </q-toolbar>
+      <q-separator color="blue" size="1px" />
+    </header>
+    <q-page-container>
       <!-- Filtros -->
-      <div class="col-xs col-sm-12  col-md-9 col-9 row justify-center items-center q-gutter-sm q-gutter-y-sm">
-        <q-select  class="col-sm-3 col-md-3 col-12 " v-model="cartaControl" :options="cartasControl" label="Carta Control"
-        @update:model-value="llenarDatos" />
-        <q-select class="col-sm-3 col-md-3 col-12" v-model="Metodo" :options="metodos" label="Método"  @update:model-value="llenarDatos" />
-        <q-select class="col-sm-3 col-md-3 col-12" v-if="cartaControl.value === 'CCV'" v-model="Solucion" :options="soluciones"
-          label="Solución"  @update:model-value="llenarDatos" />
-        <q-select class="col-sm-3 col-md-3 col-12" v-if="cartaControl.value === 'CCRPD'" v-model="Matriz" :options="matrices"
-          label="Matriz"  @update:model-value="llenarDatos" />
+      <div class="q-pa-xs row col items-center justify-stretch q-gutter-xs col-xs-12 col-sm-5 col-md">
+        <q-select outlined class="col-xs-12 col-sm col-md" v-model="cartaControl" :options="cartasControl"
+          label="Carta Control" @update:model-value="llenarDatos" />
+        <q-select outlined class="col-xs col-sm col-md" v-model="Metodo" :options="metodos" label="Método"
+          @update:model-value="llenarDatos" />
+        <q-select outlined class="col-xs col-sm col-md " v-if="cartaControl.value === 'CCV'" v-model="Solucion"
+          :options="soluciones" label="Solución" @update:model-value="llenarDatos" />
+        <q-select outlined class="col-md col-xs" v-if="cartaControl.value === 'CCRPD'" v-model="Matriz"
+          :options="matrices" label="Matriz" @update:model-value="llenarDatos" />
       </div>
-    </div>
-    <div class="column justify-center  items-center q-gutter-sm " style="height: 400px;">
-
-
-<div  class="column" style="width: 40%;">
-  <div class="row items-center q-gutter-md">
-    <div>
-      <p class="text-weight-bolder">{{ cartaControl.label }}</p>
-    </div>
-
-    <div class="row items-center">
-      <p class="text-h">Metodo:</p>
-      <p class="">{{ Metodo.label }}</p>
-
-    </div>
-    <div class="row items-center">
-      <p class="text-h6">Fecha:</p>
-      <p class="">{{ Fecha }}</p>
-    </div>
- 
-  </div>
-  <div class="row justify-around q-mb-sm q-mr-xs" style="width: 100%;  width: 100%;">
-    <!-- hacer funcion para marcar todos los resultados -->
-    <!-- <q-btn label="Marcar" @click="toggleMarcado" /> -->
-    <q-btn class="bg-primary text-white" icon="add_circle" @click="CrearObservacion" v-if="EstadoObservacion === false" label="Crear Observación general"
-      style="width: auto;" :disabled="itemsCarta.length === 0" />
-      <q-btn class="bg-primary text-white" icon="search" @click="CallObservacion" v-if="EstadoObservacion === true"
-      label="Observación general" style="width: auto;"  />
-
-      <q-btn class="bg-positive text-white" :disabled="IdsAprobar.length === 0" icon="send" label="Enviar" @click="Aprobar" />
-  </div>
-  <q-dialog v-model="ShowObservacion">
-    <q-card style="width: 700px; max-width: 80vw;">
-      <q-card-section>
-        <div class="text-h6">OBSERVACIÓN GENERAL</div>
-      </q-card-section>
-      <q-card-section class="q-pt-none row justify-end ">
-        <q-btn label="Ver anteriores" color="positive" />
-      </q-card-section>
-      <q-card-section class="q-pt-none">
-       <p>{{ DatosObservacion.Observacion }}</p>
-      </q-card-section>
-      <q-card-section class="q-pt-none">
-        <p class="text-weight-bold row justify-end ">{{  DatosObservacion.Nombre + ', ' + DatosObservacion.Fecha }}</p>
-      </q-card-section>
-      <q-card-actions align="right" class="bg-white text-teal">
-        <q-btn flat label="Cerrar" color="negative" v-close-popup />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
-
-
-
-  <q-scroll-area style="height: 250px;">
-    <q-list bordered separator>
-
-      <q-item v-for="(item, index) in itemsCarta" :key="index">
-        <q-item-section class="row  justify-center" style="height: 60px; width: 100%;">
-          <q-item-section class="row items-center" style="width: 50px; ">
-            <q-checkbox v-if="item.Aprobado === false" v-model="IdsAprobar " :val="item.Idcarta" />
-            <q-icon class="" v-if="item.Aprobado === true" color="green" name="check_circle" size="1.5rem" />
-          </q-item-section>
-          <div class="row q-gutter-sm justify-between">
-            <div class="column justify-center">
-              <p class="q-mb-xs text-weight-bold">Valor: {{ item.Valor }}</p>
-              <p class="q-mb-none">Realizo:</p>
-              <p class="q-mb-none">{{ item.Nombre }}</p>
+      <!-- datos selecionados -->
+      <div class="q-pa-xs q-gutter-xs shadow-6">
+        <!-- <q-card-section class="row items-center"> -->
+        <div class="row justify-center col items-center q-gutter-xs">
+          <q-item-label class="text-subtitle1 text-weight-medium">Método: {{ Metodo.label }} -</q-item-label>
+          <q-item-label class="text-subtitle1 text-weight-medium">Fecha: {{ Fecha }}</q-item-label>
+        </div>
+        <div class="row col items-center q-gutter-xs">
+          <q-btn flat class="bg-primary text-white col" icon="add_circle" @click="CrearObservacion"
+            v-if="EstadoObservacion === false" :disabled="itemsCarta.length === 0">
+            <div class="ellipsis">
+              Crear Observación general
             </div>
-            <p class="row justify-center items-center q-mb-xs text-weight-bold">{{ item.mes }}</p>
+          </q-btn>
+          <q-btn class="bg-primary text-white col" icon="search" @click="CallObservacion"
+            v-if="EstadoObservacion === true">
+            <div class="ellipsis">
+              Observación general
+            </div>
+          </q-btn>
+          <q-btn class="bg-positive text-white col" :disabled="IdsAprobar.length === 0" icon="send" @click="Aprobar">
+            <div class="ellipsis">
+              Enviar
+            </div>
+          </q-btn>
+        </div>
+        <!-- </q-card-section> -->
+      </div>
 
+
+      <!-- ventana de ver la observacion -->
+      <q-dialog v-model="ShowObservacion">
+        <q-card class="rounded-borders ">
+          <header class="justify between items-center  inset-shadow bg-grey">
+            <q-toolbar>
+              <q-toolbar-title class="text-subtitle1 ellipsis text-weight-medium text-white">OBSERVACIÓN
+                GENERAL</q-toolbar-title>
+              <q-btn glossy unelevated color="grey-1" class="inset-shadow">
+                <div class="ellipsis text-black">
+                  Ver anteriores
+                </div>
+              </q-btn>
+            </q-toolbar>
+          </header>
+          <q-separator color="primary" size="1px" />
+          <q-card-section class="q-pt-xs col">
+            <div>{{ DatosObservacion.Observacion }}</div>
+          </q-card-section>
+          <q-card-section class="q-pb-none col q-pr-md">
+            <div class="text-weight-bold text-caption row justify-end  ">Realizo: {{ DatosObservacion.Nombre }}
+            </div>
+          </q-card-section>
+          <q-separator color="primary" size="1px" />
+          <q-card-actions class="bg-white text-teal justify-between">
+            <div class="text ">{{ DatosObservacion.Fecha }}</div>
+            <div align="right">
+              <q-btn flat label="Cerrar" color="negative" v-close-popup />
+            </div>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+
+      <q-scroll-area style="height: calc(70vh - 105px)" class="q-gutter-xs">
+        <div class="col row">
+
+          <div class="col">
+            <q-scroll-area style="height: 330px;">
+              <q-list bordered separator v-if="itemList.length > 0">
+                <q-item class="" v-for="(item, index) in itemList" :key="index" clickable v-ripple
+                  @click="callResult(item)">
+                  <q-item-section class="row col">
+                    <div class="row col justify-between">
+                      <div class="column q-gutter-xs">
+                        <div class="text-weight-bold text-italic">{{ item.text }}</div>
+                        <div class="text-weight-light">{{ item.text2 }}</div>
+                        <div class="text-weight-light"> {{ item.text3 }}</div>
+                      </div>
+                      <div class="text-center text-weight-bold bg-grey-3 inset-shadow q-pa-xs rounded-borders q-mb-xl">
+                        {{ item.mes }}</div>
+                    </div>
+                    <q-btn outline class="rounded-borders" icon="description" :color=item.Color />
+                  </q-item-section>
+                </q-item>
+              </q-list>
+              <div v-else>
+                <q-item class="col justify-center items-center">
+                  <q-separator class="bg-primary" inset size="1px" />
+                  <q-item-section class="text-white bg-grey-6 q-pa-xs rounded-borders col row items-center text-bold">
+                    No hay Datos Disponibles
+                  </q-item-section>
+                  <q-separator class="bg-primary" inset size="1px" />
+                </q-item>
+              </div>
+            </q-scroll-area>
           </div>
-          <q-item-section style="width: 150px;" class="row items-center justify-center q-ml-md">
-            <!-- <q-btn label="Observación"/> -->
 
-            <q-btn icon="plagiarism" v-if="item.Observacion !== null" @click="Show(item.Observacion)" />
-            <p class=" row justify-center items-center q-mb-none text-weight-bold"
-              v-if="item.Observacion === null">Sin Observación</p>
-          </q-item-section>
-          <q-item-section class="q-pa-md row  items-center" style="width: 10px;">
-            <q-badge rounded :color=item.ColorStatus />
-          </q-item-section>
+          <div class="col q-gutter-xs">
+            <q-scroll-area style="height: 330px;">
+              <q-list bordered separator v-if="itemsCarta.length > 0">
+                <q-item v-for="(item, index) in itemsCarta" :key="index">
+                  <q-item-section class="row col justify-center">
+                    <div class="row q-gutter-xs justify-between">
+                      <div class="column q-gutter-xs">
+                        <div class="text-weight-bold">Valor: {{ item.Valor }}</div>
+                        <div class="text-caption">Realizo:</div>
+                        <div class="text-bold text-subtitle2">{{ item.Nombre }}</div>
+                      </div>
+                      <div class="column items-center q-gutter-xs">
+                        <q-checkbox v-if="item.Aprobado === false" v-model="IdsAprobar" :val="item.Idcarta" />
+                        <q-icon v-if="item.Aprobado === true" color="green" name="check_circle" size="sm" />
+                        <q-btn icon="plagiarism" v-if="item.Observacion !== ''" @click="Show(item.Observacion)" />
+                        <div class="row justify-center items-center q-mb-none text-weight-bold"
+                          v-if="item.Observacion === ''">Sin Observación
+                        </div>
+                      </div>
+                      <div class="column">
+                        <q-btn disable unelevated glossy
+                          class="text-center items-center text-weight-bold bg-grey-4 inset-shadow q-pa-xs rounded-borders q-mb-xl">
+                          {{ item.mes }}
+                          <q-badge floating rounded :color="item.ColorStatus" />
+                        </q-btn>
+                      </div>
+                    </div>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+              <div v-else>
+                <q-item class="col justify-center items-center">
+                  <q-separator class="bg-primary" inset size="1px" />
+                  <q-item-section class="text-white bg-grey-6 q-pa-xs rounded-borders col row items-center text-bold">
+                    No hay Datos Disponibles
+                  </q-item-section>
+                  <q-separator class="bg-primary" inset size="1px" />
+                </q-item>
+              </div>
+            </q-scroll-area>
+          </div>
 
-        </q-item-section>
-      </q-item>
-    </q-list>
-  </q-scroll-area>
-  <!-- 
-  <img src="~assets/Select.svg" alt=""/>
-   -->
-</div>
-<div class="" style="width: 40%;">
-  <!-- <p class="text-center text-h4">{{ cartaControl.label }}</p> -->
-
-
-  <div style="height: 200px;">
-    <q-scroll-area style="height: 300px;">
-      <q-list bordered separator>
-        <q-item class="" v-for="(item, index) in itemList" :key="index" clickable v-ripple
-          @click="callResult(item)">
-          <q-item-section class="row " style="height: 60px; width: 100%;">
-            <div class="column ">
-              <p class="q-mb-xs text-weight-bold">{{ item.text }}</p>
-              <p class="q-mb-xs text-weight-bold">{{ item.text2 }}</p>
-              <p class="q-mb-xs text-weight-bold"> {{ item.text3 }}</p>
-            </div>
-            <div class="text-center text-weight-bold">{{ item.mes }}</div>
-
-
-          </q-item-section>
-
-          <q-btn class="q-ml-sm" style="width: 50px;" icon="description" :color=item.Color />
-
-        </q-item>
-      </q-list>
-    </q-scroll-area>
-  </div>
-
-</div>
-</div>
+        </div>
+      </q-scroll-area>
+    </q-page-container>
   </q-layout>
 </template>
 
 <script>
 import { api } from 'boot/axios'
 import utilidades from '../../commons/utilidades.js'
+import ApiService from 'src/commons/Datos/ADDashboard.js';
 export default {
   data() {
     return {
@@ -144,28 +173,18 @@ export default {
       val: false,
       color: 'green',
       usuario: '',
-      cartaControl: {label: 'Carta control  RPD', value: 'CCRPD'},
-      Metodo: { label: '', value: '' },
-      Matriz: { label: '', value: '' },
-      Solucion: { label: '', value: '' },
+      cartaControl: { label: 'Carta Control  RPD', value: 'CCRPD' },
+      Metodo: { label: '', value: '' ,id :''},
+      Matriz: { label: '', value: '', id: ''},
+      Solucion: { label: '', value: '' ,id :''},
       otraOpcion2: "",
       cartasControl: [
-        { label: 'Carta control  RPD', value: 'CCRPD' },
         { label: 'Carta control  Verificación', value: 'CCV' },
+        { label: 'Carta control  RPD', value: 'CCRPD' },
       ],
-      metodos: [
-        { label: 'Color Aparente', value: 2 },
-        { label: 'Color Verdadero', value: 3 }
-      ],
-      soluciones: [
-        { label: '10 UC', value: '10' },
-        { label: '15 UC', value: '15' },
-        { label: '50 UC', value: '50' },// Ejemplo de opciones para matriz
-      ],
-      matrices: [
-        { label: 'Agua Cruda', value: 'AC' },
-        { label: 'Agua Tratada', value: 'AT' }
-      ],
+      metodos: [{}],
+      soluciones: [{}],
+      matrices: [{}],
       itemList: [
         { text: 'Carta control  RPD', value: '1', metodo: 'Color aparente', solucion: 'Solución patron: Solucion 15 UC', mes: 'Enero' }
       ],
@@ -179,10 +198,10 @@ export default {
       DatosRecarga: '',
       EstadoObservacion: false,
       DatosObservacion: {
-  Fecha: '',
-  Nombre: '',
-  Observacion: ``,
-},
+        Fecha: utilidades.darFormatofecha(),
+        Nombre: '',
+        Observacion: '',
+      },
 
       ShowObservacion: false,
       ColorStatus: ''
@@ -190,87 +209,78 @@ export default {
   },
   methods: {
     Descarga() {
-  try {
-    if (!this.Ruta) {
-      this.$q.notify({
-        type: 'negative',
-        message: 'La ruta del archivo no está definida.',
-        position: 'bottom-right'
-      });
-      return;
-    }
+      try {
+        if (!this.Ruta) {
+          this.$q.notify({
+            type: 'negative',
+            message: 'La ruta del archivo no está definida.',
+            position: 'bottom-right'
+          });
+          return;
+        }
 
-    const a = document.createElement('a');
-    a.href = 'file:///E:/pexels-liane-cumming-224181355-15045083.jpg';
-    a.target = '_blank'
-    const fileName = this.Ruta.split('/').pop();
-    a.download = ''; // Nombre del archivo a descargar
+        const a = document.createElement('a');
+        a.href = 'file:///E:/pexels-liane-cumming-224181355-15045083.jpg';
+        a.target = '_blank'
+        const fileName = this.Ruta.split('/').pop();
+        a.download = ''; // Nombre del archivo a descargar
 
-    // Agregar el elemento <a> al DOM y simular clic para descargar
-    document.body.appendChild(a);
-    a.click();
+        // Agregar el elemento <a> al DOM y simular clic para descargar
+        document.body.appendChild(a);
+        a.click();
 
-    // Eliminar el elemento <a> del DOM después de la descarga
-    document.body.removeChild(a);
-  } catch (error) {
-    console.error('Error al descargar el archivo:', error);
-    this.$q.notify({
-      type: 'negative',
-      message: 'Error al descargar el archivo: ' + error.message,
-      position: 'bottom-right'
-    });
-  }
-}
-,
+        // Eliminar el elemento <a> del DOM después de la descarga
+        document.body.removeChild(a);
+      } catch (error) {
+        console.error('Error al descargar el archivo:', error);
+        this.$q.notify({
+          type: 'negative',
+          message: 'Error al descargar el archivo: ' + error.message,
+          position: 'bottom-right'
+        });
+      }
+    },
     toggleMarcado() {
-      // Si hay algún checkbox marcado, desmárcalo; de lo contrario, marca todos los checkboxes
       this.IdsAprobar = true
     },
     llenarDatos() {
-      console.log('hola mundo')
+      // console.log('hola mundo')
       this.datosCartas = {
         TipoCarta: this.cartaControl.value
 
       };
 
-      if (this.Metodo.value) {
-        this.datosCartas.IdMetodo = this.Metodo.value;
+      if (this.Metodo.id) {
+        this.datosCartas.IdMetodo = this.Metodo.id;
       }
 
-      if (this.Matriz.value) {
-        this.datosCartas.IdMatriz = this.Matriz.value;
+      if (this.Matriz.id) {
+        this.datosCartas.IdMatriz = this.Matriz.id;
         // this.datosCartas.Concentracion = ''
       }
 
-      if (this.Solucion.value) {
-        this.datosCartas.Concentracion = this.Solucion.value
+      if (this.Solucion.id) {
+        this.datosCartas.Idsolucion = this.Solucion.id
         // this.datosCartas.IdMatriz = ''
       }
-
 
       // if (this.datosCartas.TipoCarta === 'CartaControlRPD') {
       //   this.datosCartas.Concentracion = ''
 
-      // } 
-      
+      // }
+
       // if (this.datosCartas.TipoCarta === 'CartaControlVerificacion') {
       //   this.datosCartas.IdMatriz = ''
       // }
 
       this.CargarCartas()
-    }
-    ,
-
+    },
     CargarCartas() {
-
       if (this.datosCartas.TipoCarta === 'CCRPD') {
         const self = this;
         self.$q.loading.show();
-        api.post('/usuarios/CallCartas', this.datosCartas)
+        api.post('/cartas/CallCartas', this.datosCartas)
           .then((response) => {
-
-
-
             self.itemList = response.data.map(item => {
               const fecha = item.Fecha
               const date = new Date(item.Fecha);
@@ -287,6 +297,7 @@ export default {
                 text3: item.NombreMatriz,
                 Color: item.Color,
                 Fecha: fecha,
+
                 IsObservacion: Aprobado,
                 TipoCarta: 'CCRPD'
               };
@@ -296,7 +307,7 @@ export default {
             self.$q.loading.hide();
           })
           .catch((error) => {
-            utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
+            utilidades.mensaje('cargar cartas CCRPD - Fallo la conexion ' + error);
             self.$q.loading.hide();
           });
       }
@@ -304,7 +315,7 @@ export default {
 
         const self = this;
         self.$q.loading.show();
-        api.post('/usuarios/CallCartas', this.datosCartas)
+        api.post('/cartas/CallCartas', this.datosCartas)
           .then((response) => {
 
 
@@ -335,7 +346,7 @@ export default {
             self.$q.loading.hide();
           })
           .catch((error) => {
-            utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
+            utilidades.mensaje('cargar Cartas CCV - Fallo la conexion ' + error);
             self.$q.loading.hide();
           });
       }
@@ -348,7 +359,7 @@ export default {
       this.MetodoName = this.cartaControl.metodo
       var datos = {};
       if (this.cartaControl.value === 'CCV') {
-       
+
         datos = {
           IdMetodo: item.IdMetodo,
           IdSolucion: item.IdSolucion,
@@ -357,10 +368,10 @@ export default {
         }
 
         // this.EstadoObservacion = item.IsObservacion;
-        console.log('poo', item)
+        // console.log('poo', item)
         const self = this;
         self.$q.loading.show();
-        api.post('/usuarios/CallValoresCarta', datos)
+        api.post('/cartas/CallValoresCarta', datos)
           .then((response) => {
 
 
@@ -387,11 +398,11 @@ export default {
             });
             this.Fecha = item.mes
             console.log('ccv', self.itemList)
-           
+
             self.$q.loading.hide();
           })
           .catch((error) => {
-            utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
+            utilidades.mensaje('llamar valores carta ccv - Fallo la conexion ' + error);
             self.$q.loading.hide();
           });
       }
@@ -400,7 +411,7 @@ export default {
 
 
       if (this.cartaControl.value === 'CCRPD') {
-       
+
         this.s = this.cartaControl.mes
         datos = {
           IdMetodo: item.IdMetodo,
@@ -413,7 +424,7 @@ export default {
 
         const self = this;
         self.$q.loading.show();
-        api.post('/usuarios/CallValoresCarta', datos)
+        api.post('/cartas/CallValoresCarta', datos)
           .then((response) => {
 
 
@@ -442,88 +453,147 @@ export default {
             self.$q.loading.hide();
           })
           .catch((error) => {
-            utilidades.mensaje('Tipo Identificacion - Fallo la conexion ' + error);
+            utilidades.mensaje('llamar valores carta rpd - Fallo la conexion ' + error);
             self.$q.loading.hide();
           });
       }
     },
+
     Aprobar() {
-
       const self = this;
+
+      if (this.IdsAprobar.length === 0) {
+        console.error('No hay Ids para aprobar.');
+        return;
+      }
+
+      let apiUrl = '';
+      let dataToSend = [];
+
       if (this.cartaControl.value === 'CCRPD') {
-        const dataToSend = this.IdsAprobar.map(id => {
-          return {
-            IdsAprobar: id,
-          };
-        });
-
-        api.post('/usuarios/AprobarRPD', dataToSend)
-          .then((response) => {
-            self.callResult(this.DatosRecarga);
-            this.IdsAprobar = []
-          })
-          .catch((error) => {
-            console.error('Tipo Identificacion - Fallo la conexion ' + error);
-          });
+        apiUrl = '/cartas/AprobarRPD';
+        dataToSend = this.IdsAprobar.map(id => ({ IdCartaControlRPD: id }));
+      } else if (this.cartaControl.value === 'CCV') {
+        apiUrl = '/cartas/AprobarV';
+        dataToSend = this.IdsAprobar.map(id => ({ IdCartaControlVerificacion: id }));
       }
 
-
-      if (this.cartaControl.value === 'CCV') {
-        const dataToSend = this.IdsAprobar.map(id => {
-          return {
-            IdsAprobar: id,
-          };
+      api.post(apiUrl, dataToSend)
+        .then((response) => {
+          self.callResult(this.DatosRecarga);
+          this.IdsAprobar = [];
+        })
+        .catch((error) => {
+          console.error('Error al enviar la solicitud:', error);
         });
-
-        api.post('/usuario/AprobarV', dataToSend)
-          .then((response) => {
-            self.callResult(this.DatosRecarga);
-            this.IdsAprobar = []
-          })
-          .catch((error) => {
-            console.error('Tipo Identificacion - Fallo la conexion ' + error);
-          });
-      }
-      // Construir el array en el formato requerido
-
     },
     CallObservacion() {
-      console.log('paquete',this.DatosRecarga)
-      this.DatosRecarga.Login = this.usuario.Login
-      // this.ShowObservacion = true
+      this.DatosRecarga.Login = this.usuario.Login;
 
-      
-      api.post('/usuarios/CallObservacion',this.DatosRecarga)
-          .then((response) => {
+      api.post('/cartas/CallObservacion', this.DatosRecarga)
+        .then((response) => {
+          if (response.data.IsExito === true) { // Asegúrate de usar === para comparar
+            this.DatosObservacion = response.data.Dato[0]; // Accede a response.data.Dato
+            this.ShowObservacion = true;
 
-            this.DatosObservacion = response.data[0];
-            this.ShowObservacion = true
-
-            this.DatosObservacion.Fecha =  this.DatosObservacion.Fecha.replace('T', ' ');
-           console.log('Observacion',response.data)
-          })
-          .catch((error) => {
-            console.error('Tipo Identificacion - Fallo la conexion ' + error);
-          });
+          } else {
+            this.ShowObservacion = false; // Oculta la observación si no hay datos
+            utilidades.mensaje(response.data.Mensaje);
+          }
+        })
+        .catch((error) => {
+          this.ShowObservacion = false; // Oculta la ventana de observaciones en caso de error
+          console.error('llamar Observacion - Fallo la conexion ' + error);
+          utilidades.mensaje("Error en la conexión");
+        });
     },
+
+
+    obtenerSolucionPatron() {
+      this.$q.loading.show();
+      api.get(`grafico/solucion-patron`)
+        .then(response => {
+          // Verificar si la respuesta tiene los datos esperados
+          if (response.data) {
+            // Asignar la solución patrón a la variable Solucion
+            this.soluciones = response.data;
+          } else {
+            utilidades.mensaje('Respuesta de API inesperada');
+          }
+        })
+        .catch(error => {
+          utilidades.mensaje(`Error al obtener la solución patrón: ${error}`);
+        })
+        .finally(() => {
+          this.$q.loading.hide();
+        });
+    },
+
+
+    obtenerMetodos() {
+      this.$q.loading.show();
+      api.get('grafico/metodo')
+        .then(response => {
+          // Verificar si la respuesta tiene los datos esperados
+          if (response.data) {
+            // Asignar la lista de métodos a la variable Metodo
+            this.metodos = response.data;
+            // También puedes asignar el primer método como valor inicial
+            if (this.Metodo.length > 0) {
+              this.MetodoName = this.Metodo[0].Nombre;
+            }
+          } else {
+            utilidades.mensaje('Respuesta de API inesperada');
+          }
+        })
+        .catch(error => {
+          utilidades.mensaje(`Error al obtener los métodos: ${error}`);
+        })
+        .finally(() => {
+          this.$q.loading.hide();
+        });
+    },
+
+
+    obtenerTipoMatriz() {
+      this.$q.loading.show();
+      api.get('grafico/tipo-matriz')
+        .then(response => {
+          // Verificar si la respuesta tiene los datos esperados
+          if (response.data) {
+            // Asignar el tipo de matriz a la variable Matriz
+            this.matrices = response.data;
+          } else {
+            // utilidades.mensaje('Respuesta de API inesperada');
+          }
+        })
+        .catch(error => {
+          utilidades.mensaje(`Error al obtener el tipo de matriz: ${error}`);
+        })
+        .finally(() => {
+          this.$q.loading.hide();
+        });
+    },
+
+
     EnviarObservacion() {
-      
+
       this.DatosRecarga.Login = this.usuario.Login
       console.log(this.DatosRecarga)
       // this.ShowObservacion = true
 
-      
-      api.post('/usuarios/InsertObservacion',this.DatosRecarga)
-          .then((response) => {
-            this.showNotif()
-            this.CargarCartas()
-            this.EstadoObservacion = true
-         
-       
-          })
-          .catch((error) => {
-            console.error('Tipo Identificacion - Fallo la conexion ' + error);
-          });
+
+      api.post('/cartas/InsertObservacion', this.DatosRecarga)
+        .then((response) => {
+          this.showNotif()
+          this.CargarCartas()
+          this.EstadoObservacion = true
+
+
+        })
+        .catch((error) => {
+          console.error('Tipo Identificacion - Fallo la conexion ' + error);
+        });
       console.log(this.DatosObservacion)
     },
     Show(Observacion) {
@@ -537,8 +607,7 @@ export default {
       }).onDismiss(() => {
         // console.log('I am triggered on both OK and Cancel')
       })
-    }
-    ,
+    },
     CrearObservacion() {
       this.$q.dialog({
         title: 'Observacion General',
@@ -552,7 +621,7 @@ export default {
         ok: 'ENVIAR',
         cancel: true,
         persistent: true,
-        
+
       }).onOk(data => {
         this.DatosRecarga.Observacion = data
         this.EnviarObservacion()
@@ -562,7 +631,7 @@ export default {
         // console.log('I am triggered on both OK and Cancel')
       })
     },
-    showNotif () {
+    showNotif() {
       this.$q.notify({
         message: 'Observación general, guarda con éxito',
         color: 'green',
@@ -572,7 +641,9 @@ export default {
 
   },
   mounted() {
-
+    this.obtenerMetodos();
+    this.obtenerSolucionPatron();
+    this.obtenerTipoMatriz();
     const value = this.$q.localStorage.getItem('usuarioSilaguas')
     if (value) {
       this.usuario = value
@@ -581,25 +652,22 @@ export default {
     // utilidades.verificarUsuario(this.usuario.Login, this)
   },
   created() {
-
-     this.llenarDatos();
+    this.llenarDatos();
   },
 }
 </script>
+<!--
 <style>
-
-
 @media only screen and (max-width: 900px) {
-  .LetraT{
-  font-size: 3.5rem;
-}
+  .LetraT {
+    font-size: 3.5rem;
+  }
 }
 
 /* esta clase hace referencia a letra tamaño de ahí el nombre LetraT */
 @media only screen and (max-width: 700px) {
-  .LetraT{
-  font-size: 1rem;
+  .LetraT {
+    font-size: 1rem;
+  }
 }
-}
-
-</style>
+</style> -->

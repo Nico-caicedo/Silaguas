@@ -11,11 +11,11 @@
 
 
         <div class="q-gutter-x-sm">
-          <q-btn icon="person" label="" outline unelevated @click="abrirBusqueda()" class="inset-shadow"><q-tooltip
+          <!-- <q-btn icon="person" label="" outline unelevated @click="abrirBusqueda()" class="inset-shadow"><q-tooltip
               transition-show="scale" transition-hide="scale" class="bg-amber text-white shadow-4" :offset="[10, 10]">
               Usuarios Inactivos
             </q-tooltip>
-          </q-btn>
+          </q-btn> -->
           <q-btn icon="delete" label="" @click="limpiarTercero()" color="white" outline align="center" class="ellipsis">
             <q-tooltip transition-show="scale" transition-hide="scale" class="bg-primary text-white shadow-4">
               limpiar Campos
@@ -37,12 +37,12 @@
     <q-footer class="q-pa-sm bg-grey-4 shadow-up-3">
 
       <div class="row col q-gutter-sm">
-        <q-btn icon="search" label="" @click="cargarTodos()" color="purple" outline align="center" class="ellipsis ">
+        <!-- <q-btn icon="search" label="" @click="cargarTodos()" color="purple" outline align="center" class="ellipsis ">
           <q-tooltip transition-show="scale" transition-hide="scale" class="bg-purple text-white shadow-4"
             :offset="[10, 10]">
             Cargar Usuarios
           </q-tooltip>
-        </q-btn>
+        </q-btn> -->
 
         <q-btn label="" color="grey-10" class="ellipsis inset-shadow" outline icon="vpn_key" align="center"
           @click="restablecerClave()">
@@ -200,11 +200,11 @@
                       {{ accionBoton }}
                     </q-tooltip>
                   </q-btn>
-                  <q-btn icon="delete" label="" outline round align="center" class="shadow-1" color="negative"
+                  <!-- <q-btn icon="delete" label="" outline round align="center" class="shadow-1" color="negative"
                     @click="confirmarEliminar(usuarioAcceso.IdTercero)"><q-tooltip transition-show="scale"
                       transition-hide="scale" class="bg-red text-white shadow-4">
                       Eliminar Usuario
-                    </q-tooltip></q-btn>
+                    </q-tooltip></q-btn> -->
                 </div>
               </div>
             </div>

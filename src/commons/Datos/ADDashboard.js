@@ -3,10 +3,12 @@ import { api } from 'boot/axios';
 
 
 export default {
-  async generarPdfGrafica(filtro) {
+  async generarPdfGrafica(filtro, imageDataUrl) {
     try {
-      const response = await api.get('pdf/pdf-cartas', {
-        params: filtro,
+      const response = await api.post('pdf/pdf-cartas', {
+        ...filtro,
+        image: imageDataUrl,
+      }, {
         responseType: 'arraybuffer'
       });
 
@@ -22,16 +24,6 @@ export default {
 
 
 
-  // async obtenerDatosGraficos(data, id, Fecha) {
-  //   console.log('api', data, id, Fecha)
-  //   try {
-  //     const response = await api.get(`obtenerDatosGraficos/${data}/${id}/${Fecha}`);
-  //     return response
-  //   } catch (error) {
-  //     console.error('Error al obtener los datos gráficos:', error);
-  //     throw error;
-  //   }
-  // },
 
   async obtenerSolucionPatron() {
     try {

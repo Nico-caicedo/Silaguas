@@ -5,26 +5,25 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick, defineProps, onBeforeUnmount } from 'vue';
+import { ref, onMounted, watch, nextTick, defineProps, onBeforeUnmount, defineEmits } from 'vue';
 import * as echarts from 'echarts';
-import ApiService from 'src/commons/Datos/ADDashboard.js';
-import { useQuasar } from 'quasar';
-const $q = useQuasar();
-import utilidades from 'src/commons/utilidades';
 
+const emit = defineEmits(['imagenCapturada']);
 const props = defineProps({
   chartData: {
     type: Object,
     default: () => ({}),
   },
-  chartOptions: {
-    type: Object,
-    default: () => ({}),
+  captureEvent: {
+    type: String,
+    default: '', // Nombre del evento para activar la captura del gráfico desde el dashboard
   },
 });
 
 const chart = ref(null);
 let myChart = null;
+
+
 
 const renderChart = (chartDom, chartData) => {
   if (myChart) {
@@ -34,7 +33,7 @@ const renderChart = (chartDom, chartData) => {
 
   const option = {
     title: {
-      text: "",
+      text: '',
     },
     tooltip: {
       show: true,
@@ -50,18 +49,6 @@ const renderChart = (chartDom, chartData) => {
       bottom: '1.5%',
       containLabel: true,
     },
-    toolbox: {
-      feature: {
-        restore: {},
-        // saveAsImage: {
-        // //   title: 'Guardar como PDF',
-        // //   onclick: () => {
-        // //     const chartContainer = chart.value.parentElement;
-        // //     saveChartImage(chartContainer);
-        // //   },
-        //  },
-      },
-    },
     xAxis: {
       type: 'category',
       data: chartData.labels || [],
@@ -74,44 +61,62 @@ const renderChart = (chartDom, chartData) => {
       axisLabel: {
         formatter: function (value) {
           return value != null ? value.toFixed(2) : '';
-        }
-      }
-    },
-    dataZoom: [
-      {
-        type: 'inside',
-        start: 0,
-        end: 100,
+        },
       },
-      {
-        start: 0,
-        end: 100,
-      },
-    ],
-    itemStyle: {
-      borderWidth: 4,
     },
-    lineStyle: {
-      width: 1,
-    },
-    symbolSize: 40,
-    symbol: "emptyPin",
-    smooth: false,
-    series: chartData.datasets.map((dataset, index) => ({
-      name: dataset.label,
-      type: 'line',
-      smooth: true,
-      data: dataset.data.map(value => value != null ? Number(value).toFixed(2) : null),
-      itemStyle: {
-        color: dataset.backgroundColor,
-        borderColor: dataset.borderColor,
-      },
-    })),
+    // series: chartData.datasets.map((dataset) => ({
+    //   name: dataset.label,
+    //   type: 'line',
+    //   smooth: true,
+    //   data: dataset.data.map(value => value != null ? Number(value).toFixed(2) : null),
+    //   itemStyle: {
+    //     color: dataset.backgroundColor,
+    //     borderColor: dataset.borderColor,
+    //   },
+    // })),
+    series: chartData.datasets.map((dataset) => {
+      const isSpecialSample = ["Muestra", "Agua Cruda", "Agua Tratada"].includes(dataset.label);
+      const specialColor = dataset.label === "Muestra"  ? 'black' : dataset.backgroundColor;
+      const specialBorderColor = dataset.label === "Muestra" ? 'black' : dataset.borderColor;
+      return {
+        name: dataset.label,
+        type: 'line',
+        smooth: true,
+        data: dataset.data.map((value, index) => ({
+          value: value != null ? Number(value).toFixed(2) : null,
+          symbolSize: isSpecialSample ? 5: 4,
+        })),
+        itemStyle: {
+          color: specialColor,
+          borderColor: specialBorderColor,
+        },
+      };
+    }),
   };
 
   myChart.setOption(option);
   window.addEventListener('resize', myChart.resize);
 };
+
+
+
+
+const captureChartAsImage = () => {
+  if (myChart) {
+    const imageDataUrl = myChart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#fff' });
+    emit('imagenCapturada', imageDataUrl);
+  }
+};
+
+onMounted(() => {
+  nextTick(() => {
+    if (chart.value && props.chartData.labels && props.chartData.labels.length > 0) {
+      renderChart(chart.value, props.chartData);
+    } else {
+      showNoDataWatermark(chart.value);
+    }
+  });
+});
 
 const showNoDataWatermark = (chartDom) => {
   if (myChart) {
@@ -159,52 +164,6 @@ const showNoDataWatermark = (chartDom) => {
   window.addEventListener('resize', myChart.resize);
 };
 
-// const saveChartImage = async (chartContainer) => {
-//   $q.loading.show();
-//   try {
-//     const chartDataUrl = await getChartImageUrl(chartContainer);
-//     // Envía solo la URL de la imagen al backend para generar el PDF
-//     await ApiService.saveChartImage(chartDataUrl);
-//   } catch (error) {
-//     utilidades.mensaje(`Error al guardar la imagen del gráfico: ${error}`);
-//   } finally {
-//     $q.loading.hide();
-//   }
-// };
-
-// const getChartImageUrl = async (chartContainer) => {
-//   return new Promise((resolve, reject) => {
-//     if (!myChart) {
-//       reject('Chart is not initialized.');
-//       return;
-//     }
-
-//     myChart.on('rendered', () => {
-//       try {
-//         myChart.getDataURL({
-//           type: 'png',
-//           pixelRatio: 2,
-//           backgroundColor: '#fff',
-//         }, (dataUrl) => {
-//           resolve(dataUrl);
-//         });
-//       } catch (error) {
-//         reject(error);
-//       }
-//     });
-//   });
-// };
-
-onMounted(() => {
-  nextTick(() => {
-    if (chart.value && props.chartData.labels && props.chartData.labels.length > 0) {
-      renderChart(chart.value, props.chartData);
-    } else {
-      showNoDataWatermark(chart.value);
-    }
-  });
-});
-
 watch(() => props.chartData, (newData) => {
   nextTick(() => {
     if (chart.value && newData.labels && newData.labels.length > 0) {
@@ -220,5 +179,12 @@ onBeforeUnmount(() => {
     myChart.dispose();
     window.removeEventListener('resize', myChart.resize);
   }
+});
+
+watch(() => props.captureEvent, (eventName) => {
+  if (eventName === 'capturarImagen') {
+    captureChartAsImage();
+  }
+
 });
 </script>

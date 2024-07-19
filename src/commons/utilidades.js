@@ -101,7 +101,7 @@ export default {
   mensajeConfirmacion(mensaje) {
     Dialog.create({
       title: `<span class="text-bold text-blue-10 rounded-borders text-uppercase text-italic bg-grey flex flex-center inset-shadow" >Silaguas</span>`,
-      dark: true,
+      dark: false,
       message: `<hr style="color:1px dashed red;">
           <p class="q-pa-xs text-subtitle1 text-center">${mensaje}</p>
       `,

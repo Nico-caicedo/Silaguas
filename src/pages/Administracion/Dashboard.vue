@@ -37,11 +37,12 @@
         <div class="col q-gutter-xs">
           <SelectCalendar @FiltroSeleccionado="obtenerFecha" :tipoCarta="tipoCarta" :solucion="solucionCarta"
             :metodo="metodoCarta" :matriz="matrizCarta"  />
-            <q-btn icon="download" label="" @click="confirmarPdf" color="green" outline align="center" class="col row ellipsis">
+            <div class="col"><q-btn icon="download" label="" @click="confirmarPdf" color="green" outline >
               <q-tooltip transition-show="scale" transition-hide="scale" class="bg-grey-10 text-white shadow-4">
                 Descargar pdf
               </q-tooltip>
-            </q-btn>
+            </q-btn></div>
+
         </div>
 
       </div>
@@ -49,21 +50,15 @@
 
     <!-- seccion componenete grafico lineal -->
     <div class="row justify-center text-center q-col-gutter-xs">
-      <div class="col row col-xs-12 col-sm-12 col-md">
-        <Echart class="col row" if="loaded" :key="keyToRerender" :chartData="lineChartData" />
+      <div  class="col row col-xs-12 col-sm-12 col-md">
+        <Echart :chartData="lineChartData" :captureEvent="captureEvent" @imagenCapturada="guardarImagen" />
       </div>
-      <!-- <div class="col row col-xs-12 col-sm col-md-3 col-xl-3 col-lg-4">
-        <ListItems v-if="loaded" :key="keyToRerender" :List="List" :Fecha="Fecha" />
-      </div> -->
+
     </div>
     <!-- seccion componenete observacion general -->
     <div class="row justify-center  text-center q-col-gutter-xs">
-      <div class="row col-xs-12 col-sm col-md col-xl col-lg">
-        <ListItems v-if="loaded" :key="keyToRerender" :List="List" :Fecha="Fecha" />
-        <!-- <CardObservacion v-if="loaded" :key="keyToRerender" :ObservacionProps="Observacion" :hayDatos="hayDatos"
-          :hayCarta="tipoCarta" :Filtro="Filtro" :haySolucion="solucionCarta" :hayMetodo="metodoCarta"
-          :hayMatriz="matrizCarta" @guardarObservacion="registrarObservacionGeneral"
-          @ActualizarObservacion="actualizarObservacionGeneral" /> -->
+      <div class="col row col-xs-12 col-sm col-md-3 col-xl-3 col-lg-4">
+        <ListItems v-if="loaded" :key="keyToRerender" :List="List" :Fecha="Fecha" :tipoCarta="tipoCarta"/>
       </div>
        <!-- seccion componenete contadores -->
       <div class="row q-gutter-y-xs col col-xs-12 col-sm-12 col-md col-xl col-lg">
@@ -96,10 +91,10 @@ import CardData from "src/components/CardDataComponent.vue";
 import Select from 'src/components/SelectComponent.vue';
 import SelectCalendar from 'src/components/SelectCalendarComponent.vue';
 import ListItems from 'src/components/ListItemsComponents.vue';
-import CardObservacion from 'src/components/CardObservacionComponent.vue'
 // servicio api graficos
 import ApiService from 'src/commons/Datos/ADDashboard.js';
-import { api } from 'src/boot/axios';
+
+const chart = ref(null);
 
 const $q = useQuasar();
 const keyToRerender = ref(true);
@@ -151,8 +146,6 @@ const optionspie = {
 };
 
 
-
-
 // Funciones de utilidad
 const getColorByNombre = (backgroundcolor) => {
   const colorMap = {
@@ -178,10 +171,87 @@ const getIconByNombre = (icon) => {
   return iconMap[icon] || "";
 }
 
+const obtenerSolucionPatron = async (solucion, fecha) => {
+  $q.loading.value = true;
+  try {
+    const solucionpatron = await ApiService.obtenerSolucionPatron();
+    optionsSolucion.value = solucionpatron;
+    if (solucion === null) {
+      const { dia, mes, año } = fecha;
+      solucionCarta.value = solucion;
+      await obtenerFecha('CCV', dia, mes, año, null, null, null);
 
+    }
+    if (solucion) {
+      const { dia, mes, año } = fecha;
+      solucionCarta.value = solucion;
+      await obtenerFecha('CCV', dia, mes, año, solucion, null, null);
+
+      // await registrarObservacionGeneral(null, 'CCV', solucion);
+    }
+    // await obtenerCarta('CCV',fecha,solucion,null,null);
+  } catch (error) {
+    utilidades.mensaje(`Error al obtener la solución patrón, ${error}`);
+  } finally {
+    $q.loading.value = false;
+  }
+};
+
+const obtenerMetodos = async (metodo, fecha) => {
+  $q.loading.value = true;
+  try {
+    const Metodos = await ApiService.obtenerMetodos();
+    optionsMetodo.value = Metodos;
+    metodoCarta.value = metodo;
+    if (metodo === null) {
+      const { dia, mes, año } = fecha;
+      metodoCarta.value = metodo;
+      await obtenerFecha('CCRPD', dia, mes, año, null, null, null);
+    }
+    if (metodo) {
+      const { dia, mes, año } = fecha;
+      metodoCarta.value = metodo;
+      await obtenerFecha('CCRPD', dia, mes, año, null, metodo, null);
+
+      // await registrarObservacionGeneral(null, 'CCRPD', null, metodo);
+    }
+    // await obtenerCarta('CCRPD',fecha,null,metodo,null);
+  } catch (error) {
+    utilidades.mensaje(`Error al obtener los métodos, ${error}`);
+  } finally {
+    $q.loading.value = false;
+  }
+}
+
+const obtenerTipoMatriz = async (matriz, fecha) => {
+  $q.loading.value = true;
+  try {
+    const TipoMatriz = await ApiService.obtenerTipoMatriz();
+    optionsMatriz.value = TipoMatriz;
+    matrizCarta.value = matriz;
+    if (matriz === null) {
+      const { dia, mes, año } = fecha;
+      matrizCarta.value = matriz;
+      await obtenerFecha('CCRPD', dia, mes, año, null, null, null);
+    }
+    if (matriz) {
+      const { dia, mes, año } = fecha;
+      matrizCarta.value = matriz;
+      await obtenerFecha('CCRPD', dia, mes, año, null, null, matriz);
+
+      // await registrarObservacionGeneral(null, 'CCRPD', null, null, matriz);
+    }
+    // await obtenerCarta('CCRPD',fecha,null,null,matriz);
+  } catch (error) {
+    utilidades.mensaje(`Error al obtener el tipo de matriz, ${error}`);
+  } finally {
+    $q.loading.value = false;
+  }
+}
 
 // Funciones para obtener y manejar datos
-const obtenerCarta = async (carta, fecha) => {
+const obtenerCarta = async (carta, fecha,solucion,metodo,matriz) => {
+  // console.log(solucion,'-',metodo,'-',matriz);
   $q.loading.value = true;
   if (!fecha) {
     return;
@@ -211,84 +281,13 @@ const obtenerCarta = async (carta, fecha) => {
   }
   try {
     const { dia = undefined, mes, año } = fecha;
-    await obtenerFecha(carta, dia, mes, año);
+    await obtenerFecha(carta, dia, mes,año,solucion,metodo,matriz);
   } catch (error) {
     console.log('Error al obtener la carta', error);
   } finally {
     $q.loading.value = false;
   }
 };
-
-const obtenerSolucionPatron = async (solucion, fecha) => {
-  $q.loading.value = true;
-  try {
-    const solucionpatron = await ApiService.obtenerSolucionPatron();
-    optionsSolucion.value = solucionpatron;
-    if (solucion === null) {
-      const { dia, mes, año } = fecha;
-      solucionCarta.value = solucion;
-      await obtenerFecha('CCV', dia, mes, año, null, null, null);
-    }
-    if (solucion) {
-      const { dia, mes, año } = fecha;
-      solucionCarta.value = solucion;
-      await obtenerFecha('CCV', dia, mes, año, solucion, null, null);
-      // await registrarObservacionGeneral(null, 'CCV', solucion);
-    }
-  } catch (error) {
-    utilidades.mensaje(`Error al obtener la solución patrón, ${error}`);
-  } finally {
-    $q.loading.value = false;
-  }
-};
-
-const obtenerMetodos = async (metodo, fecha) => {
-  $q.loading.value = true;
-  try {
-    const Metodos = await ApiService.obtenerMetodos();
-    optionsMetodo.value = Metodos;
-    metodoCarta.value = metodo;
-    if (metodo === null) {
-      const { dia, mes, año } = fecha;
-      metodoCarta.value = metodo;
-      await obtenerFecha('CCRPD', dia, mes, año, null, null, null);
-    }
-    if (metodo) {
-      const { dia, mes, año } = fecha;
-      metodoCarta.value = metodo;
-      await obtenerFecha('CCRPD', dia, mes, año, null, metodo, null);
-      // await registrarObservacionGeneral(null, 'CCRPD', null, metodo);
-    }
-  } catch (error) {
-    utilidades.mensaje(`Error al obtener los métodos, ${error}`);
-  } finally {
-    $q.loading.value = false;
-  }
-}
-
-const obtenerTipoMatriz = async (matriz, fecha) => {
-  $q.loading.value = true;
-  try {
-    const TipoMatriz = await ApiService.obtenerTipoMatriz();
-    optionsMatriz.value = TipoMatriz;
-    matrizCarta.value = matriz;
-    if (matriz === null) {
-      const { dia, mes, año } = fecha;
-      matrizCarta.value = matriz;
-      await obtenerFecha('CCRPD', dia, mes, año, null, null, null);
-    }
-    if (matriz) {
-      const { dia, mes, año } = fecha;
-      matrizCarta.value = matriz;
-      await obtenerFecha('CCRPD', dia, mes, año, null, null, matriz);
-      // await registrarObservacionGeneral(null, 'CCRPD', null, null, matriz);
-    }
-  } catch (error) {
-    utilidades.mensaje(`Error al obtener el tipo de matriz, ${error}`);
-  } finally {
-    $q.loading.value = false;
-  }
-}
 
 const obtenerFecha = async (data, dia, mes, año, solucion, metodo, matriz) => {
   $q.loading.value = true;
@@ -297,7 +296,6 @@ const obtenerFecha = async (data, dia, mes, año, solucion, metodo, matriz) => {
   disableMatriz.value = true;
   disableSolucion.value = false;
   var dato = data;
-
   if (data === 'CCV') {
     tipoCarta.value = data;
     disableMetodo.value = true;
@@ -348,66 +346,111 @@ const obtenerFecha = async (data, dia, mes, año, solucion, metodo, matriz) => {
   }
 }
 
+const captureEvent = ref('');
+let imageDataUrl = '';
 
+const guardarImagen = (imagenCapturada) => {
+  imageDataUrl = imagenCapturada;
+  captureEvent.value = '';
+};
 const confirmarPdf = async () => {
   const filtrocarta = Filtro.value;
-  try {
-    if (lineChartData.value.datasets && lineChartData.value.datasets.length > 0 && Filtro.value.Metodo != "") {
-    $q.dialog({
-      title: `<span class="text-bold text-blue-10 rounded-borders text-uppercase text-italic bg-grey flex flex-center inset-shadow" >Silaguas</span>`,
-      dark: true,
-      message: `<hr style="color:1px dashed red;">
-          <p class="q-pa-xs text-subtitle1 text-center">¿Seguro de Generar Pdf?</p>
-      `,
-      ok: {
-        label: "Si",
-        color: "blue-10",
-        textColor: "white",
-        style: {
-          margin: "",
-          border: "1px dashed lightblue",
-          background: "shadow-1",
-        },
-      },
-      dark: false,
-      html: true,
-      style: {
-        border: "1px dashed blue",
-        background: "shadow-1",
-      },
-      cancel: {
-        label: "No",
-        color: "red-6",
-        textColor: "white",
-        style: {
-          margin: "",
-          border: "1px dashed red",
-          background: "shadow-1",
-        },
-      },
-      persistent: true,
-    })
-      .onOk(async () => {
-        await generarPdfGrafica(filtrocarta);
-      })
-      .onCancel(() => { });
-    }else {
-      utilidades.mensaje("Sin Datos en el Grafico Principal :)");
+
+  // Validaciones adicionales según el tipo de carta
+  if (filtrocarta.TipoCarta === 'CCV' && (!filtrocarta.SolucionPatron || filtrocarta.SolucionPatron === "")) {
+    $q.notify({
+      color: 'negative',
+      message: 'Por favor, selecciona una solución patrón para el tipo de carta CCV.',
+    });
+    return;
+  }
+
+  if (filtrocarta.TipoCarta === 'CCRPD' &&
+      (!filtrocarta.Metodo || filtrocarta.Metodo === "") &&
+      (!filtrocarta.Matriz || filtrocarta.Matriz === "")) {
+    $q.notify({
+      color: 'negative',
+      message: 'Por favor, selecciona un método o una matriz para el tipo de carta CCRPD.',
+    });
+    return;
+  }
+
+  // Validación original para los datos del gráfico
+  if (lineChartData.value.datasets && lineChartData.value.datasets.length > 0) {
+    if (imageDataUrl) {
+      try {
+        await $q.dialog({
+          title: `<span class="text-bold text-blue-10 rounded-borders text-uppercase text-italic bg-grey flex flex-center inset-shadow">Silaguas</span>`,
+          dark: false,
+          message: `<hr style="color:1px dashed red;">
+                    <p class="q-pa-xs text-subtitle1 text-center">¿Seguro de Generar Pdf?</p>`,
+          ok: {
+            label: 'Si',
+            color: 'blue-10',
+            textColor: 'white',
+            style: {
+              margin: '',
+              border: '1px dashed lightblue',
+              background: 'shadow-1',
+            },
+          },
+          html: true,
+          style: {
+            border: '1px dashed blue',
+            background: 'shadow-1',
+          },
+          cancel: {
+            label: 'No',
+            color: 'red-6',
+            textColor: 'white',
+            style: {
+              margin: '',
+              border: '1px dashed red',
+              background: 'shadow-1',
+            },
+          },
+          persistent: true,
+        }).onOk(async () => {
+          await generarPdfGrafica(filtrocarta, imageDataUrl);
+          imageDataUrl = '';
+        })
+        .onCancel(() => { });
+
+      } catch (error) {
+        console.error('Error en confirmación de generar PDF:', error);
+        $q.notify({
+          color: 'negative',
+          message: 'Error en confirmación de generar PDF',
+        });
+      }
+    } else {
+      captureEvent.value = 'capturarImagen';
     }
-  } catch (error) {
-    utilidades.mensaje("error en confirmacion de generar pdf cartas" + error);
+  } else {
+    $q.notify({
+      color: 'negative',
+      message: 'Sin datos en el Gráfico Principal',
+    });
   }
 };
 
-const generarPdfGrafica = async (filtro) => {
+
+
+const generarPdfGrafica = async (filtro, imageDataUrl) => {
   try {
-    await ApiService.generarPdfGrafica(filtro);
+    await ApiService.generarPdfGrafica(filtro, imageDataUrl);
+    $q.notify({
+      color: 'positive',
+      message: 'PDF generado exitosamente',
+    });
   } catch (error) {
-    console.error('Error generating PDF:', error);
+    console.error('Error generando PDF:', error);
+    $q.notify({
+      color: 'negative',
+      message: 'Error generando PDF',
+    });
   }
 };
-
-
 
 const obtenerAnalisisDatos = async (filtro) => {
   $q.loading.value = true;

@@ -59,7 +59,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import eventBus from 'src/commons/eventBus';
+
 import { useRouter } from "vue-router";
 import utilidades from "src/commons/utilidades";
 import { LocalStorage, Loading, useQuasar } from "quasar";
@@ -130,8 +130,9 @@ onMounted(async () => {
   menuElements.value = accesos;
   // eventBus.on('accesosActualizados', (nuevosAccesos) => {
   //   if (nuevosAccesos) {
-  //     MostrarAccesos(IdRol, -1);
+  //
   //   }
   // });
+  MostrarAccesos(IdRol, -1);
 });
 </script>

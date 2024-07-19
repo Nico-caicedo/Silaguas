@@ -1,7 +1,7 @@
 <template>
-  <q-select  outlined :clearable="clearable"  v-model="model" :options="options" :label="label"
-    label-color="primary" color="teal" emit-value options-selected-class="text-deep-primary" :dense="dense"
-    :options-dense="denseOpts" class="ellipsis" @clear="onClear">
+  <q-select outlined :clearable="clearable" v-model="model" :options="options" :label="label" label-color="primary"
+    color="teal" emit-value options-selected-class="text-deep-primary" :dense="dense" :options-dense="denseOpts"
+    class="ellipsis" @clear="onClear">
     <template v-slot:prepend>
       <q-icon name="filter_alt" color="primary" />
     </template>
@@ -24,53 +24,44 @@
   </q-select>
 </template>
 
-<script>
+<script setup>
 import { ref, watch, onMounted } from 'vue';
 
-export default {
-  props: {
-    options: {
-      type: [Array, String],
-      default: () => [],
-    },
-    label: String,
-    Fecha: Object,
-    clearable: Boolean,
+const props = defineProps({
+  options: {
+    type: [Array, String],
+    default: () => [],
   },
-  setup(props, { emit }) {
-    const model = ref(props.options[0]);
-    const dense = ref(true);
-    const denseOpts = ref(true);
+  label: String,
+  Fecha: Object,
+  clearable: Boolean,
+});
 
-    const emitSelection = () => {
-      if (model.value && model.value.id) {
-        emit('FiltroSeleccionado', model.value.id, props.Fecha);
-      }
-    };
+const emit = defineEmits(['FiltroSeleccionado', 'FechaSeleccionada']);
 
-    const emitFecha = () => {
-      emit('FechaSeleccionada', props.Fecha);
-    };
+const model = ref(props.options[0]);
+const dense = ref(true);
+const denseOpts = ref(true);
 
-    const onClear = () => {
-      emit('FiltroSeleccionado', null, props.Fecha);
-    };
-
-    onMounted(() => {
-      emitFecha();
-    });
-
-    watch(model, () => {
-      emitSelection();
-    });
-
-
-    return {
-      model,
-      dense,
-      denseOpts,
-      onClear, // Agregar el controlador para el evento de limpieza
-    };
-  },
+const emitSelection = () => {
+  if (model.value && model.value.id) {
+    emit('FiltroSeleccionado', model.value.id, props.Fecha);
+  }
 };
+
+const emitFecha = () => {
+  emit('FechaSeleccionada', props.Fecha);
+};
+
+const onClear = () => {
+  emit('FiltroSeleccionado', null, props.Fecha);
+};
+
+onMounted(() => {
+  emitFecha();
+});
+
+watch(model, () => {
+  emitSelection();
+});
 </script>
