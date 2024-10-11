@@ -434,8 +434,6 @@ const confirmarPdf = async () => {
   }
 };
 
-
-
 const generarPdfGrafica = async (filtro, imageDataUrl) => {
   try {
     await ApiService.generarPdfGrafica(filtro, imageDataUrl);

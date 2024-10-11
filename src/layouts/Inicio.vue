@@ -49,7 +49,7 @@ import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import ADUsuario from "src/commons/Datos/ADUsuarios.js";
 import utilidades from "src/commons/utilidades";
-import utils from "src/commons/utils";
+import utils from "src/commons/utilidades";
 
 const $q = useQuasar();
 const usuario = ref({ Login: "", Password: "" });

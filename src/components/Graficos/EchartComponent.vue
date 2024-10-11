@@ -98,7 +98,7 @@ const renderChart = (chartDom, chartData) => {
   window.addEventListener('resize', myChart.resize);
 };
 
-
+  
 
 
 const captureChartAsImage = () => {
